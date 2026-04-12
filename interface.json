@@ -21,6 +21,14 @@
     },
     "task": [
         {
+            "name": "启动加速器",
+            "description": "通过 ADB 执行 StartApp 拉起加速器客户端；在任务选项填写包名（与 Maa StartApp 的 package 一致，可含 activity）",
+            "entry": "启动加速器入口",
+            "option": [
+                "加速器包名"
+            ]
+        },
+        {
             "name": "日常",
             "description": "包含商店、50AP消耗、战舰巡航、开发、强化任务",
             "option": [
@@ -74,6 +82,27 @@
         }
     ],
     "option": {
+        "加速器包名": {
+            "type": "input",
+            "description": "原生 StartApp；MuMu 上 UU 建议填 LaunchActivity（默认已填），其它加速器请 resolve-activity 自查",
+            "inputs": [
+                {
+                    "name": "ACCEL_PACKAGE",
+                    "description": "默认网易 UU 启动 Activity；仅包名可试 com.netease.uu",
+                    "default": "com.netease.uu/.activity.LaunchActivity"
+                }
+            ],
+            "pipeline_override": {
+                "启动加速器执行": {
+                    "action": {
+                        "param": {
+                            "package": "{ACCEL_PACKAGE}"
+                        },
+                        "type": "StartApp"
+                    }
+                }
+            }
+        },
         "GP输入": {
             "type": "input",
             "description": "请输入GP数量",
