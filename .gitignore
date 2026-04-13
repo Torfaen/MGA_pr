@@ -441,11 +441,25 @@ enc_temp_folder/*
 
 # Build
 deps
+MFA
+libs
+python
 build
 install
+dist
+
+# MFAAvalonia / MAA files copied to repo root (from install or upstream bundle; do not commit)
+/appsettings.json
+/DependencySetup*.bat
+/Maa*.node
+/MFAAvalonia.deps.json
+/MFAAvalonia.runtimeconfig.json
+/resource/mfa_layout.json
 
 # Tools
 tools/ImageCropper/**/*.png
 
 config
 debug
+tools/CI/package_release.py
+tools/CI/build_install_windows.ps1
