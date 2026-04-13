@@ -80,7 +80,7 @@
             }
         },
         "next": [
-            "tap_to_next",
+            "点击tap_to_next",
             "进入商店",
             "登录体力领取",
             "领取战舰体力",
@@ -106,7 +106,7 @@
         },
         "timeout": 5000
     },
-    "tap_to_next": {
+    "点击tap_to_next": {
         "$__mpe_code": {
             "position": {
                 "x": -391,
