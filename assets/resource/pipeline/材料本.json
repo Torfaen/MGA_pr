@@ -352,7 +352,9 @@
     "recognition": {
       "param": {
         "expected": [
-          "OK"
+          "OK",
+          "@K",
+          "0K"
         ]
       },
       "type": "OCR"

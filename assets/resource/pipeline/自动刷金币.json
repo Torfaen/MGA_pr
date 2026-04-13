@@ -525,7 +525,9 @@
         "recognition": {
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
             },
             "type": "OCR"
@@ -706,7 +708,9 @@
         "recognition": {
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
             },
             "type": "OCR"

@@ -80,6 +80,7 @@
             }
         },
         "next": [
+            "tap_to_next",
             "进入商店",
             "登录体力领取",
             "领取战舰体力",
@@ -104,6 +105,36 @@
             "type": "OCR"
         },
         "timeout": 5000
+    },
+    "tap_to_next": {
+        "$__mpe_code": {
+            "position": {
+                "x": -391,
+                "y": -471
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "主画面检测"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "TAP"
+                ],
+                "roi": [
+                    0,
+                    -144,
+                    0,
+                    144
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
     },
     "体力领取失败": {
         "$__mpe_code": {
@@ -777,7 +808,9 @@
         "recognition": {
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
             },
             "type": "OCR"
@@ -800,7 +833,9 @@
         "recognition": {
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
             },
             "type": "OCR"
@@ -822,11 +857,11 @@
         ],
         "recognition": {
             "param": {
-                "expected": [
-                    "OK"
+                "template": [
+                    "OK.png"
                 ]
             },
-            "type": "OCR"
+            "type": "TemplateMatch"
         }
     },
     "确认领取礼物": {
@@ -843,7 +878,9 @@
         "recognition": {
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
             },
             "type": "OCR"
@@ -1007,7 +1044,7 @@
             },
             "type": "OCR"
         },
-        "timeout": 2000
+        "timeout": 10000
     },
     "领取战舰体力": {
         "$__mpe_code": {

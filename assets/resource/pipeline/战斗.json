@@ -810,7 +810,9 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
             }
         },
