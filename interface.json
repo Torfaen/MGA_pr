@@ -27,7 +27,7 @@
         },
         {
             "name": "启动加速器",
-            "description": "通过 ADB 执行 StartApp 拉起加速器；在任务选项选择加速器类型（网易 UU / 腾讯手游加速器）",
+            "description": "通过 ADB 执行 StartApp 拉起加速器；在任务选项选择加速器类型",
             "entry": "启动加速器入口",
             "option": [
                 "加速器类型"
