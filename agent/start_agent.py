@@ -41,6 +41,7 @@ def run_agent_logic(socket_id):
         import SmartShopBuy
         import ReturnHome
         import StageSelect
+        import BatchStageSweep
         import DailyBattle
         import GP
         
