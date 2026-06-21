@@ -280,7 +280,7 @@
             "type": "Custom"
         },
         "focus": {
-            "Node.Action.Failed": "强制返回主页失败"
+            "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
         },
         "timeout": 5000
     },

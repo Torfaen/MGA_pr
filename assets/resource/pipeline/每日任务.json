@@ -118,7 +118,7 @@
             "type": "Click"
         },
         "next": [
-            "主画面检测"
+            "游戏唤醒_状态轮询"
         ],
         "recognition": {
             "param": {
@@ -312,7 +312,7 @@
             "type": "StopTask"
         },
         "focus": {
-            "Node.Recognition.Succeeded": "发生意外错误，请检查网络以及模拟器状况"
+            "Node.Recognition.Succeeded": "MGA_TASK_FAILED: 发生意外错误，请检查网络以及模拟器状况"
         },
         "recognition": {
             "param": {
@@ -364,7 +364,7 @@
             "param": {},
             "type": "Click"
         },
-        "enabled": false,
+        "enabled": true,
         "focus": {
             "Node.Recognition.Succeeded": "开始执行开发强化任务"
         },
@@ -393,8 +393,7 @@
             "type": "Click"
         },
         "next": [
-            "唤醒失败",
-            "主画面检测"
+            "游戏唤醒_状态轮询"
         ],
         "recognition": {
             "param": {
@@ -405,6 +404,132 @@
             "type": "OCR"
         },
         "timeout": 45000
+    },
+    "游戏唤醒_状态轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": -1240,
+                "y": -308
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "唤醒失败",
+            "游戏唤醒_资源下载",
+            "游戏唤醒_关闭公告",
+            "点击tap_to_next",
+            "开始唤醒",
+            "主画面检测",
+            "游戏唤醒_状态轮询"
+        ],
+        "on_error": [
+            "唤醒失败",
+            "主画面检测"
+        ],
+        "post_delay": 1000,
+        "rate_limit": 1000,
+        "timeout": 120000
+    },
+    "游戏唤醒_资源下载": {
+        "$__mpe_code": {
+            "position": {
+                "x": -1050,
+                "y": -308
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "检测到游戏资源未下载，开始下载"
+        },
+        "next": [
+            "游戏唤醒_状态轮询"
+        ],
+        "post_wait_freezes": 3500,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "下载"
+                ],
+                "roi": [
+                    687,
+                    544,
+                    152,
+                    44
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "游戏唤醒_下载后等待": {
+        "$__mpe_code": {
+            "position": {
+                "x": -782,
+                "y": -308
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "唤醒失败",
+            "游戏唤醒_关闭公告",
+            "点击tap_to_next",
+            "开始唤醒",
+            "主画面检测",
+            "游戏唤醒_状态轮询"
+        ],
+        "max_hit": 120,
+        "on_error": [
+            "唤醒失败",
+            "主画面检测"
+        ],
+        "post_delay": 5000,
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
+    },
+    "游戏唤醒_关闭公告": {
+        "$__mpe_code": {
+            "position": {
+                "x": -514,
+                "y": -308
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "检测到下载后公告，点击关闭"
+        },
+        "next": [
+            "游戏唤醒_状态轮询"
+        ],
+        "post_delay": 1000,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "关闭"
+                ],
+                "roi": [
+                    500,
+                    620,
+                    280,
+                    80
+                ]
+            },
+            "type": "OCR"
+        }
     },
     "战舰巡航结算": {
         "$__mpe_code": {
@@ -588,13 +713,38 @@
             "type": "Click"
         },
         "next": [
-            "执行开发"
+            "开发等待"
         ],
         "pre_wait_freezes": 200,
         "recognition": {
             "param": {
                 "expected": [
                     "全部开发"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "开发等待": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1964,
+                "y": -701
+            }
+        },
+        "next": [
+            "执行开发"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部开发"
+                ],
+                "roi": [
+                    571,
+                    43,
+                    143,
+                    41
                 ]
             },
             "type": "OCR"
@@ -960,7 +1110,7 @@
             "type": "Custom"
         },
         "focus": {
-            "Node.Action.Failed": "强制返回主页失败"
+            "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
         },
         "timeout": 5000
     },

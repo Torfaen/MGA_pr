@@ -33,7 +33,7 @@
         },
         "focus": {
             "Node.Action.Succeeded": "已执行启动游戏（StartApp）",
-            "Node.Action.Failed": "启动游戏失败，请检查 package 与设备连接"
+            "Node.Action.Failed": "MGA_TASK_FAILED: 启动游戏失败，请检查 package 与设备连接"
         },
         "next": [
             "启动游戏任务结束"

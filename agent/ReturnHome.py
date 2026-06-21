@@ -20,10 +20,10 @@ class ReturnHome(CustomAction):
                 print("[返回主画面]  执行成功！")
                 return True
             else:
-                print(f"[返回主画面]  执行失败！")
+                print("MGA_TASK_FAILED: [返回主画面] 执行失败！")
                 return False
         except Exception as e:
-            print(f"[返回主画面]  Python 脚本执行异常: {e}")
+            print(f"MGA_TASK_FAILED: [返回主画面] Python 脚本执行异常: {e}")
             import traceback
             traceback.print_exc()
             return False

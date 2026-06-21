@@ -33,7 +33,7 @@
         },
         "focus": {
             "Node.Action.Succeeded": "已执行启动加速器（StartApp）",
-            "Node.Action.Failed": "启动加速器失败，请检查 package 与设备连接"
+            "Node.Action.Failed": "MGA_TASK_FAILED: 启动加速器失败，请检查 package 与设备连接"
         },
         "next": [
             "加速器原生_锚点图标"
