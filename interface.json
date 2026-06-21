@@ -56,6 +56,31 @@
             ]
         },
         {
+            "name": "故事扫荡",
+            "label": "故事扫荡",
+            "entry": "故事扫荡入口",
+            "description": "进入一个故事后，按勾选的 HARD 关卡顺序连续扫荡；找不到的关卡会跳过。",
+            "option": [
+                "故事扫荡模式",
+                "扫荡关卡"
+            ]
+        },
+        {
+            "name": "活动扫荡",
+            "entry": "活动扫荡入口",
+            "description": "从主画面进入 Stargazer 活动，略过 HARD1-3 和 BOSS EXPERT。"
+        },
+        {
+            "name": "故事开荒",
+            "entry": "故事开荒入口",
+            "description": "从当前故事/事件关卡页开始，连续推进 NEXT 关卡直到无下一关。"
+        },
+        {
+            "name": "BOSS挑战开荒",
+            "entry": "BOSS挑战开荒入口",
+            "description": "从当前 BOSS 战斗难度页开始，按 EXPERT -> HARD -> NORMAL 连续挑战可挑战难度。"
+        },
+        {
             "name": "强敌来袭",
             "entry": "强敌来袭：入口",
             "description": "从主画面进入关卡页后，依次进入事件、选择强敌来袭并点击前往事件",
@@ -200,6 +225,100 @@
                                 "强敌来袭：检测主画面",
                                 "[JumpBack]强敌来袭：主页返回"
                             ]
+                        }
+                    }
+                }
+            ]
+        },
+        "故事扫荡模式": {
+            "type": "select",
+            "label": "故事类型",
+            "description": "选择要扫荡的故事类型，再选择具体故事。",
+            "default_case": "主线故事",
+            "cases": [
+                {
+                    "name": "主线故事",
+                    "label": "主线故事",
+                    "option": [
+                        "主线故事选择"
+                    ],
+                    "pipeline_override": {
+                        "寻找HARD": {
+                            "next": [
+                                "故事扫荡关卡右复位"
+                            ]
+                        },
+                        "主线左复位": {
+                            "enabled": true
+                        },
+                        "进入历史关卡": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "历史故事",
+                    "label": "历史故事",
+                    "option": [
+                        "历史故事选择"
+                    ],
+                    "pipeline_override": {
+                        "寻找HARD": {
+                            "next": [
+                                "故事扫荡关卡右复位"
+                            ]
+                        },
+                        "主线左复位": {
+                            "enabled": false
+                        },
+                        "进入历史关卡": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        },
+        "扫荡关卡": {
+            "type": "checkbox",
+            "description": "选择需要扫荡的 HARD 关卡；执行顺序固定为 HARD1 到 HARD5。",
+            "cases": [
+                {
+                    "name": "HARD1",
+                    "pipeline_override": {
+                        "故事扫荡_HARD1": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "HARD2",
+                    "pipeline_override": {
+                        "故事扫荡_HARD2": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "HARD3",
+                    "pipeline_override": {
+                        "故事扫荡_HARD3": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "HARD4",
+                    "pipeline_override": {
+                        "故事扫荡_HARD4": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "HARD5",
+                    "pipeline_override": {
+                        "故事扫荡_HARD5": {
+                            "enabled": true
                         }
                     }
                 }
@@ -884,6 +1003,25 @@
                             "recognition": {
                                 "param": {
                                     "template": "EW.png"
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        },
+                        "主线左复位": {
+                            "enabled": true
+                        },
+                        "进入历史关卡": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "NT",
+                    "pipeline_override": {
+                        "寻找目标故事": {
+                            "recognition": {
+                                "param": {
+                                    "template": "NT.png"
                                 },
                                 "type": "TemplateMatch"
                             }
