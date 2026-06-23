@@ -418,25 +418,19 @@
     },
     "活动扫荡_返回活动页找BOSS": {
         "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "roi": [
-                    0,
-                    0,
-                    180,
-                    90
-                ],
-                "template": [
-                    "返回.png"
-                ],
-                "threshold": [
-                    0.8
-                ]
-            }
+            "type": "DirectHit",
+            "param": {}
         },
         "action": {
             "type": "Click",
-            "param": {}
+            "param": {
+                "target": [
+                    36,
+                    14,
+                    96,
+                    48
+                ]
+            }
         },
         "post_wait_freezes": 1500,
         "timeout": 10000,
