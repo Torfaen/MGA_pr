@@ -296,9 +296,32 @@
             },
             "type": "Swipe"
         },
+        "max_hit": 3,
         "next": [
             "点击战舰"
-        ]
+        ],
+        "on_error": [
+            "向左滑动",
+            "战舰体力查找失败"
+        ],
+        "timeout": 2000
+    },
+    "战舰体力查找失败": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1542,
+                "y": -98
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Starting": "MGA_TASK_FAILED: 战舰体力领取失败，4次未找到战舰，跳过该分支，开始返回主页"
+        }
     },
     "唤醒失败": {
         "$__mpe_code": {
@@ -808,7 +831,7 @@
             "param": {
                 "target_offset": [
                     0,
-                    100,
+                    0,
                     0,
                     0
                 ]
@@ -821,7 +844,7 @@
         "recognition": {
             "param": {
                 "expected": [
-                    "战舰巡航"
+                    "巡航"
                 ]
             },
             "type": "OCR"
@@ -1216,7 +1239,7 @@
             "点击战舰"
         ],
         "on_error": [
-            "尝试战舰巡航复位"
+            "向左滑动"
         ],
         "recognition": {
             "param": {

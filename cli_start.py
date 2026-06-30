@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 
@@ -16,6 +17,8 @@ CLI_INTERFACE = DEPS_BIN / "interface.json"
 CLI_CONFIG = CLI_CONFIG_DIR / "maa_pi_config.json"
 CLI_AGENT_BINARY = DEPS_BIN / "MaaAgentBinary"
 SOURCE_AGENT_BINARY = ROOT / "deps" / "share" / "MaaAgentBinary"
+SUCCESS_LOG = "任务已全部完成"
+ERROR_LOG = "MGA_TASK_FAILED|已放弃本次任务"
 
 
 def read_json(path):
@@ -28,6 +31,23 @@ def write_json(path, data):
     with path.open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
         f.write("\n")
+
+
+def automas_log_path(now=None):
+    now = now or datetime.now()
+    return ROOT / "logs" / f"log-{now:%Y%m%d}.log"
+
+
+def append_automas_log(level, instance_name, message):
+    now = datetime.now()
+    path = automas_log_path(now)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    line = (
+        f"[{now:%Y-%m-%d %H:%M:%S.%f}][{level}] "
+        f"[cfg=CLI][inst={instance_name}][src=cli_start][op=RunMaaPiCli] {message}\n"
+    )
+    with path.open("a", encoding="utf-8") as f:
+        f.write(line)
 
 
 def normalize_name(value):
@@ -185,7 +205,11 @@ def ensure_agent_binary():
 
 
 def backup_path(path):
-    return path.with_name(path.name + ".cli_start.bak")
+    backup = path.with_name(path.name + ".cli_start.bak")
+    if not backup.exists():
+        return backup
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    return path.with_name(f"{path.name}.cli_start.{timestamp}.bak")
 
 
 def install_runtime_files(interface, config):
@@ -247,16 +271,24 @@ def main():
         print(json.dumps(cli_config, ensure_ascii=False, indent=4))
         return
 
-    backups = install_runtime_files(cli_interface, cli_config)
     print(f"[MGA CLI] 使用配置：{instance_name}")
     print(f"[MGA CLI] 启动：{CLI_EXE}")
+    append_automas_log("INF", instance_name, f"命令行启动开始：{CLI_EXE}")
+    backups = install_runtime_files(cli_interface, cli_config)
+    exit_code = 1
     try:
         ensure_agent_binary()
         env = os.environ.copy()
         env["MAAFW_BINARY_PATH"] = str(DEPS_BIN)
-        raise SystemExit(run_maapicli(env))
+        exit_code = run_maapicli(env)
     finally:
         restore_runtime_files(backups)
+
+    if exit_code == 0:
+        append_automas_log("INF", instance_name, f"{SUCCESS_LOG}！")
+    else:
+        append_automas_log("ERR", instance_name, f"{ERROR_LOG}，退出码={exit_code}")
+    raise SystemExit(exit_code)
 
 
 if __name__ == "__main__":
