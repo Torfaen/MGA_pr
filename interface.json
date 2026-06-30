@@ -61,8 +61,7 @@
             "entry": "故事扫荡入口",
             "description": "进入一个故事后，按勾选的 HARD 关卡顺序连续扫荡；找不到的关卡会跳过。",
             "option": [
-                "故事扫荡模式",
-                "扫荡关卡"
+                "故事扫荡模式"
             ]
         },
         {
@@ -248,7 +247,8 @@
                     "name": "主线故事",
                     "label": "主线故事",
                     "option": [
-                        "主线故事选择"
+                        "主线故事选择",
+                        "扫荡关卡"
                     ],
                     "pipeline_override": {
                         "寻找HARD": {
@@ -268,7 +268,8 @@
                     "name": "历史故事",
                     "label": "历史故事",
                     "option": [
-                        "历史故事选择"
+                        "历史故事选择",
+                        "扫荡关卡"
                     ],
                     "pipeline_override": {
                         "寻找HARD": {
@@ -281,6 +282,24 @@
                         },
                         "进入历史关卡": {
                             "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "强敌来袭",
+                    "label": "强敌来袭",
+                    "option": [
+                        "强敌来袭目标",
+                        "是否开启自动战斗",
+                        "自动战斗次数"
+                    ],
+                    "pipeline_override": {
+                        "故事扫荡入口": {
+                            "timeout": 5000,
+                            "next": [
+                                "强敌来袭：检测主画面",
+                                "[JumpBack]强敌来袭：主页返回"
+                            ]
                         }
                     }
                 }
@@ -400,13 +419,13 @@
                     }
                 },
                 {
-                    "name": "G猎鹰GX",
+                    "name": "高达F90（火星独立吉翁军规格）",
                     "pipeline_override": {
                         "强敌来袭：选择机体": {
                             "recognition": {
                                 "param": {
                                     "template": [
-                                        "强敌来袭/G猎鹰GX.PNG"
+                                        "强敌来袭/高达F90（火星独立吉翁军规格）.PNG"
                                     ]
                                 },
                                 "type": "TemplateMatch"
@@ -418,13 +437,13 @@
                     }
                 },
                 {
-                    "name": "G西福斯",
+                    "name": "高达Mk-IV",
                     "pipeline_override": {
                         "强敌来袭：选择机体": {
                             "recognition": {
                                 "param": {
                                     "template": [
-                                        "强敌来袭/G西福斯.PNG"
+                                        "强敌来袭/高达Mk-IV.PNG"
                                     ]
                                 },
                                 "type": "TemplateMatch"
@@ -432,6 +451,54 @@
                         },
                         "进入历史战斗": {
                             "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "G猎鹰GX",
+                    "pipeline_override": {
+                        "强敌来袭：选择机体": {
+                            "enabled": false
+                        },
+                        "进入历史战斗": {
+                            "enabled": true
+                        },
+                        "寻找目标历史战斗_匹配": {
+                            "recognition": {
+                                "param": {
+                                    "template": [
+                                        "强敌来袭/历史战斗/G猎鹰GX.png"
+                                    ],
+                                    "threshold": [
+                                        0.65
+                                    ]
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "G西福斯",
+                    "pipeline_override": {
+                        "强敌来袭：选择机体": {
+                            "enabled": false
+                        },
+                        "进入历史战斗": {
+                            "enabled": true
+                        },
+                        "寻找目标历史战斗_匹配": {
+                            "recognition": {
+                                "param": {
+                                    "template": [
+                                        "强敌来袭/历史战斗/G西福斯.png"
+                                    ],
+                                    "threshold": [
+                                        0.65
+                                    ]
+                                },
+                                "type": "TemplateMatch"
+                            }
                         }
                     }
                 },
