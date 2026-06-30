@@ -1095,7 +1095,8 @@
             "Node.Recognition.Succeeded": "故事开荒无剧情，点击战斗说明 TAP TO NEXT"
         },
         "next": [
-            "故事开荒_进入auto检查"
+            "故事开荒_进入auto检查",
+            "故事开荒_结算后状态轮询"
         ],
         "$__mpe_code": {
             "position": {
@@ -1251,7 +1252,8 @@
             "Node.Recognition.Succeeded": "故事开荒点击战斗说明 TAP TO NEXT"
         },
         "next": [
-            "故事开荒_进入auto检查"
+            "故事开荒_进入auto检查",
+            "故事开荒_结算后状态轮询"
         ],
         "$__mpe_code": {
             "position": {
@@ -1288,7 +1290,8 @@
             "Node.Recognition.Succeeded": "故事开荒OCR点击战斗说明 TAP TO NEXT"
         },
         "next": [
-            "故事开荒_进入auto检查"
+            "故事开荒_进入auto检查",
+            "故事开荒_结算后状态轮询"
         ],
         "on_error": [
             "故事开荒_结算后状态轮询"
