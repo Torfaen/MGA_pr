@@ -826,7 +826,7 @@
                 ]
             }
         },
-        "pre_wait_freezes": 1000,
+        "pre_wait_freezes": 300,
         "action": {
             "type": "Click",
             "param": {}
@@ -873,7 +873,7 @@
                 ]
             }
         },
-        "post_wait_freezes": 2000,
+        "post_wait_freezes": 500,
         "timeout": 120000,
         "rate_limit": 1000,
         "next": [
@@ -912,7 +912,9 @@
                     "选择关卡",
                     "UP",
                     "STAGE",
-                    "关卡"
+                    "关卡",
+                    "Loading",
+                    "ロード"
                 ]
             }
         },
@@ -933,7 +935,8 @@
             "故事开荒_奖励回故事",
             "故事开荒_奖励选关",
             "故事开荒_BOSS等待",
-            "故事开荒_关卡结算前置"
+            "故事开荒_关卡结算前置",
+            "故事开荒_出击后状态轮询"
         ],
         "on_error": [
             "战斗出口"
@@ -1009,7 +1012,7 @@
                 ]
             }
         },
-        "post_wait_freezes": 2000,
+        "post_wait_freezes": 500,
         "timeout": 1500,
         "next": [
             "故事开荒_出击后状态轮询"
@@ -1050,7 +1053,7 @@
                 ]
             }
         },
-        "post_wait_freezes": 2000,
+        "post_wait_freezes": 500,
         "timeout": 1500,
         "next": [
             "故事开荒_出击后状态轮询"
@@ -1089,7 +1092,7 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1500,
+        "post_wait_freezes": 500,
         "timeout": 500000,
         "focus": {
             "Node.Recognition.Succeeded": "故事开荒无剧情，点击战斗说明 TAP TO NEXT"
@@ -1124,7 +1127,7 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 3500,
+        "post_wait_freezes": 500,
         "timeout": 500000,
         "rate_limit": 1000,
         "focus": {
@@ -1162,20 +1165,14 @@
         },
         "action": {
             "type": "Click",
-            "param": {
-                "target": [
-                    1134,
-                    6,
-                    130,
-                    54
-                ]
-            }
+            "param": {}
         },
-        "post_wait_freezes": 1000,
+        "post_delay": 300,
         "timeout": 30000,
         "rate_limit": 1000,
         "next": [
-            "故事开荒_剧情Skip"
+            "故事开荒_剧情Skip",
+            "故事开荒_剧情后状态轮询"
         ],
         "on_error": [
             "故事开荒_剧情后状态轮询"
@@ -1206,7 +1203,7 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1500,
+        "post_wait_freezes": 500,
         "timeout": 120000,
         "rate_limit": 1000,
         "next": [
@@ -1240,12 +1237,12 @@
                 ]
             }
         },
-        "pre_wait_freezes": 1000,
+        "pre_wait_freezes": 300,
         "action": {
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1500,
+        "post_wait_freezes": 500,
         "timeout": 500000,
         "rate_limit": 10000,
         "focus": {
@@ -1278,12 +1275,12 @@
                 ]
             }
         },
-        "pre_wait_freezes": 1000,
+        "pre_wait_freezes": 300,
         "action": {
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1500,
+        "post_wait_freezes": 500,
         "timeout": 10000,
         "rate_limit": 1000,
         "focus": {
@@ -1413,6 +1410,7 @@
             "故事开荒_战斗结束过渡等待",
             "故事开荒_奖励回故事",
             "故事开荒_奖励选关",
+            "故事开荒_困难BOSS挑战",
             "故事开荒_BOSS等待",
             "故事开荒_关卡结算前置",
             "故事开荒_结算后状态轮询",
@@ -1455,6 +1453,35 @@
             "position": {
                 "x": 1262,
                 "y": -1198
+            }
+        }
+    },
+    "故事开荒_困难BOSS挑战": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "挑战"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_wait_freezes": 500,
+        "timeout": 10000,
+        "rate_limit": 1000,
+        "next": [
+            "故事开荒_战斗中状态轮询"
+        ],
+        "on_error": [
+            "故事开荒_战斗中状态轮询"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 1612,
+                "y": -1048
             }
         }
     },
@@ -1524,14 +1551,15 @@
                 ]
             }
         },
-        "post_wait_freezes": 2500,
+        "post_wait_freezes": 500,
         "timeout": 120000,
         "rate_limit": 1000,
         "focus": {
             "Node.Recognition.Succeeded": "故事开荒首通奖励页返回故事"
         },
         "next": [
-            "故事开荒_结算后状态轮询"
+            "故事开荒_结算后状态轮询",
+            "故事开荒_回到关卡页"
         ],
         "on_error": [
             "战斗出口"
@@ -1570,14 +1598,15 @@
                 ]
             }
         },
-        "post_wait_freezes": 2500,
+        "post_wait_freezes": 500,
         "timeout": 120000,
         "rate_limit": 1000,
         "focus": {
             "Node.Recognition.Succeeded": "故事开荒奖励页选择关卡"
         },
         "next": [
-            "故事开荒_结算后状态轮询"
+            "故事开荒_结算后状态轮询",
+            "故事开荒_回到关卡页"
         ],
         "on_error": [
             "战斗出口"
@@ -1611,20 +1640,14 @@
         },
         "action": {
             "type": "Click",
-            "param": {
-                "target": [
-                    1134,
-                    6,
-                    130,
-                    54
-                ]
-            }
+            "param": {}
         },
-        "post_wait_freezes": 1000,
+        "post_delay": 300,
         "timeout": 30000,
         "rate_limit": 1000,
         "next": [
-            "故事开荒_奖励后剧情Skip"
+            "故事开荒_奖励后剧情Skip",
+            "故事开荒_结算后状态轮询"
         ],
         "on_error": [
             "故事开荒_结算后状态轮询"
@@ -1655,7 +1678,7 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 2500,
+        "post_wait_freezes": 500,
         "timeout": 10000,
         "rate_limit": 1000,
         "next": [
@@ -1679,18 +1702,19 @@
                     "故事",
                     "选择关卡",
                     "继续",
-                    "UP",
                     "REWARD",
                     "BATTLE CLEAR",
                     "达成胜利条件",
                     "MENU",
                     "SKIP",
-                    "AUTO",
                     "TAP",
                     "NEXT",
                     "STAGE",
                     "事件关卡",
-                    "关卡"
+                    "历史关卡",
+                    "Loading",
+                    "Louding",
+                    "ロード"
                 ]
             }
         },
@@ -1701,6 +1725,7 @@
             "故事开荒_奖励选关",
             "故事开荒_战斗结束过渡等待",
             "故事开荒_关卡结算前置",
+            "故事开荒_结算明细等待",
             "故事开荒_奖励后剧情Skip",
             "故事开荒_奖励后剧情Menu",
             "故事开荒_点击战斗说明OCR",
@@ -1717,12 +1742,49 @@
             }
         }
     },
-    "故事开荒_回到关卡页": {
+    "故事开荒_结算明细等待": {
         "recognition": {
             "type": "OCR",
             "param": {
                 "expected": [
+                    "完成关卡",
+                    "TOTAL SCORE",
+                    "HIGH SCORE",
+                    "损伤报告"
+                ]
+            }
+        },
+        "timeout": 120000,
+        "rate_limit": 1000,
+        "next": [
+            "故事开荒_关卡结算前置",
+            "故事开荒_结算明细等待",
+            "故事开荒_结算后状态轮询"
+        ],
+        "on_error": [
+            "故事开荒_结算后状态轮询"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 3362,
+                "y": -1718
+            }
+        }
+    },
+    "故事开荒_回到关卡页": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    100,
+                    0,
+                    320,
+                    90
+                ],
+                "expected": [
+                    "选择关卡",
                     "事件关卡",
+                    "历史关卡",
                     "关卡"
                 ]
             }
@@ -1845,7 +1907,8 @@
         "post_wait_freezes": 1000,
         "timeout": 1000,
         "next": [
-            "故事开荒_进入倍速检查"
+            "故事开荒_auto检查",
+            "故事开荒_点击auto"
         ],
         "on_error": [
             "故事开荒_战斗中状态轮询"
@@ -2095,7 +2158,7 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1500,
+        "post_wait_freezes": 500,
         "timeout": 120000,
         "rate_limit": 1000,
         "next": [
