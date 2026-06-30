@@ -1,0 +1,237 @@
+{
+    "$__mpe_config_角色要求": {
+        "$__mpe_code": {
+            "filename": "角色要求"
+        }
+    },
+    "角色要求入口": {
+        "$__mpe_code": {
+            "position": {
+                "x": 329,
+                "y": -555
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "开始查找角色要求"
+        },
+        "next": [
+            "角色要求_右复位"
+        ],
+        "on_error": [
+            "角色要求_返回主页"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "个人基地"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "角色要求_返回主页": {
+        "$__mpe_code": {
+            "position": {
+                "x": -1050,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
+        },
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
+    },
+    "角色要求_右复位": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1237,
+                "y": -274
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    1010,
+                    335,
+                    157,
+                    43
+                ],
+                "end": [
+                    [
+                        147,
+                        334,
+                        155,
+                        33
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "next": [
+            "角色要求_上复位"
+        ],
+        "repeat": 4
+    },
+    "角色要求_上复位": {
+        "$__mpe_code": {
+            "position": {
+                "x": 944,
+                "y": -287
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    574,
+                    319,
+                    56,
+                    17
+                ],
+                "end": [
+                    [
+                        493,
+                        503,
+                        44,
+                        19
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "next": [
+            "角色要求_尝试下滑动"
+        ],
+        "repeat": 4
+    },
+    "角色要求_尝试下滑动": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1650,
+                "y": -560
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    458,
+                    500,
+                    103,
+                    25
+                ],
+                "end": [
+                    [
+                        462,
+                        278,
+                        90,
+                        22
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "max_hit": 3,
+        "next": [
+            "角色要求_向左滑动"
+        ],
+        "post_wait_freezes": 200
+    },
+    "角色要求_向左滑动": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1542,
+                "y": -263
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    294,
+                    249,
+                    105,
+                    27
+                ],
+                "end": [
+                    [
+                        841,
+                        279,
+                        160,
+                        38
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "max_hit": 3,
+        "next": [
+            "点击角色要求"
+        ],
+        "on_error": [
+            "角色要求_向左滑动",
+            "角色要求_查找失败"
+        ],
+        "timeout": 2000
+    },
+    "点击角色要求": {
+        "$__mpe_code": {
+            "position": {
+                "x": 675,
+                "y": -395
+            }
+        },
+        "action": {
+            "param": {
+                "target_offset": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "已找到角色要求，点击进入"
+        },
+        "recognition": {
+            "param": {
+                "expected": [
+                    "角色要求"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "角色要求_查找失败": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1542,
+                "y": -98
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Starting": "MGA_TASK_FAILED: 角色要求查找失败，4次未找到角色要求，跳过该任务，开始返回主页"
+        }
+    }
+}
