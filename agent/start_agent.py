@@ -44,6 +44,7 @@ def run_agent_logic(socket_id):
         import BatchStageSweep
         import DailyBattle
         import GP
+        import RunTask
         
     except ImportError as e:
         print(f"[MGA Error] Failed to import dependencies: {e}")
