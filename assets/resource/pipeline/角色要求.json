@@ -304,6 +304,90 @@
         },
         "timeout": 10000
     },
+    "角色要求_处理左角色调度资金": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1840,
+                "y": -395
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "运行子任务",
+                "custom_action_param": {
+                    "entry": "角色要求_调度资金操作轮询"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_等待角色列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_处理中角色调度资金": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1840,
+                "y": -225
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "运行子任务",
+                "custom_action_param": {
+                    "entry": "角色要求_调度资金操作轮询"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_等待角色列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_处理右角色调度资金": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1840,
+                "y": -55
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "运行子任务",
+                "custom_action_param": {
+                    "entry": "角色要求_调度资金操作轮询"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_等待角色列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
     "角色要求_等待角色列表_全检查": {
         "$__mpe_code": {
             "position": {
@@ -356,7 +440,8 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_检测左角色强化部队_全检查"
+            "角色要求_检测左角色强化部队_全检查",
+            "角色要求_检测左角色调度资金_全检查"
         ],
         "on_error": [
             "角色要求_左角色返回列表_全检查"
@@ -385,6 +470,39 @@
             "param": {
                 "expected": [
                     "强化部队"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "角色要求_检测左角色调度资金_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": -490
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_处理左角色调度资金"
+        ],
+        "on_error": [
+            "角色要求_左角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "调度资金"
                 ],
                 "roi": [
                     640,
@@ -439,7 +557,8 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_检测中角色强化部队_全检查"
+            "角色要求_检测中角色强化部队_全检查",
+            "角色要求_检测中角色调度资金_全检查"
         ],
         "on_error": [
             "角色要求_中角色返回列表_全检查"
@@ -468,6 +587,39 @@
             "param": {
                 "expected": [
                     "强化部队"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "角色要求_检测中角色调度资金_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": -320
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_处理中角色调度资金"
+        ],
+        "on_error": [
+            "角色要求_中角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "调度资金"
                 ],
                 "roi": [
                     640,
@@ -522,7 +674,8 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_检测右角色强化部队_全检查"
+            "角色要求_检测右角色强化部队_全检查",
+            "角色要求_检测右角色调度资金_全检查"
         ],
         "on_error": [
             "角色要求_完成"
@@ -551,6 +704,39 @@
             "param": {
                 "expected": [
                     "强化部队"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "角色要求_检测右角色调度资金_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": -150
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_处理右角色调度资金"
+        ],
+        "on_error": [
+            "角色要求_完成"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "调度资金"
                 ],
                 "roi": [
                     640,
@@ -640,6 +826,188 @@
                     0,
                     200,
                     90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 30000
+    },
+    "角色要求_调度资金操作轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1620,
+                "y": 260
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_承接调度资金",
+            "角色要求_交付调度资金"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_承接调度资金": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1840,
+                "y": 260
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_调度资金接取剧情略过"
+        ],
+        "on_error": [
+            "角色要求_调度资金操作轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "承接"
+                ],
+                "roi": [
+                    900,
+                    520,
+                    330,
+                    150
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_调度资金接取剧情略过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2060,
+                "y": 260
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_调度资金操作轮询"
+        ],
+        "on_error": [
+            "角色要求_调度资金操作轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "略过"
+                ],
+                "roi": [
+                    1080,
+                    0,
+                    200,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 30000
+    },
+    "角色要求_交付调度资金": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": 260
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_确认交付调度资金"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付"
+                ],
+                "roi": [
+                    900,
+                    520,
+                    330,
+                    150
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_确认交付调度资金": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2500,
+                "y": 260
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_调度资金交付剧情略过"
+        ],
+        "on_error": [
+            "角色要求_回报后状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付"
+                ],
+                "roi": [
+                    620,
+                    500,
+                    300,
+                    130
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_调度资金交付剧情略过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2720,
+                "y": 260
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_回报后状态轮询"
+        ],
+        "on_error": [
+            "角色要求_回报后状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "略过"
+                ],
+                "roi": [
+                    1085,
+                    20,
+                    190,
+                    60
                 ]
             },
             "type": "OCR"
@@ -1111,10 +1479,10 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_点击回报完成"
+            "角色要求_回报后状态轮询"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_回报后状态轮询"
         ],
         "recognition": {
             "param": {
@@ -1144,10 +1512,10 @@
             "type": "Click"
         },
         "focus": {
-            "Node.Action.Succeeded": "角色要求强化部队回报完成"
+            "Node.Action.Succeeded": "角色要求任务回报完成"
         },
         "next": [
-            "角色要求_点击OK确认"
+            "角色要求_回报后状态轮询"
         ],
         "on_error": [
             "角色要求_查找失败"
@@ -1168,10 +1536,61 @@
         },
         "timeout": 10000
     },
-    "角色要求_点击OK确认": {
+    "角色要求_回报后状态轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": 5480,
+                "y": 120
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_点击特殊要求提示",
+            "角色要求_点击回报完成",
+            "角色要求_点击OK确认"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_点击特殊要求提示": {
         "$__mpe_code": {
             "position": {
                 "x": 5580,
+                "y": 0
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_点击OK确认"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "特殊要求"
+                ],
+                "roi": [
+                    500,
+                    250,
+                    560,
+                    220
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_点击OK确认": {
+        "$__mpe_code": {
+            "position": {
+                "x": 5700,
                 "y": 120
             }
         },
@@ -1180,7 +1599,7 @@
             "type": "Click"
         },
         "focus": {
-            "Node.Action.Succeeded": "角色要求强化部队已点击OK确认"
+            "Node.Action.Succeeded": "角色要求任务已点击OK确认"
         },
         "recognition": {
             "param": {
