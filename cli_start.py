@@ -1,9 +1,12 @@
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
+import threading
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -17,8 +20,20 @@ CLI_INTERFACE = DEPS_BIN / "interface.json"
 CLI_CONFIG = CLI_CONFIG_DIR / "maa_pi_config.json"
 CLI_AGENT_BINARY = DEPS_BIN / "MaaAgentBinary"
 SOURCE_AGENT_BINARY = ROOT / "deps" / "share" / "MaaAgentBinary"
+MAA_DEBUG_LOG = DEPS_BIN / "debug" / "maa.log"
 SUCCESS_LOG = "任务已全部完成"
 ERROR_LOG = "MGA_TASK_FAILED|已放弃本次任务"
+ERROR_LOG_MARKERS = tuple(marker for marker in ERROR_LOG.split("|") if marker)
+CRITICAL_MAA_LOG_MARKERS = (
+    "Parse config failed",
+    "Failed to create control unit",
+    "MaaAdbControllerCreate] Failed",
+    "handle is null",
+)
+MAA_TASK_START_MARKER = "MaaNS::Tasker::post_task"
+MAA_EVENT_RE = re.compile(r"\[msg=([^\]]+)\].*\[details=(\{.*\})\]\s*$")
+MAA_SOURCE_RE = re.compile(r"^\[[^\]]+\](?:\[[^\]]+\]){6}")
+SKIP_ACTION_TYPES = {"DoNothing"}
 
 
 def read_json(path):
@@ -48,6 +63,134 @@ def append_automas_log(level, instance_name, message):
     )
     with path.open("a", encoding="utf-8") as f:
         f.write(line)
+
+    MAA_DEBUG_LOG.parent.mkdir(parents=True, exist_ok=True)
+    with MAA_DEBUG_LOG.open("a", encoding="utf-8", errors="replace") as f:
+        f.write(line)
+
+
+def append_automas_bridge_log(level, instance_name, message):
+    now = datetime.now()
+    path = automas_log_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    line = (
+        f"[{now:%Y-%m-%d %H:%M:%S.%f}][{level}] "
+        f"[cfg=CLI][inst={instance_name}][src=cli_start][op=MaaPiCliLog] {message}\n"
+    )
+    with path.open("a", encoding="utf-8", errors="replace") as f:
+        f.write(line)
+
+
+def parse_maa_event(line):
+    if "MaaNS::EventDispatcher::notify" not in line:
+        return None
+    match = MAA_EVENT_RE.search(line)
+    if match is None:
+        return None
+    try:
+        return match.group(1), json.loads(match.group(2))
+    except json.JSONDecodeError:
+        return None
+
+
+def summarize_maa_event(msg, details):
+    entry = details.get("entry")
+    name = details.get("name")
+
+    if msg == "Tasker.Task.Starting" and entry:
+        return "INF", f"Maa任务开始：{entry}"
+    if msg == "Tasker.Task.Succeeded" and entry:
+        return "INF", f"Maa任务完成：{entry}"
+    if msg == "Tasker.Task.Failed" and entry:
+        return "WRN", f"Maa任务失败：{entry}"
+
+    action_details = details.get("action_details") or {}
+    action_type = action_details.get("action")
+    action_name = action_details.get("name") or name
+    if msg == "Node.Action.Succeeded" and action_name:
+        if action_type in SKIP_ACTION_TYPES:
+            return None
+        suffix = f" ({action_type})" if action_type else ""
+        return "INF", f"动作成功：{action_name}{suffix}"
+    if msg == "Node.Action.Failed" and action_name:
+        suffix = f" ({action_type})" if action_type else ""
+        return "WRN", f"动作失败：{action_name}{suffix}"
+
+    if msg == "Node.PipelineNode.Failed" and name:
+        return "WRN", f"节点失败：{name}"
+
+    focus = details.get("focus")
+    if msg == "Node.Recognition.Failed" and name and isinstance(focus, dict):
+        hint = focus.get("Node.Recognition.Failed")
+        if hint:
+            return "WRN", f"识别未命中：{name} - {hint}"
+
+    return None
+
+
+def summarize_generic_maa_log(line):
+    if any(marker in line for marker in ERROR_LOG_MARKERS):
+        return None
+    if "][ERR]" in line:
+        level = "ERR"
+    elif "][WRN]" in line:
+        level = "WRN"
+    else:
+        return None
+
+    text = MAA_SOURCE_RE.sub("", line).strip()
+    if not text:
+        text = line[-180:].strip()
+    if len(text) > 180:
+        text = f"{text[:177]}..."
+    return level, f"Maa{('错误' if level == 'ERR' else '警告')}：{text}"
+
+
+def summarize_maa_log(line):
+    if not line.startswith("[20"):
+        return None
+    event = parse_maa_event(line)
+    if event is not None:
+        summary = summarize_maa_event(*event)
+        if summary is not None:
+            return summary
+    return summarize_generic_maa_log(line)
+
+
+def bridge_maa_log(process, start_pos, stop_event, instance_name):
+    pos = start_pos
+    pending = ""
+    last_summary = None
+    while True:
+        if MAA_DEBUG_LOG.exists():
+            size = MAA_DEBUG_LOG.stat().st_size
+            if size < pos:
+                pos = 0
+                pending = ""
+            if size > pos:
+                with MAA_DEBUG_LOG.open("rb") as f:
+                    f.seek(pos)
+                    chunk = f.read()
+                    pos = f.tell()
+                text = pending + chunk.decode("utf-8", errors="replace")
+                lines = text.splitlines(keepends=True)
+                pending = ""
+                if lines and not lines[-1].endswith(("\n", "\r")):
+                    pending = lines.pop()
+                for line in lines:
+                    line = line.rstrip("\r\n")
+                    summary = summarize_maa_log(line)
+                    if summary is not None and summary != last_summary:
+                        level, message = summary
+                        append_automas_bridge_log(level, instance_name, message)
+                        last_summary = summary
+        if stop_event.is_set() and process.poll() is not None:
+            summary = summarize_maa_log(pending) if pending else None
+            if summary is not None and summary != last_summary:
+                level, message = summary
+                append_automas_bridge_log(level, instance_name, message)
+            break
+        time.sleep(0.5)
 
 
 def normalize_name(value):
@@ -148,6 +291,24 @@ def selected_tasks_from_instance(interface, instance):
     return tasks
 
 
+def build_adb_config(adb):
+    config = adb.get("Config") or "{}"
+    agent_path = adb.get("AgentPath") or str(CLI_AGENT_BINARY)
+    agent_path = Path(agent_path)
+    if not agent_path.is_absolute():
+        agent_path = (DEPS_BIN / agent_path).resolve()
+
+    return {
+        "name": adb.get("Name", ""),
+        "adb_path": adb.get("AdbPath", ""),
+        "address": adb.get("AdbSerial", ""),
+        "screencap_methods": adb.get("ScreencapMethods", 0),
+        "input_methods": adb.get("InputMethods", 0),
+        "config": config,
+        "agent_path": str(agent_path),
+    }
+
+
 def build_cli_interface(interface):
     data = dict(interface)
     data["interface_version"] = 2
@@ -183,9 +344,7 @@ def build_cli_config(interface, instance):
             "type": controller.get("type"),
         },
         "adb": {
-            "name": adb.get("Name", ""),
-            "adb_path": adb.get("AdbPath", ""),
-            "address": adb.get("AdbSerial", ""),
+            **build_adb_config(adb),
         },
         "resource": instance.get("Resource"),
         "task": selected_tasks_from_instance(interface, instance),
@@ -237,8 +396,15 @@ def restore_runtime_files(backups):
             shutil.move(str(backup), str(path))
 
 
-def run_maapicli(env):
+def run_maapicli(env, maa_log_start, instance_name):
     process = subprocess.Popen([str(CLI_EXE)], cwd=str(DEPS_BIN), stdin=subprocess.PIPE, text=True, env=env)
+    stop_event = threading.Event()
+    bridge_thread = threading.Thread(
+        target=bridge_maa_log,
+        args=(process, maa_log_start, stop_event, instance_name),
+        daemon=True,
+    )
+    bridge_thread.start()
     try:
         if process.stdin is not None:
             process.stdin.write("6\n")
@@ -251,6 +417,26 @@ def run_maapicli(env):
         except subprocess.TimeoutExpired:
             process.kill()
         raise
+    finally:
+        stop_event.set()
+        bridge_thread.join(timeout=2)
+
+
+def read_log_segment(path, start_pos):
+    if not path.exists():
+        return ""
+    with path.open("rb") as f:
+        if path.stat().st_size >= start_pos:
+            f.seek(start_pos)
+        return f.read().decode("utf-8", errors="replace")
+
+
+def has_critical_maa_error(log_segment):
+    return any(marker in log_segment for marker in CRITICAL_MAA_LOG_MARKERS)
+
+
+def has_started_maa_task(log_segment):
+    return MAA_TASK_START_MARKER in log_segment
 
 
 def main():
@@ -280,14 +466,27 @@ def main():
         ensure_agent_binary()
         env = os.environ.copy()
         env["MAAFW_BINARY_PATH"] = str(DEPS_BIN)
-        exit_code = run_maapicli(env)
+        maa_log_start = MAA_DEBUG_LOG.stat().st_size if MAA_DEBUG_LOG.exists() else 0
+        exit_code = run_maapicli(env, maa_log_start, instance_name)
+        maa_log_segment = read_log_segment(MAA_DEBUG_LOG, maa_log_start)
     finally:
         restore_runtime_files(backups)
 
-    if exit_code == 0:
+    if (
+        exit_code == 0
+        and not has_critical_maa_error(maa_log_segment)
+        and has_started_maa_task(maa_log_segment)
+    ):
         append_automas_log("INF", instance_name, f"{SUCCESS_LOG}！")
     else:
-        append_automas_log("ERR", instance_name, f"{ERROR_LOG}，退出码={exit_code}")
+        if exit_code == 0 and not has_started_maa_task(maa_log_segment):
+            append_automas_log(
+                "ERR",
+                instance_name,
+                f"{ERROR_LOG}，未检测到 MaaPiCli 任务启动",
+            )
+        else:
+            append_automas_log("ERR", instance_name, f"{ERROR_LOG}，退出码={exit_code}")
     raise SystemExit(exit_code)
 
 
