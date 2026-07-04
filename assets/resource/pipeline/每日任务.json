@@ -579,8 +579,10 @@
             "param": {},
             "type": "Click"
         },
+        "max_hit": 3,
         "next": [
-            "等待画面"
+            "等待画面",
+            "执行"
         ],
         "pre_wait_freezes": 200,
         "recognition": {
