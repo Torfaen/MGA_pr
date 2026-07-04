@@ -19,7 +19,7 @@
             "Node.Recognition.Succeeded": "开始查找角色要求"
         },
         "next": [
-            "角色要求_右复位"
+            "角色要求_记录开始"
         ],
         "on_error": [
             "角色要求_返回主页"
@@ -50,6 +50,34 @@
         "focus": {
             "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
         },
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
+    },
+    "角色要求_记录开始": {
+        "$__mpe_code": {
+            "position": {
+                "x": -820,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "reset"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_右复位"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
         "recognition": {
             "param": {},
             "type": "DirectHit"
@@ -210,6 +238,9 @@
         "next": [
             "角色要求_等待角色列表_全检查"
         ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
         "recognition": {
             "param": {
                 "expected": [
@@ -218,7 +249,7 @@
             },
             "type": "OCR"
         },
-        "timeout": 2000
+        "timeout": 15000
     },
     "角色要求_处理左角色强化部队": {
         "$__mpe_code": {
@@ -229,8 +260,10 @@
         },
         "action": {
             "param": {
-                "custom_action": "运行子任务",
+                "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
+                    "slot": "左",
+                    "type": "强化部队",
                     "entry": "角色要求_强化部队操作轮询"
                 }
             },
@@ -257,8 +290,10 @@
         },
         "action": {
             "param": {
-                "custom_action": "运行子任务",
+                "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
+                    "slot": "中",
+                    "type": "强化部队",
                     "entry": "角色要求_强化部队操作轮询"
                 }
             },
@@ -285,8 +320,10 @@
         },
         "action": {
             "param": {
-                "custom_action": "运行子任务",
+                "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
+                    "slot": "右",
+                    "type": "强化部队",
                     "entry": "角色要求_强化部队操作轮询"
                 }
             },
@@ -313,8 +350,10 @@
         },
         "action": {
             "param": {
-                "custom_action": "运行子任务",
+                "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
+                    "slot": "左",
+                    "type": "调度资金",
                     "entry": "角色要求_调度资金操作轮询"
                 }
             },
@@ -341,8 +380,10 @@
         },
         "action": {
             "param": {
-                "custom_action": "运行子任务",
+                "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
+                    "slot": "中",
+                    "type": "调度资金",
                     "entry": "角色要求_调度资金操作轮询"
                 }
             },
@@ -369,8 +410,10 @@
         },
         "action": {
             "param": {
-                "custom_action": "运行子任务",
+                "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
+                    "slot": "右",
+                    "type": "调度资金",
                     "entry": "角色要求_调度资金操作轮询"
                 }
             },
@@ -444,7 +487,7 @@
             "角色要求_检测左角色调度资金_全检查"
         ],
         "on_error": [
-            "角色要求_左角色返回列表_全检查"
+            "角色要求_记录左角色跳过"
         ],
         "post_wait_freezes": 500,
         "timeout": 3000
@@ -464,7 +507,7 @@
             "角色要求_处理左角色强化部队"
         ],
         "on_error": [
-            "角色要求_左角色返回列表_全检查"
+            "角色要求_记录左角色跳过"
         ],
         "recognition": {
             "param": {
@@ -497,7 +540,7 @@
             "角色要求_处理左角色调度资金"
         ],
         "on_error": [
-            "角色要求_左角色返回列表_全检查"
+            "角色要求_记录左角色跳过"
         ],
         "recognition": {
             "param": {
@@ -515,6 +558,33 @@
         },
         "timeout": 3000
     },
+    "角色要求_记录左角色跳过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2420,
+                "y": -640
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "左",
+                    "reason": "类别不明"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_左角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
+    },
     "角色要求_左角色返回列表_全检查": {
         "$__mpe_code": {
             "position": {
@@ -524,18 +594,30 @@
         },
         "action": {
             "param": {
-                "target": [
-                    20,
-                    45,
-                    110,
-                    65
-                ]
             },
             "type": "Click"
         },
         "next": [
             "角色要求_点击中角色_全检查"
         ],
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    170,
+                    90
+                ],
+                "template": [
+                    "角色要求/返回按钮.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            },
+            "type": "TemplateMatch"
+        },
+        "timeout": 5000,
         "post_wait_freezes": 500
     },
     "角色要求_点击中角色_全检查": {
@@ -561,7 +643,7 @@
             "角色要求_检测中角色调度资金_全检查"
         ],
         "on_error": [
-            "角色要求_中角色返回列表_全检查"
+            "角色要求_记录中角色跳过"
         ],
         "post_wait_freezes": 500,
         "timeout": 3000
@@ -581,7 +663,7 @@
             "角色要求_处理中角色强化部队"
         ],
         "on_error": [
-            "角色要求_中角色返回列表_全检查"
+            "角色要求_记录中角色跳过"
         ],
         "recognition": {
             "param": {
@@ -614,7 +696,7 @@
             "角色要求_处理中角色调度资金"
         ],
         "on_error": [
-            "角色要求_中角色返回列表_全检查"
+            "角色要求_记录中角色跳过"
         ],
         "recognition": {
             "param": {
@@ -632,6 +714,33 @@
         },
         "timeout": 3000
     },
+    "角色要求_记录中角色跳过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2420,
+                "y": -470
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "中",
+                    "reason": "类别不明"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_中角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
+    },
     "角色要求_中角色返回列表_全检查": {
         "$__mpe_code": {
             "position": {
@@ -641,18 +750,30 @@
         },
         "action": {
             "param": {
-                "target": [
-                    20,
-                    45,
-                    110,
-                    65
-                ]
             },
             "type": "Click"
         },
         "next": [
             "角色要求_点击右角色_全检查"
         ],
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    170,
+                    90
+                ],
+                "template": [
+                    "角色要求/返回按钮.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            },
+            "type": "TemplateMatch"
+        },
+        "timeout": 5000,
         "post_wait_freezes": 500
     },
     "角色要求_点击右角色_全检查": {
@@ -678,7 +799,7 @@
             "角色要求_检测右角色调度资金_全检查"
         ],
         "on_error": [
-            "角色要求_完成"
+            "角色要求_记录右角色跳过"
         ],
         "post_wait_freezes": 500,
         "timeout": 3000
@@ -698,7 +819,7 @@
             "角色要求_处理右角色强化部队"
         ],
         "on_error": [
-            "角色要求_完成"
+            "角色要求_记录右角色跳过"
         ],
         "recognition": {
             "param": {
@@ -731,7 +852,7 @@
             "角色要求_处理右角色调度资金"
         ],
         "on_error": [
-            "角色要求_完成"
+            "角色要求_记录右角色跳过"
         ],
         "recognition": {
             "param": {
@@ -748,6 +869,68 @@
             "type": "OCR"
         },
         "timeout": 3000
+    },
+    "角色要求_记录右角色跳过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2420,
+                "y": -300
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "右",
+                    "reason": "类别不明"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_右角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
+    },
+    "角色要求_右角色返回列表_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2500,
+                "y": -225
+            }
+        },
+        "action": {
+            "param": {
+            },
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_完成"
+        ],
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    170,
+                    90
+                ],
+                "template": [
+                    "角色要求/返回按钮.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            },
+            "type": "TemplateMatch"
+        },
+        "timeout": 5000,
+        "post_wait_freezes": 500
     },
     "角色要求_强化部队操作轮询": {
         "$__mpe_code": {
@@ -1628,11 +1811,16 @@
             }
         },
         "action": {
-            "param": {},
-            "type": "DoNothing"
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "summary"
+                }
+            },
+            "type": "Custom"
         },
         "focus": {
-            "Node.Action.Succeeded": "角色要求强化部队已处理完成"
+            "Node.Action.Succeeded": "角色要求流程结束"
         },
         "recognition": {
             "param": {},

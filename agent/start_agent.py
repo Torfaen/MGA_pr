@@ -45,6 +45,7 @@ def run_agent_logic(socket_id):
         import DailyBattle
         import GP
         import RunTask
+        import RoleRequirementTracker
         
     except ImportError as e:
         print(f"[MGA Error] Failed to import dependencies: {e}")
