@@ -1,12 +1,11 @@
 import argparse
+import csv
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
-import threading
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -21,6 +20,7 @@ CLI_CONFIG = CLI_CONFIG_DIR / "maa_pi_config.json"
 CLI_AGENT_BINARY = DEPS_BIN / "MaaAgentBinary"
 SOURCE_AGENT_BINARY = ROOT / "deps" / "share" / "MaaAgentBinary"
 MAA_DEBUG_LOG = DEPS_BIN / "debug" / "maa.log"
+CLI_STATE = DEPS_BIN / "cli_start_state.json"
 SUCCESS_LOG = "任务已全部完成"
 ERROR_LOG = "MGA_TASK_FAILED|已放弃本次任务"
 ERROR_LOG_MARKERS = tuple(marker for marker in ERROR_LOG.split("|") if marker)
@@ -39,6 +39,13 @@ SKIP_ACTION_TYPES = {"DoNothing"}
 def read_json(path):
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def try_read_json(path):
+    try:
+        return read_json(path)
+    except (OSError, json.JSONDecodeError):
+        return None
 
 
 def write_json(path, data):
@@ -69,16 +76,133 @@ def append_automas_log(level, instance_name, message):
         f.write(line)
 
 
-def append_automas_bridge_log(level, instance_name, message):
-    now = datetime.now()
-    path = automas_log_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    line = (
-        f"[{now:%Y-%m-%d %H:%M:%S.%f}][{level}] "
-        f"[cfg=CLI][inst={instance_name}][src=cli_start][op=MaaPiCliLog] {message}\n"
+def maa_cli_processes():
+    if os.name != "nt":
+        return []
+
+    processes = []
+    try:
+        result = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq MaaPiCli.exe", "/FO", "CSV", "/NH"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+    except OSError:
+        result = None
+
+    if result is not None and result.returncode == 0:
+        for row in csv.reader(result.stdout.splitlines()):
+            if len(row) < 2 or row[0].upper() == "INFO:":
+                continue
+            try:
+                pid = int(row[1])
+            except ValueError:
+                continue
+            processes.append({"name": row[0], "pid": pid})
+
+    try:
+        ps_result = subprocess.run(
+            [
+                "powershell.exe",
+                "-NoProfile",
+                "-Command",
+                "Get-Process -Name MaaPiCli -ErrorAction SilentlyContinue | ForEach-Object { \"$($_.ProcessName),$($_.Id)\" }",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+    except OSError:
+        ps_result = None
+
+    if ps_result is not None and ps_result.returncode == 0:
+        known_pids = {item["pid"] for item in processes}
+        for line in ps_result.stdout.splitlines():
+            parts = line.strip().split(",", 1)
+            if len(parts) != 2:
+                continue
+            try:
+                pid = int(parts[1])
+            except ValueError:
+                continue
+            if pid not in known_pids:
+                processes.append({"name": f"{parts[0]}.exe", "pid": pid})
+                known_pids.add(pid)
+    return processes
+
+
+def format_processes(processes):
+    return ", ".join(f"{item['name']}({item['pid']})" for item in processes) or "无"
+
+
+def terminate_process(pid):
+    if os.name == "nt":
+        return subprocess.run(
+            ["taskkill", "/PID", str(pid), "/T", "/F"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+    return subprocess.run(
+        ["kill", "-TERM", str(pid)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
     )
-    with path.open("a", encoding="utf-8", errors="replace") as f:
-        f.write(line)
+
+
+def cleanup_stale_maapicli(instance_name):
+    processes = maa_cli_processes()
+    if not processes:
+        append_automas_log("INF", instance_name, "未发现残留 MaaPiCli 进程。")
+        return True
+
+    ok = True
+    append_automas_log("WRN", instance_name, f"准备清理残留 MaaPiCli 进程：{format_processes(processes)}")
+    for item in processes:
+        result = terminate_process(item["pid"])
+        if result.returncode == 0:
+            append_automas_log("INF", instance_name, f"已清理残留 MaaPiCli：PID={item['pid']}")
+        else:
+            ok = False
+            detail = (result.stderr or result.stdout or "").strip()
+            append_automas_log("ERR", instance_name, f"清理残留 MaaPiCli 失败：PID={item['pid']} {detail}")
+    return ok
+
+
+def assert_no_maapicli_running(instance_name):
+    processes = maa_cli_processes()
+    if not processes:
+        return
+    message = f"发现已有 MaaPiCli 正在运行：{format_processes(processes)}。请先清理残留命令行任务。"
+    append_automas_log("ERR", instance_name, message)
+    raise SystemExit(message)
+
+
+def assert_files_available(paths, instance_name):
+    locked = []
+    for path in paths:
+        if path is None or not path.exists():
+            continue
+        try:
+            with path.open("r+", encoding="utf-8"):
+                pass
+        except OSError as exc:
+            locked.append(f"{path} ({exc})")
+    if not locked:
+        return
+    message = "配置文件被其他进程占用，已中止启动：" + "；".join(locked)
+    append_automas_log("ERR", instance_name, message)
+    raise SystemExit(message)
 
 
 def parse_maa_event(line):
@@ -155,42 +279,6 @@ def summarize_maa_log(line):
         if summary is not None:
             return summary
     return summarize_generic_maa_log(line)
-
-
-def bridge_maa_log(process, start_pos, stop_event, instance_name):
-    pos = start_pos
-    pending = ""
-    last_summary = None
-    while True:
-        if MAA_DEBUG_LOG.exists():
-            size = MAA_DEBUG_LOG.stat().st_size
-            if size < pos:
-                pos = 0
-                pending = ""
-            if size > pos:
-                with MAA_DEBUG_LOG.open("rb") as f:
-                    f.seek(pos)
-                    chunk = f.read()
-                    pos = f.tell()
-                text = pending + chunk.decode("utf-8", errors="replace")
-                lines = text.splitlines(keepends=True)
-                pending = ""
-                if lines and not lines[-1].endswith(("\n", "\r")):
-                    pending = lines.pop()
-                for line in lines:
-                    line = line.rstrip("\r\n")
-                    summary = summarize_maa_log(line)
-                    if summary is not None and summary != last_summary:
-                        level, message = summary
-                        append_automas_bridge_log(level, instance_name, message)
-                        last_summary = summary
-        if stop_event.is_set() and process.poll() is not None:
-            summary = summarize_maa_log(pending) if pending else None
-            if summary is not None and summary != last_summary:
-                level, message = summary
-                append_automas_bridge_log(level, instance_name, message)
-            break
-        time.sleep(0.5)
 
 
 def normalize_name(value):
@@ -292,20 +380,18 @@ def selected_tasks_from_instance(interface, instance):
 
 
 def build_adb_config(adb):
-    config = adb.get("Config") or "{}"
-    agent_path = adb.get("AgentPath") or str(CLI_AGENT_BINARY)
-    agent_path = Path(agent_path)
-    if not agent_path.is_absolute():
-        agent_path = (DEPS_BIN / agent_path).resolve()
+    raw_config = adb.get("Config") or {}
+    if isinstance(raw_config, str):
+        try:
+            raw_config = json.loads(raw_config) if raw_config.strip() else {}
+        except json.JSONDecodeError:
+            raw_config = {}
 
     return {
         "name": adb.get("Name", ""),
         "adb_path": adb.get("AdbPath", ""),
         "address": adb.get("AdbSerial", ""),
-        "screencap_methods": adb.get("ScreencapMethods", 0),
-        "input_methods": adb.get("InputMethods", 0),
-        "config": config,
-        "agent_path": str(agent_path),
+        "config": raw_config,
     }
 
 
@@ -342,6 +428,7 @@ def build_cli_config(interface, instance):
         "controller": {
             "name": controller.get("name"),
             "type": controller.get("type"),
+            "config": controller.get("config", "{}"),
         },
         "adb": {
             **build_adb_config(adb),
@@ -363,26 +450,24 @@ def ensure_agent_binary():
     shutil.copytree(SOURCE_AGENT_BINARY, CLI_AGENT_BINARY)
 
 
-def backup_path(path):
-    backup = path.with_name(path.name + ".cli_start.bak")
-    if not backup.exists():
-        return backup
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
-    return path.with_name(f"{path.name}.cli_start.{timestamp}.bak")
-
-
-def install_runtime_files(interface, config):
+def read_cli_state():
+    data = try_read_json(CLI_STATE)
+    if not isinstance(data, dict):
+        return []
     backups = []
-    for path in (CLI_INTERFACE, CLI_CONFIG):
-        if path.exists():
-            backup = backup_path(path)
-            if backup.exists():
-                raise SystemExit(f"发现未恢复的 CLI 备份文件：{backup}")
-            shutil.move(str(path), str(backup))
-            backups.append((path, backup))
+    for item in data.get("backups", []) or []:
+        path = item.get("path")
+        backup = item.get("backup")
+        if path and backup:
+            backups.append((Path(path), Path(backup)))
+    return backups
+
+
+def export_runtime_files(interface, config):
     write_json(CLI_INTERFACE, interface)
     write_json(CLI_CONFIG, config)
-    return backups
+    if CLI_STATE.exists():
+        CLI_STATE.unlink()
 
 
 def restore_runtime_files(backups):
@@ -394,32 +479,25 @@ def restore_runtime_files(backups):
             if path.exists():
                 path.unlink()
             shutil.move(str(backup), str(path))
+    if CLI_STATE.exists():
+        CLI_STATE.unlink()
 
 
-def run_maapicli(env, maa_log_start, instance_name):
-    process = subprocess.Popen([str(CLI_EXE)], cwd=str(DEPS_BIN), stdin=subprocess.PIPE, text=True, env=env)
-    stop_event = threading.Event()
-    bridge_thread = threading.Thread(
-        target=bridge_maa_log,
-        args=(process, maa_log_start, stop_event, instance_name),
-        daemon=True,
-    )
-    bridge_thread.start()
-    try:
-        if process.stdin is not None:
-            process.stdin.write("6\n")
-            process.stdin.flush()
-        return process.wait()
-    except KeyboardInterrupt:
-        process.terminate()
-        try:
-            process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            process.kill()
-        raise
-    finally:
-        stop_event.set()
-        bridge_thread.join(timeout=2)
+def restore_stale_runtime_files(instance_name):
+    backups = read_cli_state()
+    if not backups:
+        return False
+    missing = [backup for _, backup in backups if not backup.exists()]
+    if missing:
+        append_automas_log(
+            "ERR",
+            instance_name,
+            "发现 CLI 运行状态文件，但备份缺失，无法自动恢复：" + ", ".join(str(path) for path in missing),
+        )
+        return False
+    restore_runtime_files(backups)
+    append_automas_log("INF", instance_name, "已恢复上次残留的 CLI 临时运行配置。")
+    return True
 
 
 def read_log_segment(path, start_pos):
@@ -440,15 +518,23 @@ def has_started_maa_task(log_segment):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="按配置名以 MaaPiCli 命令行方式运行 MGA")
+    parser = argparse.ArgumentParser(description="按配置名同步 MaaPiCli 直接运行配置")
     parser.add_argument("-n", "--name", required=True, help="配置名字，例如：全套日常")
-    parser.add_argument("--dry-run", action="store_true", help="只打印将要运行的 MaaPiCli 配置，不启动")
+    parser.add_argument("--export-config", action="store_true", help="生成 MaaPiCli -d 使用的运行配置")
+    parser.add_argument("--dry-run", action="store_true", help="只打印将要同步的 MaaPiCli 配置，不写入")
+    parser.add_argument("--clean-stale-cli", action="store_true", help="清理残留 MaaPiCli 进程并恢复上次 CLI 临时配置")
     args = parser.parse_args()
 
     if not CLI_EXE.exists():
         raise SystemExit(f"找不到 MaaPiCli：{CLI_EXE}")
 
-    _, instance_name, _, instance = find_instance(args.name)
+    _, instance_name, instance_path, instance = find_instance(args.name)
+
+    if args.clean_stale_cli:
+        cleanup_ok = cleanup_stale_maapicli(instance_name)
+        restore_stale_runtime_files(instance_name)
+        raise SystemExit(0 if cleanup_ok else 1)
+
     interface = read_json(ROOT / "interface.json")
     cli_interface = build_cli_interface(interface)
     cli_config = build_cli_config(interface, instance)
@@ -457,37 +543,27 @@ def main():
         print(json.dumps(cli_config, ensure_ascii=False, indent=4))
         return
 
-    print(f"[MGA CLI] 使用配置：{instance_name}")
-    print(f"[MGA CLI] 启动：{CLI_EXE}")
-    append_automas_log("INF", instance_name, f"命令行启动开始：{CLI_EXE}")
-    backups = install_runtime_files(cli_interface, cli_config)
-    exit_code = 1
-    try:
-        ensure_agent_binary()
-        env = os.environ.copy()
-        env["MAAFW_BINARY_PATH"] = str(DEPS_BIN)
-        maa_log_start = MAA_DEBUG_LOG.stat().st_size if MAA_DEBUG_LOG.exists() else 0
-        exit_code = run_maapicli(env, maa_log_start, instance_name)
-        maa_log_segment = read_log_segment(MAA_DEBUG_LOG, maa_log_start)
-    finally:
-        restore_runtime_files(backups)
+    assert_no_maapicli_running(instance_name)
+    restore_stale_runtime_files(instance_name)
+    if CLI_STATE.exists():
+        message = f"发现未恢复的 CLI 运行状态文件：{CLI_STATE}，请先执行 --clean-stale-cli。"
+        append_automas_log("ERR", instance_name, message)
+        raise SystemExit(message)
+    assert_files_available(
+        [
+            ROOT / "interface.json",
+            CLI_INTERFACE,
+            CLI_CONFIG,
+            instance_path,
+        ],
+        instance_name,
+    )
 
-    if (
-        exit_code == 0
-        and not has_critical_maa_error(maa_log_segment)
-        and has_started_maa_task(maa_log_segment)
-    ):
-        append_automas_log("INF", instance_name, f"{SUCCESS_LOG}！")
-    else:
-        if exit_code == 0 and not has_started_maa_task(maa_log_segment):
-            append_automas_log(
-                "ERR",
-                instance_name,
-                f"{ERROR_LOG}，未检测到 MaaPiCli 任务启动",
-            )
-        else:
-            append_automas_log("ERR", instance_name, f"{ERROR_LOG}，退出码={exit_code}")
-    raise SystemExit(exit_code)
+    print(f"[MGA CLI] 使用配置：{instance_name}")
+    print(f"[MGA CLI] 已同步 MaaPiCli -d 配置：{CLI_CONFIG}")
+    ensure_agent_binary()
+    export_runtime_files(cli_interface, cli_config)
+    append_automas_log("INF", instance_name, f"已同步 MaaPiCli -d 直接运行配置：{CLI_CONFIG}")
 
 
 if __name__ == "__main__":

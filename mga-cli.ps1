@@ -3,7 +3,9 @@ param(
     [Alias("n")]
     [string]$Name,
 
-    [switch]$DryRun
+    [switch]$DryRun,
+
+    [switch]$CleanStaleCli
 )
 
 $ErrorActionPreference = "Stop"
@@ -16,8 +18,12 @@ $argsList = @()
 if ($Name) {
     $argsList += @("-n", $Name)
 }
+$argsList += "--export-config"
 if ($DryRun) {
     $argsList += "--dry-run"
+}
+if ($CleanStaleCli) {
+    $argsList += "--clean-stale-cli"
 }
 
 & $python $script @argsList
