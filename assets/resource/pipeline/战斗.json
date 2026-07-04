@@ -195,6 +195,73 @@
             }
         }
     },
+    "补充体力_选择体力包": {
+        "enabled": false,
+        "max_hit": 3,
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": "体力包.png",
+                "threshold": 0.75
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_wait_freezes": 500,
+        "timeout": 10000,
+        "next": [
+            "补充体力_执行"
+        ],
+        "on_error": [
+            "体力不够退出"
+        ]
+    },
+    "补充体力_执行": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "执行"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_wait_freezes": 1000,
+        "timeout": 10000,
+        "next": [
+            "补充体力_关闭"
+        ],
+        "on_error": [
+            "体力不够退出"
+        ]
+    },
+    "补充体力_关闭": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "关闭"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_wait_freezes": 1000,
+        "timeout": 10000,
+        "next": [
+            "执行关卡略过"
+        ],
+        "on_error": [
+            "体力不够退出"
+        ]
+    },
     "倍速检查": {
         "recognition": {
             "type": "ColorMatch",
@@ -2271,6 +2338,7 @@
         },
         "next": [
             "等待退出",
+            "补充体力_选择体力包",
             "体力不够退出"
         ],
         "$__mpe_code": {
