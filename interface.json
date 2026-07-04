@@ -1104,6 +1104,25 @@
                     }
                 },
                 {
+                    "name": "F91",
+                    "pipeline_override": {
+                        "寻找目标故事": {
+                            "recognition": {
+                                "param": {
+                                    "template": "机动战士高达F91.png"
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        },
+                        "主线左复位": {
+                            "enabled": true
+                        },
+                        "进入历史关卡": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
                     "name": "AGE",
                     "pipeline_override": {
                         "寻找目标故事": {
