@@ -2337,9 +2337,7 @@
             "param": {}
         },
         "next": [
-            "等待退出",
-            "补充体力_选择体力包",
-            "体力不够退出"
+            "略过结果_状态轮询"
         ],
         "$__mpe_code": {
             "position": {
@@ -2347,6 +2345,54 @@
                 "y": -221
             }
         }
+    },
+    "略过结果_状态轮询": {
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "timeout": 60000,
+        "rate_limit": 500,
+        "next": [
+            "略过结果_TAP_TO_NEXT",
+            "等待退出",
+            "补充体力_选择体力包",
+            "体力不够退出"
+        ],
+        "on_error": [
+            "战斗寻找错误退出"
+        ]
+    },
+    "略过结果_TAP_TO_NEXT": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    360,
+                    1280,
+                    360
+                ],
+                "template": [
+                    "战斗说明TAP_TO_NEXT.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            }
+        },
+        "pre_wait_freezes": 300,
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_wait_freezes": 500,
+        "focus": {
+            "Node.Recognition.Succeeded": "略过结果点击 TAP TO NEXT"
+        },
+        "next": [
+            "略过结果_状态轮询"
+        ]
     },
     "点击auto": {
         "recognition": {
