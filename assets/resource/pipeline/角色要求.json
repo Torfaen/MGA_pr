@@ -50,9 +50,22 @@
         "focus": {
             "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
         },
+        "next": [
+            "角色要求_入口状态轮询"
+        ],
         "recognition": {
-            "param": {},
-            "type": "DirectHit"
+            "param": {
+                "expected": [
+                    "移动"
+                ],
+                "roi": [
+                    1000,
+                    125,
+                    230,
+                    95
+                ]
+            },
+            "type": "OCR"
         },
         "timeout": 5000
     },
@@ -73,7 +86,7 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_右复位"
+            "角色要求_入口状态轮询"
         ],
         "on_error": [
             "角色要求_查找失败"
@@ -83,6 +96,181 @@
             "type": "DirectHit"
         },
         "timeout": 5000
+    },
+    "角色要求_入口状态轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": -600,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_入口点击特殊要求提示",
+            "角色要求_入口点击回报完成",
+            "角色要求_入口点击OK确认",
+            "角色要求_入口已在角色列表",
+            "点击角色要求",
+            "角色要求_入口个人基地搜索"
+        ],
+        "on_error": [
+            "角色要求_返回主页"
+        ],
+        "timeout": 15000
+    },
+    "角色要求_入口已在角色列表": {
+        "$__mpe_code": {
+            "position": {
+                "x": -380,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_点击左角色_全检查"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "角色要求"
+                ],
+                "roi": [
+                    120,
+                    20,
+                    360,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_入口个人基地搜索": {
+        "$__mpe_code": {
+            "position": {
+                "x": -160,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_右复位"
+        ],
+        "max_hit": 4,
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "个人基地"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_入口点击特殊要求提示": {
+        "$__mpe_code": {
+            "position": {
+                "x": 60,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_入口点击OK确认"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "特殊要求"
+                ],
+                "roi": [
+                    500,
+                    250,
+                    560,
+                    220
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_入口点击回报完成": {
+        "$__mpe_code": {
+            "position": {
+                "x": 280,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_入口状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "回报完成"
+                ],
+                "roi": [
+                    520,
+                    215,
+                    260,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_入口点击OK确认": {
+        "$__mpe_code": {
+            "position": {
+                "x": 500,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_入口状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "roi": [
+                    380,
+                    500,
+                    520,
+                    180
+                ],
+                "template": [
+                    "OK.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            },
+            "type": "TemplateMatch"
+        },
+        "timeout": 10000
     },
     "角色要求_右复位": {
         "$__mpe_code": {
@@ -206,11 +394,11 @@
         },
         "max_hit": 3,
         "next": [
-            "点击角色要求"
+            "点击角色要求",
+            "角色要求_入口状态轮询"
         ],
         "on_error": [
-            "角色要求_向左滑动",
-            "角色要求_查找失败"
+            "角色要求_入口状态轮询"
         ],
         "timeout": 2000
     },
@@ -236,10 +424,10 @@
             "Node.Recognition.Succeeded": "已找到角色要求，点击进入"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_入口状态轮询"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_入口状态轮询"
         ],
         "recognition": {
             "param": {
@@ -270,10 +458,10 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_左角色返回列表_全检查"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_左角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -300,10 +488,10 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_中角色返回列表_全检查"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_中角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -330,10 +518,10 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_右角色返回列表_全检查"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_右角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -360,10 +548,10 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_左角色返回列表_全检查"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_左角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -390,10 +578,10 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_中角色返回列表_全检查"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_中角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -420,10 +608,100 @@
             "type": "Custom"
         },
         "next": [
-            "角色要求_等待角色列表_全检查"
+            "角色要求_右角色返回列表_全检查"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_右角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_处理左角色交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2060,
+                "y": -395
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求执行并记录",
+                "custom_action_param": {
+                    "slot": "左",
+                    "type": "交付机体",
+                    "entry": "角色要求_交付机体操作轮询"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_左角色返回列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_左角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_处理中角色交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2060,
+                "y": -225
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求执行并记录",
+                "custom_action_param": {
+                    "slot": "中",
+                    "type": "交付机体",
+                    "entry": "角色要求_交付机体操作轮询"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_中角色返回列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_中角色返回列表_全检查"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_处理右角色交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2060,
+                "y": -55
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求执行并记录",
+                "custom_action_param": {
+                    "slot": "右",
+                    "type": "交付机体",
+                    "entry": "角色要求_交付机体操作轮询"
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_右角色返回列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_右角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -446,7 +724,7 @@
             "角色要求_点击左角色_全检查"
         ],
         "on_error": [
-            "角色要求_完成"
+            "角色要求_返回角色列表轮询"
         ],
         "recognition": {
             "param": {
@@ -483,14 +761,48 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_检测左角色强化部队_全检查",
-            "角色要求_检测左角色调度资金_全检查"
+            "角色要求_角色详情状态轮询_左"
         ],
         "on_error": [
             "角色要求_记录左角色跳过"
         ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "角色要求"
+                ],
+                "roi": [
+                    120,
+                    20,
+                    360,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
         "post_wait_freezes": 500,
         "timeout": 3000
+    },
+    "角色要求_角色详情状态轮询_左": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2180,
+                "y": -640
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_检测左角色强化部队_全检查",
+            "角色要求_检测左角色调度资金_全检查",
+            "角色要求_检测左角色交付机体_全检查"
+        ],
+        "on_error": [
+            "角色要求_记录左角色跳过"
+        ],
+        "timeout": 8000
     },
     "角色要求_检测左角色强化部队_全检查": {
         "$__mpe_code": {
@@ -558,6 +870,39 @@
         },
         "timeout": 3000
     },
+    "角色要求_检测左角色交付机体_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": -415
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_处理左角色交付机体"
+        ],
+        "on_error": [
+            "角色要求_记录左角色跳过"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付机体"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
     "角色要求_记录左角色跳过": {
         "$__mpe_code": {
             "position": {
@@ -595,11 +940,29 @@
         "action": {
             "param": {
             },
-            "type": "Click"
+            "type": "DoNothing"
         },
         "next": [
-            "角色要求_点击中角色_全检查"
+            "角色要求_点击中角色_全检查",
+            "角色要求_左角色点击返回按钮"
         ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_左角色点击返回按钮": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2500,
+                "y": -640
+            }
+        },
+        "action": {
+            "param": {
+            },
+            "type": "Click"
+        },
         "recognition": {
             "param": {
                 "roi": [
@@ -617,6 +980,9 @@
             },
             "type": "TemplateMatch"
         },
+        "next": [
+            "角色要求_左角色返回列表_全检查"
+        ],
         "timeout": 5000,
         "post_wait_freezes": 500
     },
@@ -639,14 +1005,48 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_检测中角色强化部队_全检查",
-            "角色要求_检测中角色调度资金_全检查"
+            "角色要求_角色详情状态轮询_中"
         ],
         "on_error": [
             "角色要求_记录中角色跳过"
         ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "角色要求"
+                ],
+                "roi": [
+                    120,
+                    20,
+                    360,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
         "post_wait_freezes": 500,
         "timeout": 3000
+    },
+    "角色要求_角色详情状态轮询_中": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2180,
+                "y": -470
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_检测中角色强化部队_全检查",
+            "角色要求_检测中角色调度资金_全检查",
+            "角色要求_检测中角色交付机体_全检查"
+        ],
+        "on_error": [
+            "角色要求_记录中角色跳过"
+        ],
+        "timeout": 8000
     },
     "角色要求_检测中角色强化部队_全检查": {
         "$__mpe_code": {
@@ -714,6 +1114,39 @@
         },
         "timeout": 3000
     },
+    "角色要求_检测中角色交付机体_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": -245
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_处理中角色交付机体"
+        ],
+        "on_error": [
+            "角色要求_记录中角色跳过"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付机体"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
     "角色要求_记录中角色跳过": {
         "$__mpe_code": {
             "position": {
@@ -751,11 +1184,29 @@
         "action": {
             "param": {
             },
-            "type": "Click"
+            "type": "DoNothing"
         },
         "next": [
-            "角色要求_点击右角色_全检查"
+            "角色要求_点击右角色_全检查",
+            "角色要求_中角色点击返回按钮"
         ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_中角色点击返回按钮": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2500,
+                "y": -470
+            }
+        },
+        "action": {
+            "param": {
+            },
+            "type": "Click"
+        },
         "recognition": {
             "param": {
                 "roi": [
@@ -773,6 +1224,9 @@
             },
             "type": "TemplateMatch"
         },
+        "next": [
+            "角色要求_中角色返回列表_全检查"
+        ],
         "timeout": 5000,
         "post_wait_freezes": 500
     },
@@ -795,14 +1249,48 @@
             "type": "Click"
         },
         "next": [
-            "角色要求_检测右角色强化部队_全检查",
-            "角色要求_检测右角色调度资金_全检查"
+            "角色要求_角色详情状态轮询_右"
         ],
         "on_error": [
             "角色要求_记录右角色跳过"
         ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "角色要求"
+                ],
+                "roi": [
+                    120,
+                    20,
+                    360,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
         "post_wait_freezes": 500,
         "timeout": 3000
+    },
+    "角色要求_角色详情状态轮询_右": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2180,
+                "y": -300
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_检测右角色强化部队_全检查",
+            "角色要求_检测右角色调度资金_全检查",
+            "角色要求_检测右角色交付机体_全检查"
+        ],
+        "on_error": [
+            "角色要求_记录右角色跳过"
+        ],
+        "timeout": 8000
     },
     "角色要求_检测右角色强化部队_全检查": {
         "$__mpe_code": {
@@ -870,6 +1358,39 @@
         },
         "timeout": 3000
     },
+    "角色要求_检测右角色交付机体_全检查": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": -75
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_处理右角色交付机体"
+        ],
+        "on_error": [
+            "角色要求_记录右角色跳过"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付机体"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
     "角色要求_记录右角色跳过": {
         "$__mpe_code": {
             "position": {
@@ -907,11 +1428,59 @@
         "action": {
             "param": {
             },
-            "type": "Click"
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_右角色已回列表完成",
+            "角色要求_右角色点击返回按钮"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_右角色已回列表完成": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2720,
+                "y": -300
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
         },
         "next": [
             "角色要求_完成"
         ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "角色要求"
+                ],
+                "roi": [
+                    120,
+                    20,
+                    360,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_右角色点击返回按钮": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2500,
+                "y": -300
+            }
+        },
+        "action": {
+            "param": {
+            },
+            "type": "Click"
+        },
         "recognition": {
             "param": {
                 "roi": [
@@ -929,8 +1498,783 @@
             },
             "type": "TemplateMatch"
         },
+        "next": [
+            "角色要求_右角色返回列表_全检查"
+        ],
         "timeout": 5000,
         "post_wait_freezes": 500
+    },
+    "角色要求_返回角色列表轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2720,
+                "y": -565
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_入口点击特殊要求提示",
+            "角色要求_入口点击回报完成",
+            "角色要求_入口点击OK确认",
+            "角色要求_入口已在角色列表",
+            "角色要求_通用点击返回按钮"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_通用点击返回按钮": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2940,
+                "y": -565
+            }
+        },
+        "action": {
+            "param": {
+            },
+            "type": "Click"
+        },
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    170,
+                    90
+                ],
+                "template": [
+                    "角色要求/返回按钮.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            },
+            "type": "TemplateMatch"
+        },
+        "next": [
+            "角色要求_返回角色列表轮询"
+        ],
+        "timeout": 5000,
+        "post_wait_freezes": 500
+    },
+    "角色要求_交付机体操作轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1620,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_承接交付机体",
+            "角色要求_交付已有机体",
+            "角色要求_点击获取途径交付机体"
+        ],
+        "on_error": [
+            "角色要求_回报后状态轮询"
+        ],
+        "timeout": 10000
+    },
+    "角色要求_承接交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1840,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_交付机体接取剧情略过"
+        ],
+        "on_error": [
+            "角色要求_交付机体操作轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "承接"
+                ],
+                "roi": [
+                    900,
+                    520,
+                    330,
+                    150
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_交付机体接取剧情略过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2060,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_交付机体操作轮询"
+        ],
+        "on_error": [
+            "角色要求_交付机体操作轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "略过"
+                ],
+                "roi": [
+                    1080,
+                    0,
+                    200,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 30000
+    },
+    "角色要求_交付已有机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2180,
+                "y": 500
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_确认交付已有机体"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付"
+                ],
+                "roi": [
+                    900,
+                    520,
+                    330,
+                    150
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_确认交付已有机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2400,
+                "y": 500
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_交付机体交付剧情略过"
+        ],
+        "on_error": [
+            "角色要求_回报后状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付"
+                ],
+                "roi": [
+                    620,
+                    500,
+                    300,
+                    130
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_交付机体交付剧情略过": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2620,
+                "y": 500
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_回报后状态轮询"
+        ],
+        "on_error": [
+            "角色要求_回报后状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "略过"
+                ],
+                "roi": [
+                    1085,
+                    20,
+                    190,
+                    60
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 30000
+    },
+    "角色要求_点击获取途径交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2280,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_等待主要获得方式"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "获取途径"
+                ],
+                "roi": [
+                    900,
+                    520,
+                    330,
+                    150
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_等待主要获得方式": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2500,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_记录交付机体目标信息"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "主要获得方式"
+                ],
+                "roi": [
+                    500,
+                    35,
+                    330,
+                    70
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_记录交付机体目标信息": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2720,
+                "y": 280
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求交付机体记录目标"
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_点击移动交付机体"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_交付机体目标信息OCR": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2940,
+                "y": 280
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "recognition": {
+            "param": {
+                "expected": [],
+                "only_rec": true,
+                "roi": [
+                    110,
+                    75,
+                    310,
+                    60
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "角色要求_点击移动交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2720,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_等待开发路线图"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "移动"
+                ],
+                "roi": [
+                    1000,
+                    125,
+                    230,
+                    95
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_等待开发路线图": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2940,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_选择目标交付机体"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "开发路线图"
+                ],
+                "roi": [
+                    120,
+                    0,
+                    360,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_选择目标交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3160,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "角色要求交付机体选择目标",
+                "custom_action_param": {
+                    "max_candidates": 24
+                }
+            },
+            "type": "Custom"
+        },
+        "next": [
+            "角色要求_点击全部开发交付机体"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 10000
+    },
+    "角色要求_交付机体详情名OCR": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3380,
+                "y": 300
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "recognition": {
+            "param": {
+                "expected": [],
+                "only_rec": true,
+                "roi": [
+                    145,
+                    385,
+                    330,
+                    75
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "角色要求_开发目标单位信息OCR": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3600,
+                "y": 300
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "recognition": {
+            "param": {
+                "expected": [
+                    "开发目标单位信息"
+                ],
+                "roi": [
+                    0,
+                    0,
+                    430,
+                    90
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 3000
+    },
+    "角色要求_点击全部开发交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3380,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_等待确认执行开发"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部开发"
+                ],
+                "roi": [
+                    1040,
+                    610,
+                    230,
+                    100
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_等待确认执行开发": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3600,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_点击执行开发交付机体"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "确认执行开发"
+                ],
+                "roi": [
+                    500,
+                    35,
+                    330,
+                    80
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_点击执行开发交付机体": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3820,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_等待开发结果TAP"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "执行"
+                ],
+                "roi": [
+                    620,
+                    610,
+                    300,
+                    100
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "角色要求_等待开发结果TAP": {
+        "$__mpe_code": {
+            "position": {
+                "x": 4040,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_开发后路线图返回轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "TAP",
+                    "NEXT"
+                ],
+                "roi": [
+                    360,
+                    600,
+                    560,
+                    120
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 30000
+    },
+    "角色要求_开发后路线图返回轮询": {
+        "$__mpe_code": {
+            "position": {
+                "x": 4260,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_开发后已回任务页",
+            "角色要求_开发后关闭主要获得方式",
+            "角色要求_开发后点击路线图返回"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 15000
+    },
+    "角色要求_开发后已回任务页": {
+        "$__mpe_code": {
+            "position": {
+                "x": 4480,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "DoNothing"
+        },
+        "next": [
+            "角色要求_交付机体操作轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "交付",
+                    "获取途径",
+                    "承接"
+                ],
+                "roi": [
+                    900,
+                    520,
+                    330,
+                    150
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_开发后关闭主要获得方式": {
+        "$__mpe_code": {
+            "position": {
+                "x": 4700,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_开发后路线图返回轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "关闭"
+                ],
+                "roi": [
+                    500,
+                    610,
+                    300,
+                    100
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "角色要求_开发后点击路线图返回": {
+        "$__mpe_code": {
+            "position": {
+                "x": 4920,
+                "y": 400
+            }
+        },
+        "action": {
+            "param": {
+            },
+            "type": "Click"
+        },
+        "next": [
+            "角色要求_开发后路线图返回轮询"
+        ],
+        "pre_delay": 2000,
+        "post_wait_freezes": 500,
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    170,
+                    90
+                ],
+                "template": [
+                    "角色要求/返回按钮.png"
+                ],
+                "threshold": [
+                    0.75
+                ]
+            },
+            "type": "TemplateMatch"
+        },
+        "timeout": 5000
+    },
+    "角色要求_取消开发目标信息": {
+        "$__mpe_code": {
+            "position": {
+                "x": 3380,
+                "y": 500
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "recognition": {
+            "param": {
+                "expected": [
+                    "取消"
+                ],
+                "roi": [
+                    360,
+                    610,
+                    300,
+                    100
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
     },
     "角色要求_强化部队操作轮询": {
         "$__mpe_code": {
@@ -948,7 +2292,7 @@
             "角色要求_挑战强化部队"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_回报后状态轮询"
         ],
         "timeout": 10000
     },
@@ -1031,7 +2375,7 @@
             "角色要求_交付调度资金"
         ],
         "on_error": [
-            "角色要求_查找失败"
+            "角色要求_回报后状态轮询"
         ],
         "timeout": 10000
     },
