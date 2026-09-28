@@ -16,7 +16,7 @@ except ModuleNotFoundError:
     raise
 
 ROOT=Path(__file__).resolve().parent
-CACHE_VERSION=2
+CACHE_VERSION=3
 
 def foreground(image,transparent=False):
     rgba=np.asarray(image.convert('RGBA'),dtype=np.float32)
@@ -78,15 +78,16 @@ def source_signature(library,paths):
     """Return a stable cache key for the exact portrait set being searched."""
     library=library.resolve()
     digest=hashlib.sha256()
-    # The output directory changes on every successful update; key by content
-    # metadata so an unchanged portrait set can reuse the same feature cache.
+    # 按图片内容生成缓存键，避免不同机器检出后的修改时间让预置缓存失效。
     digest.update(f"feature-cache-v{CACHE_VERSION}\n".encode('utf-8'))
     for rel in sorted(paths):
         candidate=(library/rel).resolve()
         if not candidate.is_relative_to(library):
             raise ValueError(f'portrait path escapes library: {rel}')
-        stat=candidate.stat()
-        digest.update(f"{rel.replace(chr(92),'/')}\0{stat.st_size}\0{stat.st_mtime_ns}\n".encode('utf-8'))
+        digest.update(f"{rel.replace(chr(92),'/')}\0".encode('utf-8'))
+        with candidate.open('rb') as source:
+            for chunk in iter(lambda: source.read(1024*1024), b''):
+                digest.update(chunk)
     return digest.hexdigest()
 
 def load_feature_cache(cache,signature,expected_paths):

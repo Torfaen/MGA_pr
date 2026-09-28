@@ -464,3 +464,8 @@ config
 debug
 tools/CI/package_release.py
 tools/CI/build_install_windows.ps1
+
+# 机体特征缓存由素材自动生成；快捷方式包含本机绝对路径。
+/assets/resource/units_info/cache/
+/启动图像匹配工具.lnk
+/tools/match-lab/启动匹配实验室.lnk
