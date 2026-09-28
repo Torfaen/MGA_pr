@@ -14,8 +14,13 @@ class RunTask(CustomAction):
             print("MGA_TASK_FAILED: [运行子任务] 未配置 entry")
             return False
 
+        pipeline_override = params.get("pipeline_override", {})
+        if not isinstance(pipeline_override, dict):
+            print("MGA_TASK_FAILED: [运行子任务] pipeline_override 必须是对象")
+            return False
+
         print(f"[运行子任务] 开始执行: {entry}")
-        result = context.run_task(entry)
+        result = context.run_task(entry, pipeline_override=pipeline_override)
         if result is None:
             print(f"MGA_TASK_FAILED: [运行子任务] 子任务执行失败: {entry}")
             return False
