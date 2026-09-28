@@ -1191,7 +1191,7 @@
             ]
         },
         "历史故事选择": {
-            "description": "选择主线故事",
+            "description": "选择历史故事",
             "cases": [
 
                 {
@@ -1277,6 +1277,82 @@
                             "recognition": {
                                 "param": {
                                     "template": "BD.png"
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        },
+                        "进入历史关卡": {
+                            "enabled": true
+                        },
+                        "主线左复位": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "08MS小队",
+                    "pipeline_override": {
+                        "寻找目标历史关卡": {
+                            "recognition": {
+                                "param": {
+                                    "template": "第08MS小队.png"
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        },
+                        "进入历史关卡": {
+                            "enabled": true
+                        },
+                        "主线左复位": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "雷霆宙域S2",
+                    "pipeline_override": {
+                        "寻找目标历史关卡": {
+                            "recognition": {
+                                "param": {
+                                    "template": "雷霆宙域S2.png"
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        },
+                        "进入历史关卡": {
+                            "enabled": true
+                        },
+                        "主线左复位": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "XAstray",
+                    "pipeline_override": {
+                        "寻找目标历史关卡": {
+                            "recognition": {
+                                "param": {
+                                    "template": "XAstray.png"
+                                },
+                                "type": "TemplateMatch"
+                            }
+                        },
+                        "进入历史关卡": {
+                            "enabled": true
+                        },
+                        "主线左复位": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "口袋里的战争",
+                    "pipeline_override": {
+                        "寻找目标历史关卡": {
+                            "recognition": {
+                                "param": {
+                                    "template": "口袋里的战争.png"
                                 },
                                 "type": "TemplateMatch"
                             }

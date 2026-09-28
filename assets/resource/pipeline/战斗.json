@@ -2959,11 +2959,63 @@
         "next": [
             "寻找目标历史关卡"
         ],
+        "on_error": [
+            "历史故事上滑重试1"
+        ],
+        "timeout": 2500,
         "$__mpe_code": {
             "position": {
                 "x": 354,
                 "y": -779
             }
+        }
+    },
+    "历史故事上滑重试1": {
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [111, 337, 26, 27],
+                "end": [[111, 150, 26, 27]]
+            }
+        },
+        "post_wait_freezes": 200,
+        "next": ["寻找目标历史关卡"],
+        "on_error": ["历史故事上滑重试2"],
+        "timeout": 1500,
+        "$__mpe_code": {
+            "position": {"x": 574, "y": -1099}
+        }
+    },
+    "历史故事上滑重试2": {
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [111, 337, 26, 27],
+                "end": [[111, 150, 26, 27]]
+            }
+        },
+        "post_wait_freezes": 200,
+        "next": ["寻找目标历史关卡"],
+        "on_error": ["历史故事上滑重试3"],
+        "timeout": 1500,
+        "$__mpe_code": {
+            "position": {"x": 834, "y": -1099}
+        }
+    },
+    "历史故事上滑重试3": {
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [111, 337, 26, 27],
+                "end": [[111, 150, 26, 27]]
+            }
+        },
+        "post_wait_freezes": 200,
+        "next": ["寻找目标历史关卡"],
+        "on_error": ["战斗寻找错误退出"],
+        "timeout": 1500,
+        "$__mpe_code": {
+            "position": {"x": 1094, "y": -1099}
         }
     },
     "进入历史关卡选择": {
