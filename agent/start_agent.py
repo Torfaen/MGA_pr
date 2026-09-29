@@ -38,8 +38,16 @@ def run_agent_logic(socket_id):
     try:
         from maa.agent.agent_server import AgentServer
         from maa.toolkit import Toolkit
+        import SmartShopBuy
+        import ReturnHome
         import StageSelect
+        import BatchStageSweep
+        import DailyBattle
         import GP
+        import RunTask
+        import RoleRequirementTracker
+        import RoleRequirementDelivery
+        import RoleRequirementCommission
         
     except ImportError as e:
         print(f"[MGA Error] Failed to import dependencies: {e}")

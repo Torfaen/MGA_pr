@@ -62,12 +62,18 @@
     },
     "进入关卡": {
         "recognition": {
-            "type": "OCR",
             "param": {
+                "roi": [
+                    525,
+                    650,
+                    215,
+                    70
+                ],
                 "expected": [
                     "关卡"
                 ]
-            }
+            },
+            "type": "OCR"
         },
         "action": {
             "type": "Click"
@@ -285,12 +291,14 @@
     },
     "领取奖励": {
         "recognition": {
-            "type": "OCR",
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "@K",
+                    "0K"
                 ]
-            }
+            },
+            "type": "OCR"
         },
         "action": {
             "type": "Click"
@@ -319,5 +327,27 @@
                 "y": 411
             }
         }
+    },
+    "新建节点5": {
+        "$__mpe_code": {
+            "position": {
+                "x": -108,
+                "y": 575
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
+        },
+        "recognition": {
+            "param": {},
+            "type": "DirectHit"
+        },
+        "timeout": 5000
     }
 }
