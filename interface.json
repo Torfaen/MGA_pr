@@ -97,19 +97,6 @@
             ]
         },
         {
-            "name": "BOSS挑战开荒",
-            "entry": "BOSS挑战开荒入口",
-            "description": "从当前 BOSS 战斗难度页开始，按 EXPERT -> HARD -> NORMAL 连续挑战可挑战难度。"
-        },
-        {
-            "name": "强敌来袭",
-            "entry": "强敌来袭：入口",
-            "description": "从主画面进入关卡页后，依次进入事件、选择强敌来袭并点击前往事件",
-            "option": [
-                "强敌来袭目标"
-            ]
-        },
-        {
             "name": "GP任务",
             "entry": "金币任务入口",
             "description": "输入一个值后会自动刷取指定数量的GP",
