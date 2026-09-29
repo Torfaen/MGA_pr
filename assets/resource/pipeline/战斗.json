@@ -3088,5 +3088,19 @@
                 "y": -1308
             }
         }
+    },
+    "主页返回": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "强制返回主页"
+            }
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": -819,
+                "y": -224
+            }
+        }
     }
 }
