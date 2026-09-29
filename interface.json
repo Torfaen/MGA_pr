@@ -101,6 +101,24 @@
             "option": [
                 "加速器类型"
             ]
+        },
+        {
+            "name": "故事扫荡",
+            "label": "故事扫荡",
+            "entry": "故事扫荡入口",
+            "description": "进入一个故事后，按勾选的 HARD 关卡顺序连续扫荡；找不到的关卡会跳过。",
+            "option": [
+                "故事扫荡模式",
+                "体力不足时使用体力包"
+            ]
+        },
+        {
+            "name": "故事开荒",
+            "entry": "故事开荒入口",
+            "description": "从当前故事/事件关卡页开始，连续推进 NEXT 关卡直到无下一关。",
+            "option": [
+                "故事开荒体力包"
+            ]
         }
     ],
     "option": {
@@ -1303,6 +1321,152 @@
                                 },
                                 "type": "TemplateMatch"
                             }
+                        }
+                    }
+                }
+            ]
+        },
+        "故事扫荡模式": {
+            "type": "select",
+            "label": "故事类型",
+            "description": "选择要扫荡的故事类型，再选择具体故事。",
+            "default_case": "主线故事",
+            "cases": [
+                {
+                    "name": "主线故事",
+                    "label": "主线故事",
+                    "option": [
+                        "主线故事选择",
+                        "扫荡关卡"
+                    ],
+                    "pipeline_override": {
+                        "寻找HARD": {
+                            "next": [
+                                "故事扫荡关卡右复位"
+                            ]
+                        },
+                        "主线左复位": {
+                            "enabled": true
+                        },
+                        "进入历史关卡": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "历史故事",
+                    "label": "历史故事",
+                    "option": [
+                        "历史故事选择",
+                        "扫荡关卡"
+                    ],
+                    "pipeline_override": {
+                        "寻找HARD": {
+                            "next": [
+                                "故事扫荡关卡右复位"
+                            ]
+                        },
+                        "主线左复位": {
+                            "enabled": false
+                        },
+                        "进入历史关卡": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "强敌来袭",
+                    "label": "强敌来袭",
+                    "option": [
+                        "强敌来袭目标",
+                        "是否开启自动战斗",
+                        "自动战斗次数"
+                    ],
+                    "pipeline_override": {
+                        "故事扫荡入口": {
+                            "timeout": 5000,
+                            "next": [
+                                "强敌来袭：检测主画面",
+                                "[JumpBack]强敌来袭：主页返回"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "活动扫荡",
+                    "label": "活动扫荡",
+                    "option": [
+                        "活动扫荡关卡"
+                    ],
+                    "pipeline_override": {
+                        "故事扫荡入口": {
+                            "next": [
+                                "活动扫荡_状态轮询"
+                            ],
+                            "on_error": [
+                                "战斗出口"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "体力不足时使用体力包": {
+            "type": "checkbox",
+            "description": "扫荡执行时 AP 不足则最多自动使用 3 次体力包；默认不启用。",
+            "cases": [
+                {
+                    "name": "使用体力包",
+                    "pipeline_override": {
+                        "补充体力_选择体力包": {
+                            "enabled": true
+                        },
+                        "活动HARD扫荡_补充体力_选择体力包": {
+                            "enabled": true
+                        },
+                        "体力不够退出": {
+                            "focus": {
+                                "Node.Action.Succeeded": "MGA_TASK_FAILED: 体力不足且补充体力失败，退出任务"
+                            }
+                        },
+                        "活动HARD扫荡_体力不足退出": {
+                            "focus": {
+                                "Node.Action.Succeeded": "MGA_TASK_FAILED: 体力不足且补充体力失败，退出任务"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "故事开荒体力包": {
+            "type": "checkbox",
+            "label": "体力不足时使用体力包",
+            "description": "故事开荒遇到 AP 不足时点击“是”并自动使用最多 3 次体力包；补充完成后回到出击状态轮询。默认不启用。",
+            "cases": [
+                {
+                    "name": "使用体力包",
+                    "pipeline_override": {
+                        "故事开荒_体力不足异常处理": {
+                            "enabled": true
+                        },
+                        "补充体力_选择体力包": {
+                            "enabled": true,
+                            "on_error": [
+                                "故事开荒_体力不足退出"
+                            ]
+                        },
+                        "补充体力_执行": {
+                            "on_error": [
+                                "故事开荒_体力不足退出"
+                            ]
+                        },
+                        "补充体力_关闭": {
+                            "next": [
+                                "故事开荒_出击后状态轮询"
+                            ],
+                            "on_error": [
+                                "故事开荒_体力不足退出"
+                            ]
                         }
                     }
                 }
