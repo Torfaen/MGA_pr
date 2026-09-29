@@ -2602,11 +2602,44 @@
             }
         }
     },
+    "连续扫荡_略过入口": {
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "timeout": 5000,
+        "next": [
+            "连续扫荡_次数上限",
+            "略过关卡"
+        ]
+    },
+    "连续扫荡_次数上限": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": "次数上限.png",
+                "threshold": 0.75
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "当前关卡略过次数上限，继续下一关"
+        }
+    },
     "略过关卡": {
         "enabled": true,
         "recognition": {
             "type": "OCR",
             "param": {
+                "roi": [
+                    1030,
+                    445,
+                    170,
+                    55
+                ],
                 "expected": [
                     "略过"
                 ]

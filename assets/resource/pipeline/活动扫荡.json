@@ -4,20 +4,10 @@
             "filename": "活动扫荡"
         }
     },
-    "活动扫荡入口": {
-        "timeout": 5000,
-        "next": [
-            "活动扫荡_状态轮询"
-        ],
-        "on_error": [
-            "战斗出口"
-        ]
-    },
     "活动扫荡_状态轮询": {
         "timeout": 60000,
         "rate_limit": 1000,
         "next": [
-            "活动扫荡_BOSS_EXPERT略过",
             "活动扫荡_执行HARD扫荡",
             "活动扫荡_活动页点击事件关卡",
             "活动扫荡_点击事件关卡",
@@ -49,7 +39,7 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1000,
+        "post_wait_freezes": 0,
         "timeout": 8000,
         "next": [
             "活动扫荡_状态轮询"
@@ -97,11 +87,9 @@
                     130
                 ],
                 "template": [
-                    "活动扫荡/stargazer_inner.png",
-                    "活动扫荡/stargazer.png"
+                    "活动扫荡/00F.png"
                 ],
                 "threshold": [
-                    0.62,
                     0.65
                 ]
             }
@@ -110,7 +98,8 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1000,
+        "post_wait_freezes": 0,
+        "post_delay": 500,
         "timeout": 30000,
         "rate_limit": 1000,
         "next": [
@@ -139,8 +128,10 @@
             "type": "Click",
             "param": {}
         },
-        "post_wait_freezes": 1500,
-        "timeout": 10000,
+        "pre_delay": 0,
+        "post_wait_freezes": 0,
+        "post_delay": 0,
+        "timeout": 20000,
         "next": [
             "活动扫荡_活动页点击事件关卡"
         ],
@@ -153,10 +144,10 @@
             "type": "OCR",
             "param": {
                 "roi": [
-                    690,
-                    305,
-                    285,
-                    95
+                    708,
+                    75,
+                    248,
+                    244
                 ],
                 "expected": [
                     "事件关卡"
@@ -167,14 +158,14 @@
             "type": "Click",
             "param": {
                 "target": [
-                    705,
-                    320,
-                    255,
-                    70
+                    708,
+                    75,
+                    248,
+                    244
                 ]
             }
         },
-        "post_wait_freezes": 1500,
+        "post_wait_freezes": 0,
         "timeout": 30000,
         "rate_limit": 1000,
         "next": [
@@ -260,10 +251,16 @@
                 ],
                 "template": [
                     "HARD1.png",
+                    "HARD1_light.png",
                     "HARD2.png",
-                    "HARD3.png"
+                    "HARD2_light.png",
+                    "HARD3.png",
+                    "HARD3_light.png"
                 ],
                 "threshold": [
+                    0.65,
+                    0.65,
+                    0.65,
                     0.65,
                     0.65,
                     0.65
@@ -271,120 +268,74 @@
             }
         },
         "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "BatchStageSweep",
-                "custom_action_param": {
-                    "stage_targets": [
-                        "HARD1",
-                        "HARD2",
-                        "HARD3"
-                    ],
-                    "skip_task": "活动扫荡_略过关卡",
-                    "skip_optional": true
-                }
-            }
+            "type": "DoNothing"
         },
         "post_wait_freezes": 1000,
         "timeout": 5000,
         "next": [
-            "活动扫荡_返回活动页找BOSS"
+            "活动扫荡_选中HARD1",
+            "活动扫荡_选中HARD2",
+            "活动扫荡_选中HARD3",
+            "活动扫荡_仅HARD结束"
         ],
         "on_error": [
             "战斗寻找错误退出"
         ]
     },
-    "活动扫荡_略过关卡": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    1010,
-                    430,
-                    220,
-                    90
-                ],
-                "expected": [
-                    "略过"
-                ]
-            }
-        },
+    "活动扫荡_选中HARD1": {
+        "enabled": false,
         "action": {
-            "type": "Click",
+            "type": "Custom",
             "param": {
-                "target": [
-                    1030,
-                    445,
-                    170,
-                    55
-                ]
+                "custom_action": "BatchStageSweep",
+                "custom_action_param": {
+                    "stage_targets": ["HARD1"],
+                    "skip_task": "连续扫荡_略过入口",
+                    "skip_optional": true
+                }
             }
         },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_执行关卡略过"
-        ],
-        "on_error": [
-            "活动扫荡_略过不可用"
-        ]
+        "next": ["活动扫荡_选中HARD2", "活动扫荡_选中HARD3", "活动扫荡_仅HARD结束"],
+        "on_error": ["战斗寻找错误退出"]
     },
-    "活动扫荡_执行关卡略过": {
-        "recognition": {
-            "type": "OCR",
+    "活动扫荡_选中HARD2": {
+        "enabled": false,
+        "action": {
+            "type": "Custom",
             "param": {
-                "roi": [
-                    430,
-                    500,
-                    420,
-                    160
-                ],
-                "expected": [
-                    "执行"
-                ]
+                "custom_action": "BatchStageSweep",
+                "custom_action_param": {
+                    "stage_targets": ["HARD2"],
+                    "skip_task": "连续扫荡_略过入口",
+                    "skip_optional": true
+                }
             }
         },
+        "next": ["活动扫荡_选中HARD3", "活动扫荡_仅HARD结束"],
+        "on_error": ["战斗寻找错误退出"]
+    },
+    "活动扫荡_选中HARD3": {
+        "enabled": false,
         "action": {
-            "type": "Click",
+            "type": "Custom",
+            "param": {
+                "custom_action": "BatchStageSweep",
+                "custom_action_param": {
+                    "stage_targets": ["HARD3"],
+                    "skip_task": "连续扫荡_略过入口",
+                    "skip_optional": true
+                }
+            }
+        },
+        "next": ["活动扫荡_仅HARD结束"],
+        "on_error": ["战斗寻找错误退出"]
+    },
+    "活动扫荡_仅HARD结束": {
+        "action": {
+            "type": "StopTask",
             "param": {}
         },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_略过完成",
-            "活动扫荡_补充体力_选择体力包",
-            "活动扫荡_体力不足退出"
-        ],
-        "on_error": [
-            "活动扫荡_略过不可用"
-        ]
-    },
-    "活动扫荡_略过不可用": {
-        "action": {
-            "type": "DoNothing",
-            "param": {}
-        },
-        "focus": {
-            "Node.Action.Succeeded": "活动扫荡当前 HARD 未找到可用略过，继续后续关卡"
-        }
-    },
-    "活动扫荡_略过完成": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "OK",
-                    "0K",
-                    "@K"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000
+        "focus": "活动 HARD 扫荡完成"
     },
     "活动扫荡_返回活动页": {
         "recognition": {
@@ -416,317 +367,5 @@
         "on_error": [
             "活动扫荡_状态轮询"
         ]
-    },
-    "活动扫荡_返回活动页找BOSS": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {}
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    36,
-                    14,
-                    96,
-                    48
-                ]
-            }
-        },
-        "post_wait_freezes": 1500,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_BOSS状态轮询"
-        ],
-        "on_error": [
-            "活动扫荡_BOSS状态轮询"
-        ]
-    },
-    "活动扫荡_BOSS状态轮询": {
-        "timeout": 60000,
-        "rate_limit": 1000,
-        "next": [
-            "活动扫荡_BOSS_EXPERT略过",
-            "活动扫荡_点击BOSS战斗",
-            "活动扫荡_选择活动",
-            "活动扫荡_点击事件",
-            "活动扫荡_点击关卡"
-        ],
-        "on_error": [
-            "战斗出口"
-        ]
-    },
-    "活动扫荡_点击BOSS战斗": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    0,
-                    0,
-                    420,
-                    720
-                ],
-                "expected": [
-                    "BOSS战斗",
-                    "Boss战斗",
-                    "BOSS"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1500,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_BOSS状态轮询"
-        ],
-        "on_error": [
-            "活动扫荡_BOSS状态轮询"
-        ]
-    },
-    "活动扫荡_BOSS_EXPERT略过": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    850,
-                    55,
-                    210,
-                    105
-                ],
-                "expected": [
-                    "略过"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    870,
-                    80,
-                    170,
-                    60
-                ]
-            }
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 8000,
-        "next": [
-            "活动扫荡_BOSS执行略过"
-        ],
-        "on_error": [
-            "活动扫荡_状态轮询"
-        ]
-    },
-    "活动扫荡_BOSS执行略过": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "执行"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_BOSS略过完成",
-            "活动扫荡_BOSS补充体力_选择体力包",
-            "活动扫荡_体力不足退出"
-        ],
-        "on_error": [
-            "活动扫荡_状态轮询"
-        ]
-    },
-    "活动扫荡_BOSS略过完成": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "OK",
-                    "0K",
-                    "@K"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_结束"
-        ],
-        "on_error": [
-            "活动扫荡_状态轮询"
-        ]
-    },
-    "活动扫荡_补充体力_选择体力包": {
-        "enabled": false,
-        "max_hit": 3,
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": "体力包.png",
-                "threshold": 0.75
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 500,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_补充体力_执行"
-        ],
-        "on_error": [
-            "活动扫荡_体力不足退出"
-        ]
-    },
-    "活动扫荡_补充体力_执行": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "执行"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_补充体力_关闭"
-        ],
-        "on_error": [
-            "活动扫荡_体力不足退出"
-        ]
-    },
-    "活动扫荡_补充体力_关闭": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "关闭"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_执行关卡略过"
-        ],
-        "on_error": [
-            "活动扫荡_体力不足退出"
-        ]
-    },
-    "活动扫荡_BOSS补充体力_选择体力包": {
-        "enabled": false,
-        "max_hit": 3,
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": "体力包.png",
-                "threshold": 0.75
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 500,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_BOSS补充体力_执行"
-        ],
-        "on_error": [
-            "活动扫荡_体力不足退出"
-        ]
-    },
-    "活动扫荡_BOSS补充体力_执行": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "执行"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_BOSS补充体力_关闭"
-        ],
-        "on_error": [
-            "活动扫荡_体力不足退出"
-        ]
-    },
-    "活动扫荡_BOSS补充体力_关闭": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "关闭"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "post_wait_freezes": 1000,
-        "timeout": 10000,
-        "next": [
-            "活动扫荡_BOSS执行略过"
-        ],
-        "on_error": [
-            "活动扫荡_体力不足退出"
-        ]
-    },
-    "活动扫荡_体力不足退出": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "关闭"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "focus": {
-            "Node.Action.Succeeded": "活动扫荡体力不足，关闭弹窗并停止任务"
-        },
-        "next": [
-            "活动扫荡_结束"
-        ]
-    },
-    "活动扫荡_结束": {
-        "action": {
-            "type": "StopTask",
-            "param": {}
-        }
     }
 }

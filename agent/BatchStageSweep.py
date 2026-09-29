@@ -41,7 +41,7 @@ class BatchStageSweep(CustomAction):
         targets = _parse_stage_targets(
             params.get("stage_targets", params.get("stage_target", []))
         )
-        skip_task = params.get("skip_task", "略过关卡")
+        skip_task = params.get("skip_task", "连续扫荡_略过入口")
         skip_optional = bool(params.get("skip_optional", False))
 
         if not targets:

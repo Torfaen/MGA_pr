@@ -95,11 +95,9 @@
                     130
                 ],
                 "template": [
-                    "活动扫荡/stargazer_inner.png",
-                    "活动扫荡/stargazer.png"
+                    "活动扫荡/00F.png"
                 ],
                 "threshold": [
-                    0.62,
                     0.65
                 ]
             }
@@ -258,12 +256,18 @@
                 ],
                 "template": [
                     "HARD1.png",
+                    "HARD1_light.png",
                     "HARD2.png",
+                    "HARD2_light.png",
                     "HARD3.png",
+                    "HARD3_light.png",
                     "HARD4.png",
                     "HARD5.png"
                 ],
                 "threshold": [
+                    0.65,
+                    0.65,
+                    0.65,
                     0.65,
                     0.65,
                     0.65,
