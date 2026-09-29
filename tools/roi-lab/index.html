@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maa ROI 坐标工具</title>
+    <style>
+      :root {
+        font-size: 125%; color-scheme: light;
+        --ink: #19231f; --muted: #738078; --line: #e3e9e4; --paper: #f5f7f4;
+        --panel: #fff; --green: #187853; --shadow: 0 0.75rem 2rem rgba(29,48,37,.065);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 22.5rem; background: var(--paper); color: var(--ink); font: .875rem/1.5 "Segoe UI", "Microsoft YaHei UI", sans-serif; }
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      .topbar { min-height: 4.25rem; padding: .625rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #fbfcfa; border-bottom: .0625rem solid var(--line); }
+      .brand { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+      .mark { width: 2.25rem; height: 2.25rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: .6875rem; background: #1f7654; color: #fff; font-weight: 800; box-shadow: 0 .3125rem .75rem #1f76542b; }
+      .brand h1 { margin: 0; font-size: 1rem; }
+      .brand p { margin: .0625rem 0 0; color: var(--muted); font-size: .625rem; }
+      .top-actions { display: flex; align-items: center; gap: .5rem; color: var(--muted); font-size: .6875rem; }
+      .quiet-button { padding: .4375rem .5625rem; border: 0; border-radius: .4375rem; background: transparent; color: inherit; white-space: nowrap; }
+      .quiet-button:hover { background: #edf1ed; color: var(--ink); }
+      .service-status { display: inline-flex; align-items: center; gap: .375rem; white-space: nowrap; }
+      .service-status::before { content: ""; width: .4375rem; height: .4375rem; border-radius: 50%; background: #9caaa1; }
+      .service-status.ready::before { background: #1c9b64; }
+      .page { max-width: 98.75rem; margin: 0 auto; padding: 1.25rem 1.5rem 1.875rem; }
+      .page-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .875rem; }
+      .page-heading h2 { margin: 0; font-size: 1rem; }
+      .page-heading p { margin: .1875rem 0 0; color: var(--muted); font-size: .6875rem; }
+      .hint { color: var(--muted); font-size: .625rem; }
+      .roi-layout { display: grid; grid-template-columns: minmax(17.5rem,22rem) minmax(0,1fr); gap: .875rem; align-items: start; }
+      .panel { min-width: 0; overflow: hidden; background: var(--panel); border: .0625rem solid var(--line); border-radius: .8125rem; box-shadow: var(--shadow); }
+      .control-panel, .image-panel { padding: .875rem; }
+      .control-panel h3 { margin: 0 0 .625rem; font-size: .8125rem; }
+      .coord-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .375rem; }
+      input[type="number"], input[type="text"], select { min-width: 0; height: 2.1875rem; padding: 0 .625rem; border: .0625rem solid #dce4dd; border-radius: .4375rem; outline: none; background: #fff; color: var(--ink); }
+      input:focus, select:focus { border-color: #5d9a78; box-shadow: 0 0 0 .1875rem #2a8a5d15; }
+      .coord-grid input { width: 100%; padding: 0 .25rem; text-align: center; }
+      .button { min-height: 2.1875rem; display: inline-flex; align-items: center; justify-content: center; gap: .375rem; padding: 0 .6875rem; border: .0625rem solid #dce4dd; border-radius: .4375rem; background: #fff; color: #334138; font-size: .6875rem; font-weight: 650; white-space: nowrap; }
+      .button:hover { border-color: #b9c9be; background: #f8fbf8; }
+      .button.small { min-height: 1.9375rem; padding: 0 .5625rem; }
+      .button.primary { border-color: #1d7854; background: #1d7854; color: white; }
+      .button.primary:hover { background: #176746; }
+      .button:disabled { opacity: .6; cursor: wait; }
+      .apply { width: 100%; margin-top: .5rem; }
+      .array-row { display: flex; gap: .375rem; margin-top: .75rem; }
+      .array-row input { flex: 1; width: 0; }
+      .help { margin: .5rem 0 0; color: var(--muted); font-size: .625rem; }
+      .coord-output { display: grid; gap: .5rem; margin-top: .875rem; }
+      .coord-output label { display: block; margin-bottom: .1875rem; color: var(--muted); font-size: .625rem; }
+      .coord-output code { display: block; min-height: 2.125rem; padding: .4375rem .5rem; overflow-wrap: anywhere; border: .0625rem solid var(--line); border-radius: .375rem; background: var(--paper); color: var(--ink); font-size: .6875rem; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: .375rem; margin-top: .75rem; }
+      .actions .copy { grid-column: 1 / -1; }
+      .roi-list { display: grid; gap: .375rem; max-height: 15rem; margin-top: .75rem; overflow: auto; }
+      .roi-item { display: flex; justify-content: space-between; gap: .5rem; width: 100%; padding: .4375rem .5rem; border: .0625rem solid var(--line); border-left-width: .1875rem; border-radius: .375rem; background: var(--panel); color: var(--muted); text-align: left; font: inherit; font-size: .625rem; }
+      .roi-item.active { border-color: var(--green); color: var(--ink); }
+      .roi-item span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .image-head { display: flex; align-items: center; justify-content: space-between; gap: .625rem; margin-bottom: .625rem; }
+      .image-title { font-size: .75rem; font-weight: 700; }
+      .image-meta { margin-left: .375rem; color: var(--muted); font-size: .625rem; font-weight: 500; }
+      .image-actions { display: flex; gap: .375rem; }
+      .capturebar { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; align-items: center; gap: .375rem; margin-bottom: .625rem; }
+      .capturebar label { color: var(--muted); font-size: .6875rem; white-space: nowrap; }
+      .capturebar select { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .viewport { min-height: 22rem; max-height: 67vh; overflow: auto; border: .0625rem dashed #d6e0d8; border-radius: .5rem; background-color: #f9fbf9; background-image: linear-gradient(45deg,#f2f5f2 25%,transparent 25%),linear-gradient(-45deg,#f2f5f2 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f2f5f2 75%),linear-gradient(-45deg,transparent 75%,#f2f5f2 75%); background-size: 1rem 1rem; background-position: 0 0,0 .5rem,.5rem -.5rem,-.5rem 0; }
+      .viewport.dragover { outline: .125rem solid #47976c; outline-offset: -.1875rem; }
+      .placeholder { min-height: 22rem; display: grid; place-items: center; padding: 1.5rem; color: var(--muted); text-align: center; font-size: .6875rem; }
+      .placeholder strong { display: block; margin-bottom: .3125rem; color: var(--ink); }
+      canvas { display: block; max-width: none; max-height: none; touch-action: none; cursor: crosshair; }
+      .zoom-row { display: flex; align-items: center; gap: .75rem; margin-top: .75rem; }
+      .zoom-row label { color: var(--muted); font-size: .6875rem; }
+      .zoom-row input { flex: 1; min-width: 0; accent-color: var(--green); }
+      .zoom-value { min-width: 3.25rem; color: var(--ink); text-align: right; font-size: .6875rem; font-variant-numeric: tabular-nums; }
+      .toast { position: fixed; z-index: 5; right: 1.375rem; bottom: 1.25rem; max-width: min(26.25rem,calc(100vw - 2.5rem)); padding: .6875rem .875rem; border-radius: .5625rem; background: #263b30; color: #fff; font-size: .6875rem; box-shadow: 0 .5rem 1.75rem #12251b38; opacity: 0; transform: translateY(.4375rem); transition: .18s ease; pointer-events: none; }
+      .toast.show { opacity: 1; transform: translateY(0); }
+      .hidden { display: none !important; }
+      @media (max-width: 1312.5px) { .page { padding-right: 1rem; padding-left: 1rem; } }
+      @media (max-width: 1000px) { .roi-layout { grid-template-columns: 1fr; } .roi-list { max-height: 8rem; } }
+      @media (max-width: 675px) {
+        .topbar { min-height: 3.75rem; padding: .5rem .75rem; }
+        .brand { gap: .5rem; } .brand p, .service-status span { display: none; }
+        .top-actions { gap: .125rem; }
+        .page { padding: .75rem; }
+        .image-head { align-items: flex-start; flex-direction: column; }
+        .capturebar { grid-template-columns: auto minmax(0,1fr) auto; }
+        .capturebar .capture { grid-column: 1 / -1; }
+        .viewport, .placeholder { min-height: 15rem; }
+        .viewport { max-height: 55vh; }
+      }
+      html[data-theme="dark"] {
+        color-scheme: dark; --ink: #e4ece6; --muted: #a0aea4; --line: #39463e;
+        --paper: #151b17; --panel: #202822; --green: #55c28e; --shadow: 0 .75rem 2rem rgba(0,0,0,.28);
+      }
+      html[data-theme="dark"] .topbar { background: #1b221d; }
+      html[data-theme="dark"] .quiet-button:hover { background: #2b352e; }
+      html[data-theme="dark"] input[type="number"], html[data-theme="dark"] input[type="text"], html[data-theme="dark"] select { border-color: #46544a; background: #252e28; color: var(--ink); }
+      html[data-theme="dark"] .button:not(.primary) { border-color: #455249; background: #28312b; color: #d8e2da; }
+      html[data-theme="dark"] .button:not(.primary):hover { border-color: #63756a; background: #303b33; }
+      html[data-theme="dark"] .button.primary { border-color: #21845b; background: #21845b; }
+      html[data-theme="dark"] .viewport { border-color: #46534a; background-color: #202822; background-image: linear-gradient(45deg,#29322c 25%,transparent 25%),linear-gradient(-45deg,#29322c 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#29322c 75%),linear-gradient(-45deg,transparent 75%,#29322c 75%); }
+      html[data-theme="dark"] .roi-item { background: #252e28; }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><div class="mark">M</div><div><h1>Maa ROI 坐标工具</h1><p>独立版 · 原图像素坐标 · Maa ADB 截图</p></div></div>
+      <div class="top-actions">
+        <span id="serviceStatus" class="service-status"><span>连接本地服务…</span></span>
+        <button id="themeToggle" class="quiet-button" type="button" aria-pressed="false" title="切换到深色主题"><span id="themeIcon" aria-hidden="true">☾</span><span id="themeLabel">深色</span></button>
+        <button id="stopButton" class="quiet-button" type="button" title="关闭 ROI 工具服务">关闭服务</button>
+      </div>
+    </header>
+    <main class="page">
+      <div class="page-heading">
+        <div><h2>ROI 坐标工具</h2><p>粘贴、打开或从模拟器截取截图，左键拖动选区；右键 / Ctrl+Z 撤销，Esc 清空。</p></div>
+        <span id="dimensions" class="hint"></span>
+      </div>
+      <div class="roi-layout">
+        <aside class="panel control-panel">
+          <h3>坐标输入</h3>
+          <div class="coord-grid">
+            <input id="x1" type="number" step="1" placeholder="x1" aria-label="x1" />
+            <input id="y1" type="number" step="1" placeholder="y1" aria-label="y1" />
+            <input id="x2" type="number" step="1" placeholder="x2" aria-label="x2" />
+            <input id="y2" type="number" step="1" placeholder="y2" aria-label="y2" />
+          </div>
+          <button id="applyFields" class="button apply" type="button">在图片上显示框</button>
+          <div class="array-row"><input id="arrayInput" type="text" placeholder="角点 [701, 33, 952, 311]" aria-label="输入角点坐标 [x1, y1, x2, y2]" /><button id="applyArray" class="button small" type="button">显示</button></div>
+          <div class="array-row"><input id="xywhInput" type="text" placeholder="XYWH [701, 33, 251, 278]" aria-label="输入 XYWH 坐标 [x, y, width, height]" /><button id="applyXywh" class="button small" type="button">显示</button></div>
+          <p class="help">支持角点 [x1, y1, x2, y2] 和 XYWH [x, y, width, height]；超出图片的部分会限制在边界内。</p>
+          <div class="coord-output" aria-live="polite">
+            <div><label>角点坐标 [x1, y1, x2, y2]</label><code id="cornersOutput">—</code></div>
+            <div><label>Maa ROI [x, y, width, height]</label><code id="xywhOutput">—</code></div>
+          </div>
+          <div class="actions">
+            <button id="copy" class="button primary copy" type="button">复制 ROI 坐标</button>
+            <button id="undo" class="button" type="button">撤销上一个</button>
+            <button id="clear" class="button" type="button">清空 ROI</button>
+          </div>
+          <p class="help">复制内容包含两行：角点坐标和 Maa 的 [x, y, width, height]。</p>
+          <div id="roiList" class="roi-list" aria-label="已选择的 ROI"></div>
+        </aside>
+        <section class="panel image-panel">
+          <div class="image-head">
+            <div class="image-title">图片画布 <span id="roiCount" class="image-meta">未载入图片</span></div>
+            <div class="image-actions">
+              <button id="upload" class="button small" type="button">选择图片</button>
+              <button id="clearImage" class="button small" type="button">清除图片</button>
+              <input id="file" class="hidden" type="file" accept="image/*" />
+            </div>
+          </div>
+          <div class="capturebar">
+            <label for="deviceSelect">模拟器</label>
+            <select id="deviceSelect"><option value="">读取设备中…</option></select>
+            <button id="refreshDevices" class="button small" type="button">刷新</button>
+            <button id="capture" class="button primary small capture" type="button">⌖　从模拟器截屏</button>
+          </div>
+          <div id="viewport" class="viewport" tabindex="0" aria-label="ROI 图片画布">
+            <div id="placeholder" class="placeholder"><div><strong>点击此处后按 Ctrl+V 粘贴图片</strong>也可以拖入图片，或从模拟器截屏</div></div>
+            <canvas id="canvas" class="hidden" aria-label="ROI 选择画布"></canvas>
+          </div>
+          <div class="zoom-row"><label for="zoom">缩放</label><input id="zoom" type="range" min="10" max="300" step="1" value="100" /><output id="zoomValue" class="zoom-value" for="zoom">100%</output><button id="zoomReset" class="button small" type="button">100%</button></div>
+        </section>
+      </div>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const state = { image: null, boxes: [], selected: -1, preview: null, zoom: 100, dragCleanup: null };
+      const colors = ["#e34b3e", "#287bb5", "#8e5ed0", "#d48128", "#1c9b64"];
+
+      function toast(message) {
+        const el = $("toast"); el.textContent = message; el.classList.add("show");
+        clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
+      }
+      async function api(path, options) {
+        const response = await fetch(path, options);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `请求失败 (${response.status})`);
+        return data;
+      }
+      function setTheme(theme, persist = false) {
+        const dark = theme === "dark";
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        $("themeIcon").textContent = dark ? "☀" : "☾";
+        $("themeLabel").textContent = dark ? "浅色" : "深色";
+        $("themeToggle").title = dark ? "切换到浅色主题" : "切换到深色主题";
+        $("themeToggle").setAttribute("aria-pressed", String(dark));
+        if (persist) {
+          try { localStorage.setItem("maa-roi-lab-theme", dark ? "dark" : "light"); } catch (_) { }
+          try { document.cookie = `mga_roi_lab_theme=${dark ? "dark" : "light"}; Max-Age=31536000; Path=/; SameSite=Lax`; } catch (_) { }
+        }
+      }
+      let savedTheme = "light";
+      try {
+        const cookie = document.cookie.split("; ").find((item) => item.startsWith("mga_roi_lab_theme="));
+        savedTheme = cookie ? cookie.split("=")[1] : (localStorage.getItem("maa-roi-lab-theme") || "light");
+      } catch (_) { }
+      setTheme(savedTheme);
+
+      function setZoom(value) {
+        state.zoom = Math.max(10, Math.min(300, Math.round(Number(value) || 100)));
+        $("zoom").value = String(state.zoom); $("zoomValue").textContent = `${state.zoom}%`;
+        if (state.image) {
+          $("canvas").style.width = `${Math.max(1, Math.round($("canvas").width * state.zoom / 100))}px`;
+          $("canvas").style.height = `${Math.max(1, Math.round($("canvas").height * state.zoom / 100))}px`;
+        }
+      }
+      function drawCanvas() {
+        if (!state.image) return;
+        const canvas = $("canvas"), context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(state.image, 0, 0);
+        const drawBox = (box, index, preview = false) => {
+          if (!box) return;
+          const color = colors[index % colors.length], width = box.x2 - box.x1, height = box.y2 - box.y1;
+          context.save(); context.fillStyle = `${color}24`; context.fillRect(box.x1, box.y1, width, height);
+          context.strokeStyle = color; context.lineWidth = index === state.selected && !preview ? 4 : 2;
+          context.setLineDash(preview ? [8, 5] : []); context.strokeRect(box.x1, box.y1, width, height);
+          const label = `ROI ${preview ? "新建" : index + 1}`;
+          context.font = `600 ${Math.max(12, Math.min(22, canvas.width / 80))}px "Segoe UI", sans-serif`;
+          const pad = Math.max(4, canvas.width / 600), labelHeight = Math.max(20, canvas.width / 45);
+          const labelWidth = context.measureText(label).width + pad * 2;
+          const labelX = Math.max(0, Math.min(box.x1, canvas.width - labelWidth));
+          const labelY = box.y1 >= labelHeight ? box.y1 - labelHeight : box.y1;
+          context.setLineDash([]); context.fillStyle = color; context.fillRect(labelX, labelY, labelWidth, labelHeight);
+          context.fillStyle = "#fff"; context.textBaseline = "middle"; context.fillText(label, labelX + pad, labelY + labelHeight / 2); context.restore();
+        };
+        state.boxes.forEach((box, index) => drawBox(box, index));
+        if (state.preview) drawBox(state.preview, state.boxes.length, true);
+      }
+      function updateUi() {
+        const box = state.preview || (state.selected >= 0 ? state.boxes[state.selected] : null);
+        const corners = box ? [box.x1, box.y1, box.x2, box.y2] : null;
+        const xywh = box ? [box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1] : null;
+        $("cornersOutput").textContent = corners ? `[${corners.join(", ")}]` : "—";
+        $("xywhOutput").textContent = xywh ? `[${xywh.join(", ")}]` : "—";
+        $("roiCount").textContent = state.image ? `${state.boxes.length} 个 ROI` : "未载入图片";
+        ["x1", "y1", "x2", "y2"].forEach((id, index) => { $(id).value = corners ? String(corners[index]) : ""; });
+        const list = $("roiList"); list.replaceChildren();
+        state.boxes.forEach((item, index) => {
+          const button = document.createElement("button"); button.type = "button";
+          button.className = `roi-item${index === state.selected ? " active" : ""}`; button.style.borderLeftColor = colors[index % colors.length];
+          const name = document.createElement("span"), values = document.createElement("span");
+          name.textContent = `ROI ${index + 1}`; values.textContent = `[${item.x1}, ${item.y1}, ${item.x2}, ${item.y2}]`;
+          button.append(name, values); button.addEventListener("click", () => { state.selected = index; drawCanvas(); updateUi(); }); list.append(button);
+        });
+      }
+      function normalize(values) {
+        if (!state.image || !values.every(Number.isFinite)) return null;
+        const x = (value) => Math.max(0, Math.min(state.image.naturalWidth, Math.round(value)));
+        const y = (value) => Math.max(0, Math.min(state.image.naturalHeight, Math.round(value)));
+        const xa = x(values[0]), xb = x(values[2]), ya = y(values[1]), yb = y(values[3]);
+        const box = { x1: Math.min(xa, xb), y1: Math.min(ya, yb), x2: Math.max(xa, xb), y2: Math.max(ya, yb) };
+        return box.x2 > box.x1 && box.y2 > box.y1 ? box : null;
+      }
+      function addBox(box) { state.boxes.push(box); state.selected = state.boxes.length - 1; state.preview = null; drawCanvas(); updateUi(); }
+      function applyFields() {
+        if (!state.image) return toast("请先粘贴、选择或截取一张图片。");
+        const values = ["x1", "y1", "x2", "y2"].map((id) => $(id).value.trim() === "" ? NaN : Number($(id).value));
+        if (!values.every(Number.isFinite)) return toast("请填入有效的 x1、y1、x2、y2 坐标。");
+        const box = normalize(values); if (!box) return toast("ROI 宽度和高度都必须大于 0。"); addBox(box);
+      }
+      function applyArray() {
+        const match = $("arrayInput").value.match(/^\s*\[?\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\]?\s*$/);
+        if (!match) return toast("请输入四个整数，例如 [701, 33, 952, 311]。");
+        ["x1", "y1", "x2", "y2"].forEach((id, index) => { $(id).value = match[index + 1]; }); applyFields();
+      }
+      function applyXywh() {
+        const match = $("xywhInput").value.match(/^\s*\[?\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\]?\s*$/);
+        if (!match) return toast("请输入 XYWH 四个整数，例如 [701, 33, 251, 278]。");
+        const [x, y, width, height] = match.slice(1).map(Number);
+        if (!(width > 0 && height > 0) || !Number.isFinite(x + width) || !Number.isFinite(y + height)) return toast("XYWH 的宽度和高度必须大于 0。");
+        ["x1", "y1", "x2", "y2"].forEach((id, index) => { $(id).value = String([x, y, x + width, y + height][index]); }); applyFields();
+      }
+      function cancelDrag() { state.dragCleanup?.(); state.dragCleanup = null; state.preview = null; }
+      function undo() {
+        if (state.dragCleanup) { cancelDrag(); drawCanvas(); updateUi(); return; }
+        if (!state.boxes.length) return;
+        state.boxes.pop(); state.selected = state.boxes.length - 1; drawCanvas(); updateUi();
+      }
+      function clearRois() { cancelDrag(); state.boxes = []; state.selected = -1; $("arrayInput").value = ""; $("xywhInput").value = ""; drawCanvas(); updateUi(); }
+      function setImage(dataUrl, name = "图片") {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => {
+            cancelDrag(); state.image = image; state.boxes = []; state.selected = -1; state.preview = null;
+            const canvas = $("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+            canvas.classList.remove("hidden"); $("placeholder").classList.add("hidden");
+            $("dimensions").textContent = `${image.naturalWidth} × ${image.naturalHeight}`;
+            setZoom(100); drawCanvas(); updateUi(); toast(`${name}已载入 · ${image.naturalWidth} × ${image.naturalHeight}`); resolve();
+          };
+          image.onerror = () => reject(new Error("无法读取这张图片。"));
+          image.src = dataUrl;
+        });
+      }
+      function loadFile(file) {
+        if (!file || !file.type.startsWith("image/")) return;
+        const reader = new FileReader(); reader.onload = () => setImage(String(reader.result), file.name || "图片").catch((error) => toast(error.message));
+        reader.onerror = () => toast("读取图片失败。"); reader.readAsDataURL(file);
+      }
+      function clearImage() {
+        cancelDrag(); state.image = null; state.boxes = []; state.selected = -1; state.preview = null;
+        $("canvas").classList.add("hidden"); $("placeholder").classList.remove("hidden"); $("dimensions").textContent = "";
+        $("arrayInput").value = ""; $("xywhInput").value = ""; setZoom(100); updateUi();
+      }
+      async function copyRoi() {
+        const box = state.selected >= 0 ? state.boxes[state.selected] : null;
+        if (!box) return toast("请先选择或绘制一个 ROI。");
+        const text = `[${box.x1}, ${box.y1}, ${box.x2}, ${box.y2}]\n[${box.x1}, ${box.y1}, ${box.x2 - box.x1}, ${box.y2 - box.y1}]`;
+        try { await navigator.clipboard.writeText(text); }
+        catch (_) {
+          const temporary = document.createElement("textarea"); temporary.value = text; temporary.style.position = "fixed"; temporary.style.opacity = "0";
+          document.body.append(temporary); temporary.select(); const copied = document.execCommand("copy"); temporary.remove();
+          if (!copied) return toast("复制失败，请检查浏览器剪贴板权限。");
+        }
+        toast("已复制角点坐标和 Maa ROI 两种格式。");
+      }
+      function point(event) {
+        const canvas = $("canvas"), bounds = canvas.getBoundingClientRect();
+        return { x: Math.max(0, Math.min(canvas.width, Math.round((event.clientX - bounds.left) * canvas.width / bounds.width))), y: Math.max(0, Math.min(canvas.height, Math.round((event.clientY - bounds.top) * canvas.height / bounds.height))) };
+      }
+      async function loadDevices() {
+        const select = $("deviceSelect");
+        try {
+          const data = await api("/api/devices"), previous = select.value; select.innerHTML = "";
+          if (!data.devices.length) select.add(new Option("未找到项目设备配置", ""));
+          else {
+            for (const device of data.devices) select.add(new Option(`${device.name} · ${device.serial}`, device.id));
+            if (data.devices.some((device) => String(device.id) === previous)) select.value = previous;
+          }
+          select.title = select.selectedOptions[0]?.textContent || "";
+        } catch (error) { select.innerHTML = ""; select.add(new Option("设备读取失败", "")); toast(error.message); }
+      }
+      async function capture() {
+        const device = $("deviceSelect").value; if (!device) return toast("请先选择模拟器设备。");
+        const button = $("capture"); button.disabled = true; button.textContent = "连接并截图中…";
+        try {
+          const data = await api("/api/screencap", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ device_id: device }) });
+          await setImage(`data:image/png;base64,${data.data}`, "模拟器截图");
+        } catch (error) { toast(error.message); }
+        finally { button.disabled = false; button.textContent = "⌖　从模拟器截屏"; }
+      }
+
+      $("upload").addEventListener("click", () => $("file").click());
+      $("file").addEventListener("change", () => { loadFile($("file").files?.[0]); $("file").value = ""; });
+      $("clearImage").addEventListener("click", clearImage);
+      $("refreshDevices").addEventListener("click", loadDevices);
+      $("capture").addEventListener("click", capture);
+      $("zoom").addEventListener("input", (event) => setZoom(event.target.value));
+      $("zoomReset").addEventListener("click", () => setZoom(100));
+      $("applyFields").addEventListener("click", applyFields);
+      $("applyArray").addEventListener("click", applyArray);
+      $("arrayInput").addEventListener("keydown", (event) => { if (event.key === "Enter") applyArray(); });
+      $("applyXywh").addEventListener("click", applyXywh);
+      $("xywhInput").addEventListener("keydown", (event) => { if (event.key === "Enter") applyXywh(); });
+      $("copy").addEventListener("click", copyRoi);
+      $("undo").addEventListener("click", undo);
+      $("clear").addEventListener("click", clearRois);
+      $("viewport").addEventListener("contextmenu", (event) => { event.preventDefault(); undo(); });
+      $("viewport").addEventListener("dragover", (event) => { event.preventDefault(); $("viewport").classList.add("dragover"); });
+      $("viewport").addEventListener("dragleave", () => $("viewport").classList.remove("dragover"));
+      $("viewport").addEventListener("drop", (event) => { event.preventDefault(); $("viewport").classList.remove("dragover"); loadFile(event.dataTransfer.files?.[0]); });
+      $("canvas").addEventListener("pointerdown", (event) => {
+        if (event.button !== 0 || !state.image) return;
+        event.preventDefault(); const canvas = $("canvas"), start = point(event), pointerId = event.pointerId;
+        canvas.setPointerCapture(pointerId); state.preview = { x1: start.x, y1: start.y, x2: start.x, y2: start.y }; updateUi(); drawCanvas();
+        const move = (moveEvent) => {
+          if (moveEvent.pointerId !== pointerId) return;
+          const end = point(moveEvent); state.preview = { x1: Math.min(start.x, end.x), y1: Math.min(start.y, end.y), x2: Math.max(start.x, end.x), y2: Math.max(start.y, end.y) };
+          updateUi(); drawCanvas();
+        };
+        const cleanup = () => {
+          canvas.removeEventListener("pointermove", move); canvas.removeEventListener("pointerup", finish); canvas.removeEventListener("pointercancel", cancel);
+          if (state.dragCleanup === cleanup) state.dragCleanup = null;
+        };
+        const finish = (upEvent) => {
+          if (upEvent.pointerId !== pointerId) return;
+          const end = point(upEvent), box = normalize([start.x, start.y, end.x, end.y]); cleanup(); state.preview = null;
+          if (box) addBox(box); else { drawCanvas(); updateUi(); }
+        };
+        const cancel = (cancelEvent) => { if (cancelEvent.pointerId !== pointerId) return; cleanup(); state.preview = null; drawCanvas(); updateUi(); };
+        state.dragCleanup = cleanup; canvas.addEventListener("pointermove", move); canvas.addEventListener("pointerup", finish); canvas.addEventListener("pointercancel", cancel);
+      });
+      document.addEventListener("paste", (event) => {
+        const image = Array.from(event.clipboardData?.items || []).find((item) => item.type.startsWith("image/"));
+        if (!image) return; event.preventDefault(); loadFile(image.getAsFile());
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") { event.preventDefault(); clearRois(); return; }
+        const editable = event.target instanceof HTMLElement && event.target.matches("input, textarea, select, [contenteditable='true']");
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z" && !editable) { event.preventDefault(); undo(); }
+      });
+      $("themeToggle").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true));
+      $("stopButton").addEventListener("click", async () => {
+        try { await api("/api/shutdown", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); document.body.innerHTML = "<main style='margin:12vh auto;max-width:35rem;text-align:center;color:#334138'><h2>Maa ROI 坐标工具已关闭</h2><p>重新运行启动脚本即可打开。</p></main>"; }
+        catch (error) { toast(error.message); }
+      });
+      api("/api/health").then((data) => { const status = $("serviceStatus"); status.classList.toggle("ready", !data.error); status.querySelector("span").textContent = data.error ? "Maa 未就绪" : "本地服务已连接"; if (data.error) toast(data.error); }).catch(() => { $("serviceStatus").querySelector("span").textContent = "本地服务未连接"; });
+      loadDevices();
+    </script>
+  </body>
+</html>

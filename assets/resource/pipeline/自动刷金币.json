@@ -268,7 +268,7 @@
         },
         "timeout": 5000,
         "focus": {
-            "Node.Action.Failed": "强制返回主页失败"
+            "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
         },
         "next": [
             "返回主画面入口"
@@ -501,12 +501,14 @@
     },
     "确认结果": {
         "recognition": {
-            "type": "OCR",
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
-            }
+            },
+            "type": "OCR"
         },
         "action": {
             "type": "Click"
@@ -674,12 +676,14 @@
     },
     "退出解体": {
         "recognition": {
-            "type": "OCR",
             "param": {
                 "expected": [
-                    "OK"
+                    "OK",
+                    "0K",
+                    "@K"
                 ]
-            }
+            },
+            "type": "OCR"
         },
         "action": {
             "type": "Click"
@@ -716,6 +720,21 @@
                 "x": 158,
                 "y": 147
             }
+        }
+    },
+    "$__mpe_config_新建Pipeline2": {
+        "$__mpe_code": {
+            "filePath": "D:\\code\\MGA - test\\assets\\resource\\pipeline\\自动刷金币.json",
+            "filename": "新建Pipeline2",
+            "isModifiedExternally": false,
+            "lastSyncTime": 1775379325624,
+            "prefix": "",
+            "savedViewport": {
+                "x": -772,
+                "y": 400,
+                "zoom": 0.57
+            },
+            "version": "v1.4.0"
         }
     }
 }

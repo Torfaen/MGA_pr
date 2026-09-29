@@ -23,7 +23,7 @@
         },
         "recognition": {
             "param": {
-                "template": "HARD1.png"
+                "template": ["HARD1.png", "HARD1_light.png"]
             },
             "type": "TemplateMatch"
         }
@@ -57,7 +57,7 @@
         },
         "recognition": {
             "param": {
-                "template": "HARD2.png"
+                "template": ["HARD2.png", "HARD2_light.png"]
             },
             "type": "TemplateMatch"
         }
@@ -91,7 +91,7 @@
         },
         "recognition": {
             "param": {
-                "template": "HARD3.png"
+                "template": ["HARD3.png", "HARD3_light.png"]
             },
             "type": "TemplateMatch"
         }
