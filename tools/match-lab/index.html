@@ -1,0 +1,1439 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maa 图像匹配实验室</title>
+    <style>
+      :root {
+        font-size: 125%;
+        color-scheme: light;
+        --ink: #19231f;
+        --muted: #738078;
+        --line: #e3e9e4;
+        --paper: #f5f7f4;
+        --panel: #fff;
+        --green: #187853;
+        --green-soft: #e8f4ed;
+        --orange: #d47b36;
+        --shadow: 0 0.75rem 2rem rgba(29, 48, 37, 0.065);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-width: 22.5rem;
+        background: var(--paper);
+        color: var(--ink);
+        font: 0.875rem/1.5 "Segoe UI", "Microsoft YaHei UI", sans-serif;
+      }
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      .topbar {
+        height: 4.25rem;
+        padding: 0 1.625rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fbfcfa;
+        border-bottom: 0.0625rem solid var(--line);
+      }
+      .brand { display: flex; align-items: center; gap: 0.75rem; }
+      .mark {
+        width: 2.25rem; height: 2.25rem; display: grid; place-items: center;
+        border-radius: 0.6875rem; background: #1f7654; color: white; font-weight: 800;
+        letter-spacing: -0.0625rem; box-shadow: 0 0.3125rem 0.75rem #1f76542b;
+      }
+      .brand h1 { margin: 0; font-size: 1.0625rem; letter-spacing: .01em; }
+      .brand p { margin: 0.0625rem 0 0; color: var(--muted); font-size: 0.6875rem; }
+      .top-status { display: flex; gap: 1rem; align-items: center; color: var(--muted); font-size: 0.75rem; }
+      .status-dot { display: inline-flex; align-items: center; gap: 0.4375rem; }
+      .status-dot::before { content: ""; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: #9caaa1; }
+      .status-dot.ready::before { background: #1c9b64; box-shadow: 0 0 0 0.1875rem #1c9b641a; }
+      .quiet-button { border: 0; background: transparent; color: #69766f; padding: 0.4375rem 0.5625rem; border-radius: 0.4375rem; }
+      .quiet-button:hover { background: #edf1ed; color: var(--ink); }
+      .theme-label { margin-left: 0.25rem; }
+      .layout { width: 100%; max-width: 98.75rem; margin: 0 auto; padding: 1.375rem 1.5rem 1.875rem; display: grid; grid-template-columns: minmax(0, 23.125rem) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+      .sidebar, .workbench { display: grid; gap: 0.875rem; min-width: 0; }
+      .panel { min-width: 0; background: var(--panel); border: 0.0625rem solid var(--line); border-radius: 0.8125rem; box-shadow: var(--shadow); }
+      .section { padding: 1.0625rem 1.125rem; }
+      .section + .section { border-top: 0.0625rem solid #edf0ed; }
+      .section-title { margin: 0 0 0.75rem; display: flex; align-items: center; gap: 0.5625rem; font-weight: 700; font-size: 0.8125rem; }
+      .step { color: #7c9b88; font-size: 0.625rem; letter-spacing: .12em; font-weight: 700; }
+      .field { display: grid; gap: 0.3125rem; min-width: 0; }
+      .field + .field { margin-top: 0.6875rem; }
+      .field label, .label-row { color: #536058; font-size: 0.6875rem; font-weight: 650; }
+      input[type="text"], input[type="number"], select {
+        min-width: 0; height: 2.1875rem; padding: 0 0.625rem; color: var(--ink); background: #fff;
+        border: 0.0625rem solid #dce4dd; border-radius: 0.4375rem; outline: none;
+      }
+      input:focus, select:focus { border-color: #5d9a78; box-shadow: 0 0 0 0.1875rem #2a8a5d15; }
+      input[type="checkbox"] { accent-color: var(--green); }
+      .row { display: flex; gap: 0.5rem; align-items: center; min-width: 0; }
+      .row > .field { flex: 1 1 0; min-width: 0; }
+      .row > select { flex: 1 1 0; width: 0; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .button {
+        min-height: 2.1875rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.4375rem;
+        padding: 0 0.75rem; border: 0.0625rem solid #dce4dd; border-radius: 0.4375rem; background: white; color: #334138;
+        font-size: 0.75rem; font-weight: 650; white-space: nowrap;
+      }
+      .button:hover { border-color: #b9c9be; background: #f8fbf8; }
+      .button.primary { background: #1d7854; color: white; border-color: #1d7854; }
+      .button.primary:hover { background: #176746; }
+      .button.primary:disabled { opacity: .58; cursor: wait; }
+      .button.small { min-height: 1.9375rem; padding: 0 0.5625rem; }
+      .hint { color: var(--muted); font-size: 0.625rem; line-height: 1.55; }
+      .inline-hint { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.625rem; }
+      .node-hint { min-height: 1.125rem; margin-top: 0.4375rem; color: var(--muted); font-size: 0.625rem; overflow-wrap: anywhere; }
+      .mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.375rem; min-width: 0; }
+      .mode-button {
+        min-width: 0; height: 2.5rem; border: 0.0625rem solid #e0e7e1; border-radius: 0.5rem; background: #fff; color: #617067;
+        font-size: 0.6875rem; font-weight: 700;
+      }
+      .mode-button:hover { border-color: #a9c6b4; }
+      .mode-button.active { border-color: #2a815b; background: #eff8f2; color: #176846; box-shadow: inset 0 0 0 0.0625rem #2a815b; }
+      .roi-check { margin: 0.8125rem 0 0.5625rem; display: flex; gap: 0.4375rem; align-items: center; color: #4c5e52; font-size: 0.6875rem; font-weight: 650; }
+      .roi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.375rem; min-width: 0; }
+      .roi-grid input { width: 100%; text-align: center; padding: 0 0.25rem; }
+      .draw-active { color: #98600c; font-size: 0.625rem; }
+      .param-block { display: none; }
+      .param-block.active { display: block; }
+      .color-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.375rem; min-width: 0; }
+      .color-row input { width: 100%; text-align: center; padding: 0 0.1875rem; }
+      .checkline { display: flex; gap: 0.4375rem; align-items: center; margin-top: 0.6875rem; color: #56645b; font-size: 0.6875rem; }
+      .work-head { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; }
+      .work-head h2 { margin: 0; font-size: 1rem; }
+      .work-head p { margin: 0.1875rem 0 0; color: var(--muted); font-size: 0.6875rem; }
+      .image-grid { display: grid; grid-template-columns: minmax(0, var(--source-fr, 1.55fr)) 0.5rem minmax(0, var(--template-fr, .85fr)); gap: 0.5rem; min-width: 0; align-items: stretch; }
+      .image-card { padding: 0.875rem; min-width: 0; }
+      .image-card:focus-within { border-color: #a6c5b1; }
+      .image-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.625rem; }
+      .image-name { display: flex; gap: 0.5rem; align-items: center; font-weight: 700; font-size: 0.75rem; }
+      .image-tag { color: #8a9b90; font-size: 0.625rem; font-weight: 600; }
+      .image-actions { display: flex; gap: 0.375rem; }
+      .image-stage {
+        min-height: 15.3125rem; display: grid; place-items: center; overflow: hidden; position: relative;
+        border: 0.0625rem dashed #d6e0d8; border-radius: 0.5625rem; background-color: #f9fbf9;
+        background-image: linear-gradient(45deg,#f2f5f2 25%,transparent 25%),linear-gradient(-45deg,#f2f5f2 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f2f5f2 75%),linear-gradient(-45deg,transparent 75%,#f2f5f2 75%);
+        background-size: 1rem 1rem; background-position: 0 0,0 0.5rem,0.5rem -0.5rem,-0.5rem 0;
+      }
+      .image-stage.dragover { outline: 0.125rem solid #47976c; outline-offset: -0.1875rem; }
+      .image-stage canvas, .image-stage img { display: block; max-width: 100%; max-height: min(72vh, 56.25rem); width: auto; height: auto; object-fit: contain; }
+      .template-scale { display: grid; grid-template-columns: auto minmax(2.5rem, 1fr) auto; align-items: center; gap: 0.5rem; margin-top: 0.625rem; }
+      .template-scale label { color: var(--muted); font-size: 0.625rem; white-space: nowrap; }
+      .template-scale input[type="range"] { width: 100%; min-width: 0; accent-color: var(--green); }
+      .template-scale-value { display: flex; align-items: center; gap: 0.25rem; color: var(--muted); font-size: 0.625rem; }
+      .template-scale-value input { width: 4rem; height: 1.875rem; padding: 0 0.375rem; text-align: right; }
+      #templatePreview { transform-origin: center center; }
+      .template-scale-hint { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.5625rem; }
+      .image-resize-handle { position: relative; align-self: stretch; min-width: 0.5rem; cursor: col-resize; touch-action: none; user-select: none; }
+      .image-resize-handle::before { content: ""; position: absolute; top: 0.625rem; bottom: 0.625rem; left: 50%; width: 0.125rem; border-radius: 0.125rem; background: #cbd8ce; transform: translateX(-50%); transition: background .15s, width .15s; }
+      .image-resize-handle:hover::before, .image-resize-handle.dragging::before { width: 0.25rem; background: var(--green); }
+      .image-resize-handle::after { content: "⋮"; position: absolute; top: 50%; left: 50%; padding: 0.25rem 0; color: #7f8f84; background: var(--paper); font-size: 0.9375rem; line-height: 1; transform: translate(-50%, -50%); }
+      .image-resize-handle:hover::after, .image-resize-handle.dragging::after { color: var(--green); }
+      .image-resize-handle:focus-visible { outline: 0.125rem solid #5d9a78; outline-offset: 0.125rem; border-radius: 0.25rem; }
+      .placeholder { padding: 1.5rem; text-align: center; color: #8a9990; font-size: 0.6875rem; }
+      .placeholder strong { display: block; margin-bottom: 0.3125rem; color: #66766c; font-size: 0.75rem; }
+      .template-asset { margin-top: 0.5rem; min-height: 0.875rem; color: #7c8c82; font-size: 0.625rem; overflow-wrap: anywhere; }
+      .runbar { margin-top: 0.875rem; padding: 0.75rem 0.875rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+      .runbar .button { min-width: 9.375rem; min-height: 2.5rem; font-size: 0.75rem; }
+      .run-note { max-width: 70%; color: var(--muted); font-size: 0.625rem; }
+      .result-panel { overflow: hidden; }
+      .result-top { padding: 1rem 1.125rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1.25rem; border-bottom: 0.0625rem solid #edf0ed; }
+      .result-top h3 { margin: 0; font-size: 0.8125rem; }
+      .result-top p { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.625rem; }
+      .result-status { padding: 0.375rem 0.625rem; border-radius: 1.25rem; background: #eff2ef; color: #6c7b71; font-size: 0.625rem; font-weight: 750; white-space: nowrap; }
+      .result-status.hit { background: #e4f4e9; color: #16724c; }
+      .result-status.miss { background: #fff1e8; color: #ab5c27; }
+      .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 0.0625rem solid #edf0ed; }
+      .metric { padding: 0.875rem 1.0625rem; min-width: 0; }
+      .metric + .metric { border-left: 0.0625rem solid #edf0ed; }
+      .metric label { display: block; color: #859188; font-size: 0.625rem; }
+      .metric strong { display: block; margin-top: 0.25rem; font-size: 1.0625rem; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .metric strong.small-value { font-size: 0.8125rem; }
+      .result-body { padding: 0.875rem 1rem 1rem; }
+      .result-canvas-wrap { overflow: auto; max-height: 28.125rem; background: #f8faf8; border: 0.0625rem solid #e7ede8; border-radius: 0.5rem; text-align: center; }
+      #resultCanvas { display: block; width: auto; max-width: 100%; max-height: 26.875rem; margin: auto; }
+      .result-empty { min-height: 10.625rem; display: grid; place-items: center; color: #88968d; font-size: 0.6875rem; text-align: center; }
+      .detail-line { margin: 0.625rem 0 0; color: #6c7a71; font-size: 0.625rem; overflow-wrap: anywhere; }
+      .table-wrap { margin-top: 0.8125rem; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.625rem; }
+      th { padding: 0.4375rem 0.5rem; background: #f6f8f6; color: #77867b; text-align: left; font-weight: 700; }
+      td { padding: 0.4375rem 0.5rem; border-top: 0.0625rem solid #edf0ed; color: #344238; font-variant-numeric: tabular-nums; }
+      .alert { display: none; margin-top: 0.75rem; padding: 0.625rem 0.75rem; border: 0.0625rem solid #f1d2c0; border-radius: 0.5rem; background: #fff7f2; color: #985528; font-size: 0.6875rem; white-space: pre-wrap; }
+      .alert.show { display: block; }
+      .toast { position: fixed; z-index: 5; right: 1.375rem; bottom: 1.25rem; max-width: min(26.25rem, calc(100vw - 2.5rem)); padding: 0.6875rem 0.875rem; border-radius: 0.5625rem; background: #263b30; color: #fff; font-size: 0.6875rem; box-shadow: 0 0.5rem 1.75rem #12251b38; opacity: 0; transform: translateY(0.4375rem); transition: .18s ease; pointer-events: none; }
+      .toast.show { opacity: 1; transform: translateY(0); }
+      .hidden { display: none !important; }
+      @media (max-width: 1312.5px) {
+        .layout { grid-template-columns: minmax(0, 20.625rem) minmax(0, 1fr); padding: 1rem; gap: 0.875rem; }
+        .image-grid { grid-template-columns: minmax(0, var(--source-fr, 1.3fr)) 0.5rem minmax(0, var(--template-fr, .9fr)); }
+      }
+      @media (max-width: 1250px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { grid-row: 2; }
+      }
+      @media (max-width: 1125px) {
+        .image-grid { grid-template-columns: 1fr 1fr; }
+        .image-resize-handle { display: none; }
+      }
+      @media (max-width: 675px) {
+        .topbar { height: 3.75rem; padding: 0 0.8125rem; }
+        .top-status { gap: 0.4375rem; }
+        .top-status .build-label { display: none; }
+        #maaStatus { font-size: 0; }
+        .theme-label { display: none; }
+        .layout { padding: 0.75rem; }
+        .image-grid { grid-template-columns: 1fr; }
+        .image-stage { min-height: 11.25rem; }
+        .metrics { grid-template-columns: repeat(2, 1fr); }
+        .metric:nth-child(3) { border-left: 0; border-top: 0.0625rem solid #edf0ed; }
+        .metric:nth-child(4) { border-top: 0.0625rem solid #edf0ed; }
+        .run-note { max-width: 60%; }
+      }
+      html[data-theme="dark"] {
+        color-scheme: dark;
+        --ink: #e4ece6;
+        --muted: #a0aea4;
+        --line: #39463e;
+        --paper: #151b17;
+        --panel: #202822;
+        --green: #55c28e;
+        --green-soft: #1c392a;
+        --orange: #e8a06c;
+        --shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.28);
+      }
+      html[data-theme="dark"] .topbar { background: #1b221d; }
+      html[data-theme="dark"] .mark { background: #27815a; }
+      html[data-theme="dark"] .quiet-button { color: #b6c3ba; }
+      html[data-theme="dark"] .quiet-button:hover { background: #2b352e; color: var(--ink); }
+      html[data-theme="dark"] .section + .section { border-top-color: #303b33; }
+      html[data-theme="dark"] .step { color: #8eb49b; }
+      html[data-theme="dark"] .draw-active { color: #f1bd66; }
+      html[data-theme="dark"] .field label,
+      html[data-theme="dark"] .label-row,
+      html[data-theme="dark"] .roi-check,
+      html[data-theme="dark"] .checkline { color: #bdc9c0; }
+      html[data-theme="dark"] input[type="text"],
+      html[data-theme="dark"] input[type="number"],
+      html[data-theme="dark"] select { color: var(--ink); background: #252e28; border-color: #46544a; }
+      html[data-theme="dark"] .button:not(.primary) { color: #d8e2da; background: #28312b; border-color: #455249; }
+      html[data-theme="dark"] .button:not(.primary):hover { background: #303b33; border-color: #63756a; }
+      html[data-theme="dark"] .button.primary { color: #f3fff7; background: #21845b; border-color: #21845b; }
+      html[data-theme="dark"] .button.primary:hover { background: #27966a; }
+      html[data-theme="dark"] .mode-button { color: #bdc9c0; background: #252e28; border-color: #3d4a41; }
+      html[data-theme="dark"] .mode-button:hover { border-color: #68a882; }
+      html[data-theme="dark"] .mode-button.active { color: #a8e7c2; background: #1d392b; border-color: #4bac79; box-shadow: inset 0 0 0 0.0625rem #4bac79; }
+      html[data-theme="dark"] .image-stage {
+        border-color: #46534a; background-color: #202822;
+        background-image: linear-gradient(45deg,#29322c 25%,transparent 25%),linear-gradient(-45deg,#29322c 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#29322c 75%),linear-gradient(-45deg,transparent 75%,#29322c 75%);
+      }
+      html[data-theme="dark"] .image-resize-handle::before { background: #526157; }
+      html[data-theme="dark"] .image-resize-handle::after { color: #a5b4a9; background: var(--paper); }
+      html[data-theme="dark"] .placeholder { color: #9ba99f; }
+      html[data-theme="dark"] .placeholder strong { color: #c4d0c7; }
+      html[data-theme="dark"] .image-tag,
+      html[data-theme="dark"] .template-asset { color: #9aaba0; }
+      html[data-theme="dark"] .template-scale-value input { color: var(--ink); background: #252e28; border-color: #46544a; }
+      html[data-theme="dark"] .image-card:focus-within { border-color: #52765e; }
+      html[data-theme="dark"] .result-top,
+      html[data-theme="dark"] .metrics { border-color: #303b33; }
+      html[data-theme="dark"] .metric + .metric { border-left-color: #303b33; }
+      html[data-theme="dark"] .metric:nth-child(3),
+      html[data-theme="dark"] .metric:nth-child(4) { border-top-color: #303b33; }
+      html[data-theme="dark"] .metric label { color: #a4b1a8; }
+      html[data-theme="dark"] .result-status { color: #c0cdc4; background: #303a33; }
+      html[data-theme="dark"] .result-status.hit { color: #a5e6bd; background: #1d392b; }
+      html[data-theme="dark"] .result-status.miss { color: #ffc195; background: #493122; }
+      html[data-theme="dark"] .result-canvas-wrap { background: #191f1b; border-color: #354139; }
+      html[data-theme="dark"] .result-empty { color: #9ca99f; }
+      html[data-theme="dark"] .detail-line { color: #a7b4aa; }
+      html[data-theme="dark"] th { color: #aebbb2; background: #252e28; }
+      html[data-theme="dark"] td { color: #d1dbd3; border-top-color: #354139; }
+      html[data-theme="dark"] .alert { color: #ffc49f; background: #38271f; border-color: #68432e; }
+      html[data-theme="dark"] .toast { color: #f3fff7; background: #274434; }
+      .tool-tabs { display: flex; gap: 0.375rem; max-width: 98.75rem; margin: 0 auto; padding: 0.875rem 1.5rem 0; }
+      .tool-tab { min-height: 2.25rem; padding: 0 0.875rem; border: 0.0625rem solid transparent; border-radius: 0.5rem 0.5rem 0 0; background: transparent; color: var(--muted); font-weight: 700; }
+      .tool-tab:hover { color: var(--ink); background: var(--panel); }
+      .tool-tab.active { border-color: var(--line); border-bottom-color: var(--panel); background: var(--panel); color: var(--green); }
+      .roi-tool { max-width: 98.75rem; margin: 0 auto; padding: 1.125rem 1.5rem 1.875rem; }
+      .roi-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.875rem; }
+      .roi-heading h2 { margin: 0; font-size: 1rem; }
+      .roi-heading p { margin: 0.1875rem 0 0; color: var(--muted); font-size: 0.6875rem; }
+      .roi-layout { display: grid; grid-template-columns: minmax(17.5rem, 22rem) minmax(0, 1fr); gap: 0.875rem; align-items: start; }
+      .roi-image-panel, .roi-control-panel { min-width: 0; padding: 0.875rem; }
+      .roi-image-panel { grid-column: 2; grid-row: 1; }
+      .roi-control-panel { grid-column: 1; grid-row: 1; }
+      .roi-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 0.625rem; margin-bottom: 0.625rem; }
+      .roi-panel-title { font-weight: 700; font-size: 0.75rem; }
+      .roi-image-actions { display: flex; align-items: center; gap: 0.375rem; }
+      .roi-capturebar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 0.375rem; margin-bottom: 0.625rem; }
+      .roi-capturebar label { color: var(--muted); font-size: 0.6875rem; white-space: nowrap; }
+      .roi-capturebar select { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .roi-viewport { min-height: 22rem; max-height: 67vh; overflow: auto; border: 0.0625rem dashed var(--line); border-radius: 0.5rem; background-color: #f9fbf9; background-image: linear-gradient(45deg,#f2f5f2 25%,transparent 25%),linear-gradient(-45deg,#f2f5f2 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f2f5f2 75%),linear-gradient(-45deg,transparent 75%,#f2f5f2 75%); background-size: 1rem 1rem; background-position: 0 0,0 0.5rem,0.5rem -0.5rem,-0.5rem 0; }
+      .roi-viewport.dragover { outline: 0.125rem solid #47976c; outline-offset: -0.1875rem; }
+      .roi-placeholder { min-height: 22rem; display: grid; place-items: center; padding: 1.5rem; color: var(--muted); text-align: center; font-size: 0.6875rem; }
+      .roi-placeholder strong { display: block; margin-bottom: 0.3125rem; color: var(--ink); }
+      .roi-canvas { display: block; max-width: none; max-height: none; touch-action: none; cursor: crosshair; }
+      .roi-zoom-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+      .roi-zoom-row label { flex: 0 0 auto; color: var(--muted); font-size: 0.6875rem; }
+      .roi-zoom-row input { flex: 1; min-width: 0; accent-color: var(--green); }
+      .roi-zoom-value { min-width: 3.25rem; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; font-size: 0.6875rem; }
+      .roi-coord-title { margin: 0 0 0.625rem; font-size: 0.8125rem; }
+      .roi-coord-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.375rem; }
+      .roi-coord-grid input { width: 100%; text-align: center; padding: 0 0.25rem; }
+      .roi-apply { width: 100%; margin-top: 0.5rem; }
+      .roi-array-row { display: flex; gap: 0.375rem; margin-top: 0.75rem; }
+      .roi-array-row input { flex: 1; min-width: 0; }
+      .roi-combo { position: relative; flex: 1 1 0; min-width: 0; }
+      .roi-combo input { width: 100%; padding-right: 1.75rem; }
+      .roi-combo::after { content: "▾"; position: absolute; top: 0.4375rem; right: 0.625rem; color: #76847a; pointer-events: none; }
+      .roi-combo-options { position: absolute; z-index: 10; top: calc(100% + 0.1875rem); left: 0; right: 0; max-height: 15rem; overflow: auto; padding: 0.25rem; border: 0.0625rem solid var(--line); border-radius: 0.5rem; background: var(--panel); box-shadow: 0 0.5rem 1.25rem #10251b24; }
+      .roi-combo-option { display: block; width: 100%; min-height: 2rem; padding: 0.375rem 0.5rem; overflow: hidden; border: 0; border-radius: 0.3125rem; background: transparent; color: var(--ink); text-align: left; text-overflow: ellipsis; white-space: nowrap; font: inherit; font-size: 0.6875rem; }
+      .roi-combo-option:hover, .roi-combo-option:focus { outline: none; background: #eaf3ed; }
+      .roi-combo-empty { padding: 0.5rem; color: var(--muted); font-size: 0.6875rem; }
+      .roi-coord-output { display: grid; gap: 0.5rem; margin-top: 0.875rem; }
+      .roi-coord-output label { display: block; margin-bottom: 0.1875rem; color: var(--muted); font-size: 0.625rem; }
+      .roi-coord-output code { display: block; padding: 0.4375rem 0.5rem; overflow-wrap: anywhere; border: 0.0625rem solid var(--line); border-radius: 0.375rem; background: var(--paper); color: var(--ink); font-size: 0.6875rem; }
+      .roi-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.375rem; margin-top: 0.75rem; }
+      .roi-actions .copy { grid-column: 1 / -1; }
+      .roi-list { display: grid; gap: 0.375rem; max-height: 15rem; margin-top: 0.75rem; overflow: auto; }
+      .roi-item { display: flex; justify-content: space-between; gap: 0.5rem; width: 100%; padding: 0.4375rem 0.5rem; border: 0.0625rem solid var(--line); border-radius: 0.375rem; background: var(--panel); color: var(--muted); text-align: left; font: inherit; font-size: 0.625rem; }
+      .roi-item.active { border-color: var(--green); color: var(--ink); }
+      .roi-item span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .roi-help { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.625rem; }
+      @media (max-width: 1312.5px) { .tool-tabs { padding-right: 1rem; padding-left: 1rem; } .roi-tool { padding-right: 1rem; padding-left: 1rem; } }
+      @media (max-width: 1000px) { .roi-layout { grid-template-columns: 1fr; } .roi-image-panel, .roi-control-panel { grid-column: auto; grid-row: auto; } .roi-control-panel { order: -1; } .roi-list { max-height: 8rem; } }
+      @media (max-width: 675px) { .tool-tabs { padding: 0.625rem 0.75rem 0; } .roi-tool { padding: 0.75rem; } .roi-viewport, .roi-placeholder { min-height: 15rem; } .roi-viewport { max-height: 55vh; } .roi-panel-head { align-items: flex-start; flex-direction: column; } .roi-capturebar { grid-template-columns: auto minmax(0, 1fr) auto; } .roi-capturebar .capture-roi { grid-column: 1 / -1; } }
+      html[data-theme="dark"] .roi-item { background: #252e28; }
+      html[data-theme="dark"] .roi-viewport { background-color: #202822; background-image: linear-gradient(45deg,#29322c 25%,transparent 25%),linear-gradient(-45deg,#29322c 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#29322c 75%),linear-gradient(-45deg,transparent 75%,#29322c 75%); }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">M</div>
+        <div><h1>Maa 图像匹配实验室</h1><p>使用项目内 MaaFramework 原生识别器</p></div>
+      </div>
+      <div class="top-status">
+        <span id="maaStatus" class="status-dot">Maa 正在连接</span>
+        <span id="version" class="build-label"></span>
+        <button id="themeToggle" class="quiet-button" type="button" aria-pressed="false" title="切换到深色主题"><span id="themeIcon" aria-hidden="true">☾</span><span id="themeLabel" class="theme-label">深色</span></button>
+        <button id="stopButton" class="quiet-button" title="关闭本地匹配服务">关闭服务</button>
+      </div>
+    </header>
+
+    <nav class="tool-tabs" role="tablist" aria-label="工具页面">
+      <button id="matchTab" class="tool-tab active" type="button" role="tab" aria-selected="true" aria-controls="matchView">图像匹配</button>
+      <button id="roiTab" class="tool-tab" type="button" role="tab" aria-selected="false" aria-controls="roiView">ROI 坐标工具</button>
+    </nav>
+
+    <div id="matchView" class="layout" role="tabpanel" aria-labelledby="matchTab">
+      <aside class="sidebar">
+        <section class="panel">
+          <div class="section">
+            <h2 class="section-title"><span class="step">01</span> 模拟器截图</h2>
+            <div class="field">
+              <label for="deviceSelect">项目中的设备配置</label>
+              <div class="row">
+                <select id="deviceSelect"><option value="">读取设备中…</option></select>
+                <button id="refreshDevices" class="button small" type="button">刷新</button>
+              </div>
+            </div>
+            <button id="captureButton" class="button" type="button" style="width:100%;margin-top:0.5625rem">⌖　从模拟器截取当前画面</button>
+            <p class="inline-hint">截图通过 Maa 的 ADB 控制器获取，并沿用 Maa 的截图缩放方式。</p>
+          </div>
+          <div class="section">
+            <h2 class="section-title"><span class="step">02</span> Pipeline 节点</h2>
+            <div class="field">
+              <label for="pipelineSelect">Pipeline 文件</label>
+              <div class="row">
+                <select id="pipelineSelect"><option value="">正在读取…</option></select>
+                <button id="refreshPipelines" class="button small" type="button" aria-label="刷新 Pipeline 缓存" title="从磁盘重新读取 Pipeline，并刷新 Maa 资源缓存">刷新</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="nodeSelect">识别节点</label>
+              <select id="nodeSelect"><option value="">手动设置匹配参数</option></select>
+            </div>
+            <div id="nodeHint" class="node-hint">选中节点后，会读取它的 Maa 识别类型、模板与 ROI。</div>
+          </div>
+          <div class="section">
+            <h2 class="section-title"><span class="step">03</span> 识别模式与 ROI</h2>
+            <div class="mode-grid">
+              <button class="mode-button active" data-mode="TemplateMatch">TemplateMatch</button>
+              <button class="mode-button" data-mode="FeatureMatch">FeatureMatch</button>
+              <button class="mode-button" data-mode="ColorMatch">ColorMatch</button>
+            </div>
+            <label class="roi-check"><input id="pipelineRoi" type="checkbox" /> 使用 Pipeline ROI</label>
+            <div class="row" style="align-items:flex-start">
+              <div class="roi-grid" style="flex:1">
+                <input id="roiX" type="number" placeholder="X" title="ROI 左上角 X" />
+                <input id="roiY" type="number" placeholder="Y" title="ROI 左上角 Y" />
+                <input id="roiW" type="number" placeholder="W" title="ROI 宽度" />
+                <input id="roiH" type="number" placeholder="H" title="ROI 高度" />
+              </div>
+              <button id="drawRoiButton" class="button small" type="button">框选</button>
+            </div>
+            <div id="drawHint" class="hint" style="margin-top:0.375rem">坐标为 [x, y, w, h]；宽或高为 0 时表示延伸到边缘。</div>
+          </div>
+          <div class="section">
+            <h2 class="section-title"><span class="step">04</span> 匹配参数</h2>
+            <div id="templateParams" class="param-block active">
+              <div class="row">
+                <div class="field"><label for="tmMethod">模板方法</label><select id="tmMethod"><option value="5">5 · CCOEFF_NORMED</option><option value="3">3 · CCORR_NORMED</option><option value="10001">10001 · 反转 SQDIFF</option></select></div>
+                <div class="field" style="max-width:6.25rem"><label for="tmThreshold">命中阈值</label><input id="tmThreshold" type="number" min="0" max="1" step="0.01" value="0.7" /></div>
+              </div>
+              <div class="row">
+                <div class="field"><label for="tmOrder">结果排序</label><select id="tmOrder"><option>Score</option><option>Horizontal</option><option>Vertical</option><option>Random</option></select></div>
+                <div class="field" style="max-width:5.625rem"><label for="tmIndex">结果序号</label><input id="tmIndex" type="number" value="0" /></div>
+              </div>
+              <label class="checkline"><input id="tmGreen" type="checkbox" /> 启用绿色掩码</label>
+            </div>
+            <div id="featureParams" class="param-block">
+              <div class="row">
+                <div class="field"><label for="fmDetector">特征检测器</label><select id="fmDetector"><option>SIFT</option><option>KAZE</option><option>AKAZE</option><option>BRISK</option><option>ORB</option></select></div>
+                <div class="field" style="max-width:5.9375rem"><label for="fmCount">匹配点数</label><input id="fmCount" type="number" min="1" value="4" /></div>
+              </div>
+              <div class="row">
+                <div class="field"><label for="fmRatio">距离比率</label><input id="fmRatio" type="number" min="0" max="1" step="0.01" value="0.6" /></div>
+                <div class="field"><label for="fmOrder">结果排序</label><select id="fmOrder"><option>Score</option><option>Horizontal</option><option>Vertical</option><option>Area</option><option>Random</option></select></div>
+                <div class="field" style="max-width:5rem"><label for="fmIndex">序号</label><input id="fmIndex" type="number" value="0" /></div>
+              </div>
+              <label class="checkline"><input id="fmGreen" type="checkbox" /> 启用绿色掩码</label>
+            </div>
+            <div id="colorParams" class="param-block">
+              <div class="row">
+                <div class="field"><label for="cmMethod">颜色空间</label><select id="cmMethod"><option value="4">RGB</option><option value="40">HSV</option><option value="6">灰度</option></select></div>
+                <div class="field" style="max-width:5.9375rem"><label for="cmCount">最少像素</label><input id="cmCount" type="number" min="1" value="1" /></div>
+                <div class="field"><label for="cmOrder">排序</label><select id="cmOrder"><option>Score</option><option>Horizontal</option><option>Vertical</option><option>Area</option><option>Random</option></select></div>
+              </div>
+              <div class="field"><label>颜色下限 lower</label><div class="color-row"><input id="lower0" type="number" min="0" max="255" value="0" /><input id="lower1" type="number" min="0" max="255" value="0" /><input id="lower2" type="number" min="0" max="255" value="0" /></div></div>
+              <div class="field"><label>颜色上限 upper</label><div class="color-row"><input id="upper0" type="number" min="0" max="255" value="255" /><input id="upper1" type="number" min="0" max="255" value="255" /><input id="upper2" type="number" min="0" max="255" value="255" /></div></div>
+              <label class="checkline"><input id="cmConnected" type="checkbox" /> 只统计相连的最大色块</label>
+              <p class="inline-hint">灰度模式只读取第一个通道；HSV 的 H 范围为 0–179。</p>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workbench">
+        <div class="work-head">
+          <div><h2>输入图像</h2><p>拖入图片，点击图片框后按 Ctrl+V 粘贴，或直接读取模拟器画面。</p></div>
+          <span id="inputDimensions" class="hint"></span>
+        </div>
+        <div id="imageGrid" class="image-grid">
+          <section id="sourceCard" class="panel image-card" tabindex="0" data-slot="source">
+            <div class="image-head"><div class="image-name">① 待搜索画面 <span class="image-tag">SOURCE</span></div><div class="image-actions"><button id="sourceUpload" class="button small">选择图片</button><input id="sourceFile" class="hidden" type="file" accept="image/*" /></div></div>
+            <div id="sourceStage" class="image-stage"><div class="placeholder"><strong>粘贴或拖入截图</strong>也可以从左侧直接截取模拟器</div><canvas id="sourceCanvas" class="hidden"></canvas></div>
+          </section>
+          <div id="imageResizeHandle" class="image-resize-handle" role="separator" aria-orientation="vertical" aria-label="拖动调整待搜索画面大小" aria-valuemin="20" aria-valuemax="80" aria-valuenow="65" tabindex="0" title="拖动调整待搜索画面宽度；图片会保持原始比例"></div>
+          <section id="templateCard" class="panel image-card" tabindex="0" data-slot="template">
+            <div class="image-head"><div class="image-name">② 模板图 <span class="image-tag">TEMPLATE</span></div><div class="image-actions"><button id="templateUpload" class="button small">选择图片</button><input id="templateFile" class="hidden" type="file" accept="image/*" /></div></div>
+            <div id="templateStage" class="image-stage"><div class="placeholder"><strong>粘贴或拖入目标图</strong>也可沿用 Pipeline 节点的 template</div><img id="templatePreview" class="hidden" alt="模板预览" /></div>
+            <div id="templateAsset" class="template-asset">未选择 Pipeline 模板</div>
+            <div class="template-scale">
+              <label for="templateScaleSlider">匹配缩放</label>
+              <input id="templateScaleSlider" type="range" min="10" max="300" step="1" value="100" aria-label="模板匹配缩放比例" />
+              <div class="template-scale-value"><input id="templateScaleInput" type="number" min="10" max="300" step="1" value="100" aria-label="手动输入模板缩放百分比" /><span>%</span></div>
+            </div>
+            <p id="templateScaleHint" class="template-scale-hint">缩放后的模板像素会参与匹配；待搜索画面和 ROI 坐标保持原尺寸。</p>
+          </section>
+        </div>
+
+        <div class="panel runbar">
+          <div id="runNote" class="run-note">识别只运行当前节点的图像识别步骤，不会执行 Pipeline 后续节点或点击动作。</div>
+          <button id="runButton" class="button primary">▶　运行 Maa 匹配</button>
+        </div>
+
+        <section class="panel result-panel">
+          <div class="result-top">
+            <div><h3>识别结果</h3><p id="resultCaption">运行后显示 Maa 返回的得分、识别框和候选结果。</p></div>
+            <span id="resultStatus" class="result-status">等待输入</span>
+          </div>
+          <div class="metrics">
+            <div class="metric"><label id="metric1Label">最佳相似度</label><strong id="metric1">—</strong></div>
+            <div class="metric"><label id="metric2Label">命中阈值</label><strong id="metric2">—</strong></div>
+            <div class="metric"><label>匹配位置</label><strong id="metric3" class="small-value">—</strong></div>
+            <div class="metric"><label>候选结果</label><strong id="metric4">—</strong></div>
+          </div>
+          <div class="result-body">
+            <div id="resultCanvasWrap" class="result-canvas-wrap"><div id="resultEmpty" class="result-empty">选择或粘贴待搜索画面，然后运行匹配。</div><canvas id="resultCanvas" class="hidden"></canvas></div>
+            <p id="resultDetail" class="detail-line"></p>
+            <div id="errorBox" class="alert"></div>
+            <div id="tableWrap" class="table-wrap hidden"><table><thead><tr><th>#</th><th>区域</th><th id="candidateMetric">得分</th><th>相对 ROI</th></tr></thead><tbody id="resultRows"></tbody></table></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <section id="roiView" class="roi-tool hidden" role="tabpanel" aria-labelledby="roiTab" aria-hidden="true">
+      <div class="roi-heading">
+        <div><h2>ROI 坐标工具</h2><p>粘贴或打开截图，在原始像素坐标上框选 ROI；右键或 Ctrl+Z 撤销，Esc 清空。</p></div>
+        <span id="roiDimensions" class="hint"></span>
+      </div>
+      <div class="roi-layout">
+        <section class="panel roi-image-panel">
+          <div class="roi-panel-head">
+            <div class="roi-panel-title">图片画布 <span id="roiCount" class="image-tag">未载入图片</span></div>
+            <div class="roi-image-actions">
+              <button id="roiUpload" class="button small" type="button">选择图片</button>
+              <button id="roiClearImage" class="button small" type="button">清除图片</button>
+              <input id="roiFile" class="hidden" type="file" accept="image/*" />
+            </div>
+          </div>
+          <div class="roi-capturebar">
+            <label for="roiDeviceSelect">模拟器</label>
+            <select id="roiDeviceSelect"><option value="">读取设备中…</option></select>
+            <button id="roiRefreshDevices" class="button small" type="button">刷新</button>
+            <button id="roiCaptureButton" class="button primary small capture-roi" type="button">⌖　从模拟器截屏</button>
+          </div>
+          <div id="roiViewport" class="roi-viewport" tabindex="0" aria-label="ROI 图片画布">
+            <div id="roiPlaceholder" class="roi-placeholder"><div><strong>点击此处后按 Ctrl+V 粘贴图片</strong>也可以拖入图片，或使用右上角“选择图片”</div></div>
+            <canvas id="roiCanvas" class="roi-canvas hidden" aria-label="ROI 选择画布"></canvas>
+          </div>
+          <div class="roi-zoom-row">
+            <label for="roiZoom">缩放</label>
+            <input id="roiZoom" type="range" min="10" max="300" step="1" value="100" />
+            <output id="roiZoomValue" class="roi-zoom-value" for="roiZoom">100%</output>
+            <button id="roiZoomReset" class="button small" type="button">100%</button>
+          </div>
+        </section>
+        <aside class="panel roi-control-panel">
+          <h3 class="roi-coord-title">Pipeline 节点 ROI</h3>
+          <div class="field">
+            <label for="roiPipelineSearch">Pipeline 文件</label>
+            <div class="row">
+              <div class="roi-combo">
+                <input id="roiPipelineSearch" type="text" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="roiPipelineOptions" autocomplete="off" placeholder="选择或输入 Pipeline 匹配…" />
+                <div id="roiPipelineOptions" class="roi-combo-options hidden" role="listbox" aria-label="匹配的 Pipeline 文件"></div>
+              </div>
+              <select id="roiPipelineSelect" class="hidden" aria-hidden="true" tabindex="-1"><option value="">正在读取…</option></select>
+              <button id="roiRefreshPipelines" class="button small" type="button" aria-label="刷新 Pipeline 缓存" title="从磁盘重新读取 Pipeline，并刷新 Maa 资源缓存">刷新</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="roiNodeSearch">识别节点</label>
+            <div class="roi-combo">
+              <input id="roiNodeSearch" type="text" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="roiNodeOptions" autocomplete="off" placeholder="选择或输入节点名匹配…" />
+              <div id="roiNodeOptions" class="roi-combo-options hidden" role="listbox" aria-label="匹配的 Pipeline 节点"></div>
+            </div>
+            <select id="roiNodeSelect" class="hidden" aria-hidden="true" tabindex="-1"><option value="">请选择节点</option></select>
+          </div>
+          <button id="roiApplyPipeline" class="button roi-apply" type="button">显示识别 ROI 和动作目标</button>
+          <p id="roiPipelineHint" class="roi-help">红框为识别 ROI，蓝框为动作 target（标注 action.type）。选择节点后点击按钮加载。</p>
+          <h3 class="roi-coord-title">坐标输入</h3>
+          <div class="roi-coord-grid">
+            <input id="roiX1" type="number" step="1" placeholder="x1" aria-label="x1" />
+            <input id="roiY1" type="number" step="1" placeholder="y1" aria-label="y1" />
+            <input id="roiX2" type="number" step="1" placeholder="x2" aria-label="x2" />
+            <input id="roiY2" type="number" step="1" placeholder="y2" aria-label="y2" />
+          </div>
+          <button id="roiApplyFields" class="button roi-apply" type="button">在图片上显示框</button>
+          <div class="roi-array-row">
+            <input id="roiArrayInput" type="text" inputmode="text" placeholder="角点 [701, 33, 952, 311]" aria-label="输入角点坐标 [x1, y1, x2, y2]" />
+            <button id="roiApplyArray" class="button small" type="button">显示</button>
+          </div>
+          <div class="roi-array-row">
+            <input id="roiXywhInput" type="text" inputmode="text" placeholder="XYWH [701, 33, 251, 278]" aria-label="输入 XYWH 坐标 [x, y, width, height]" />
+            <button id="roiApplyXywh" class="button small" type="button">显示</button>
+          </div>
+          <p class="roi-help">支持角点 [x1, y1, x2, y2] 和 XYWH [x, y, width, height]；超出图片的部分会限制在边界内。</p>
+          <div class="roi-coord-output" aria-live="polite">
+            <div><label>角点坐标 [x1, y1, x2, y2]</label><code id="roiCornersOutput">—</code></div>
+            <div><label id="roiXywhLabel">Maa ROI [x, y, width, height]</label><code id="roiXywhOutput">—</code></div>
+          </div>
+          <div class="roi-actions">
+            <button id="roiCopy" class="button primary copy" type="button">复制选中框坐标</button>
+            <button id="roiUndo" class="button" type="button">撤销上一个</button>
+            <button id="roiClear" class="button" type="button">清空 ROI</button>
+          </div>
+          <p class="roi-help">复制内容包含两行：角点坐标和 XYWH 坐标。</p>
+          <div id="roiList" class="roi-list" aria-label="已选择的 ROI 和动作目标"></div>
+        </aside>
+      </div>
+    </section>
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const state = { source: null, template: null, templateScale: 100, mode: "TemplateMatch", entries: [], pipelines: [], currentNode: null, drawRoi: false, activeSlot: "source", lastResult: null };
+      const roiState = { image: null, boxes: [], selected: -1, preview: null, zoom: 100, dragCleanup: null };
+      let activeView = "match";
+      const fields = (ids) => ids.map((id) => $(id));
+      const modeLabels = { TemplateMatch: "TemplateMatch", FeatureMatch: "FeatureMatch", ColorMatch: "ColorMatch" };
+
+      function setTheme(theme, persist = false) {
+        const dark = theme === "dark";
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        const button = $("themeToggle");
+        $("themeIcon").textContent = dark ? "☀" : "☾";
+        $("themeLabel").textContent = dark ? "浅色" : "深色";
+        button.title = dark ? "切换到浅色主题" : "切换到深色主题";
+        button.setAttribute("aria-pressed", String(dark));
+        if (persist) {
+          try { localStorage.setItem("maa-match-lab-theme", dark ? "dark" : "light"); } catch (_) { }
+          try { document.cookie = `mga_match_lab_theme=${dark ? "dark" : "light"}; Max-Age=31536000; Path=/; SameSite=Lax`; } catch (_) { }
+        }
+      }
+      let savedTheme = "light";
+      try {
+        const savedCookie = document.cookie.split("; ").find((item) => item.startsWith("mga_match_lab_theme="));
+        savedTheme = savedCookie ? savedCookie.split("=")[1] : (localStorage.getItem("maa-match-lab-theme") || "light");
+      } catch (_) { }
+      setTheme(savedTheme);
+
+      function toast(message) {
+        const el = $("toast"); el.textContent = message; el.classList.add("show");
+        clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
+      }
+      async function api(path, options) {
+        const response = await fetch(path, options);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `请求失败 (${response.status})`);
+        return data;
+      }
+      function updateTemplateScale(value) {
+        const parsed = Number(value);
+        state.templateScale = Math.max(10, Math.min(300, Math.round(Number.isFinite(parsed) ? parsed : 100)));
+        $("templateScaleSlider").value = String(state.templateScale);
+        $("templateScaleInput").value = String(state.templateScale);
+        $("templatePreview").style.transform = `scale(${state.templateScale / 100})`;
+        if (state.template) {
+          const width = Math.max(1, Math.round(state.template.width * state.templateScale / 100));
+          const height = Math.max(1, Math.round(state.template.height * state.templateScale / 100));
+          $("templateAsset").textContent = `${state.template.name} · ${state.template.width} × ${state.template.height} · 匹配 ${state.templateScale}% (${width} × ${height})`;
+          $("templateScaleHint").textContent = `Maa 将使用 ${width} × ${height} 像素的缩放模板；待搜索画面和 ROI 坐标保持原尺寸。`;
+        } else if (state.templateScale !== 100 && state.currentNode?.params?.template) {
+          $("templateScaleHint").textContent = "当前 Pipeline 模板不会随比例缩放；请先在模板图框选择或粘贴该模板。";
+        } else {
+          $("templateScaleHint").textContent = state.templateScale === 100
+            ? "缩放后的模板像素会参与匹配；待搜索画面和 ROI 坐标保持原尺寸。"
+            : "载入模板图后会按此比例重采样，再用于匹配。";
+        }
+      }
+      function scaledTemplateData() {
+        if (!state.template) return null;
+        if (state.templateScale === 100) return state.template.dataUrl;
+        const width = Math.max(1, Math.round(state.template.width * state.templateScale / 100));
+        const height = Math.max(1, Math.round(state.template.height * state.templateScale / 100));
+        if (width > 8000 || height > 8000) throw new Error("缩放后的模板宽高不能超过 8000 像素。");
+        const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = height;
+        const context = canvas.getContext("2d"); context.imageSmoothingEnabled = true; context.imageSmoothingQuality = "high";
+        context.drawImage(state.template.image, 0, 0, width, height);
+        return canvas.toDataURL("image/png");
+      }
+      function setImage(slot, dataUrl, name) {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => {
+            const data = { dataUrl, name: name || "粘贴的图片", width: image.naturalWidth, height: image.naturalHeight, image };
+            state[slot] = data;
+            if (slot === "source") {
+              const canvas = $("sourceCanvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+              canvas.classList.remove("hidden"); $("sourceStage").querySelector(".placeholder")?.classList.add("hidden");
+              drawSourceCanvas();
+              $("inputDimensions").textContent = `${data.width} × ${data.height}`;
+            } else {
+              const preview = $("templatePreview"); preview.src = dataUrl; preview.classList.remove("hidden");
+              $("templateStage").querySelector(".placeholder")?.classList.add("hidden");
+              updateTemplateScale(state.templateScale);
+            }
+            hideError(); resolve(data);
+          };
+          image.onerror = () => reject(new Error("无法读取图片"));
+          image.src = dataUrl;
+        });
+      }
+      function readFile(slot, file) {
+        if (!file || !file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = () => setImage(slot, String(reader.result), file.name).catch((error) => showError(error.message));
+        reader.onerror = () => showError("读取图片失败");
+        reader.readAsDataURL(file);
+      }
+      async function loadHealth() {
+        try {
+          const data = await api("/api/health");
+          $("maaStatus").textContent = data.error ? "Maa 未就绪" : (data.maa === "ready" ? "Maa 已就绪" : "Maa 原生引擎");
+          $("maaStatus").classList.toggle("ready", !data.error);
+          $("version").textContent = data.version ? `Maa ${data.version}` : "";
+          if (data.error) showError(data.error);
+        } catch (error) { $("maaStatus").textContent = "本地服务未连接"; showError(error.message); }
+      }
+      async function loadDevices() {
+        const selects = [$("deviceSelect"), $("roiDeviceSelect")];
+        selects.forEach((select) => { select.onchange = () => { select.title = select.selectedOptions[0]?.textContent || ""; }; });
+        try {
+          const data = await api("/api/devices");
+          for (const select of selects) {
+            const previous = select.value; select.innerHTML = "";
+            if (!data.devices.length) select.add(new Option("未找到项目设备配置", ""));
+            else {
+              for (const device of data.devices) select.add(new Option(`${device.name} · ${device.serial}`, device.id));
+              if (data.devices.some((device) => String(device.id) === previous)) select.value = previous;
+            }
+            select.title = select.selectedOptions[0]?.textContent || "";
+          }
+        } catch (error) {
+          for (const select of selects) { select.innerHTML = ""; select.add(new Option("设备读取失败", "")); select.title = select.options[0].text; }
+          toast(error.message);
+        }
+      }
+      async function loadPipelines(refresh = false) {
+        const selectedFiles = { pipelineSelect: $("pipelineSelect").value, roiPipelineSelect: $("roiPipelineSelect").value };
+        const selectedMatchNode = $("nodeSelect").value;
+        const selectedRoiIndex = $("roiNodeSelect").value;
+        const selectedRoiNode = selectedRoiIndex === "" ? null : state.entries[Number(selectedRoiIndex)];
+        const refreshButtons = [$("refreshPipelines"), $("roiRefreshPipelines")];
+        if (refresh) refreshButtons.forEach((button) => { button.disabled = true; button.textContent = "刷新中"; });
+        try {
+          const data = refresh
+            ? await api("/api/pipelines/refresh", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+            : await api("/api/pipelines");
+          state.entries = data.entries || [];
+          state.pipelines = data.pipelines || [];
+          const select = $("pipelineSelect"), previous = selectedFiles.pipelineSelect; select.innerHTML = "";
+          select.add(new Option("全部 Pipeline 文件", "*"));
+          for (const pipeline of state.pipelines) select.add(new Option(pipeline.label, pipeline.path));
+          select.value = state.pipelines.some((pipeline) => pipeline.path === previous) || previous === "*" ? previous : "*";
+          renderRoiPipelineOptions(selectedFiles.roiPipelineSelect);
+          renderNodeOptions();
+          if (selectedMatchNode && Array.from($("nodeSelect").options).some((option) => option.value === selectedMatchNode)) {
+            $("nodeSelect").value = selectedMatchNode;
+            await selectNode(selectedMatchNode);
+          }
+          const selectedRoiIndexAfterRefresh = selectedRoiNode
+            ? state.entries.findIndex((entry) => entry.file === selectedRoiNode.file && entry.name === selectedRoiNode.name)
+            : -1;
+          renderRoiNodeOptions(selectedRoiIndexAfterRefresh >= 0 ? String(selectedRoiIndexAfterRefresh) : "");
+          if (refresh) toast("Pipeline 与 Maa 缓存已刷新。");
+        } finally {
+          if (refresh) refreshButtons.forEach((button) => { button.disabled = false; button.textContent = "刷新"; });
+        }
+      }
+      function matchesFilter(values, query) {
+        const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+        const searchable = values.join(" ").toLocaleLowerCase();
+        return terms.every((term) => searchable.includes(term));
+      }
+      function roiPipelineLabel(value) {
+        if (value === "*") return "全部 Pipeline 文件";
+        const pipeline = state.pipelines.find((item) => item.path === value);
+        return pipeline ? `${pipeline.label} · ${pipeline.path}` : "";
+      }
+      function roiNodeLabel(entry) { return `[${entry.type}] ${entry.name} · ${entry.file}`; }
+      function showComboOptions(inputId, listId, items, query, onSelect, selectedLabel) {
+        const input = $(inputId), list = $(listId);
+        const matches = items.filter((item) => matchesFilter([item.label, item.search], query));
+        list.replaceChildren();
+        if (!matches.length) {
+          const empty = document.createElement("div"); empty.className = "roi-combo-empty"; empty.textContent = "没有匹配项"; list.append(empty);
+        } else {
+          matches.slice(0, 100).forEach((item) => {
+            const option = document.createElement("button"); option.type = "button"; option.className = "roi-combo-option";
+            option.setAttribute("role", "option"); option.setAttribute("aria-selected", String(item.value === item.selected));
+            option.textContent = item.label; option.title = item.search;
+            option.addEventListener("mousedown", (event) => event.preventDefault());
+            option.addEventListener("click", () => onSelect(item.value));
+            option.addEventListener("keydown", (event) => {
+              if (event.key === "Escape") {
+                event.preventDefault(); input.focus(); closeCombo(inputId, listId, selectedLabel()); return;
+              }
+              if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+              event.preventDefault();
+              const options = Array.from(list.querySelectorAll('[role="option"]')), index = options.indexOf(option);
+              const next = options[index + (event.key === "ArrowDown" ? 1 : -1)];
+              if (next) next.focus(); else if (event.key === "ArrowUp") input.focus();
+            });
+            option.addEventListener("blur", () => setTimeout(() => {
+              if (list.contains(document.activeElement)) return;
+              closeCombo(inputId, listId, selectedLabel());
+            }, 0));
+            list.append(option);
+          });
+          if (matches.length > 100) {
+            const note = document.createElement("div"); note.className = "roi-combo-empty"; note.textContent = "结果过多，请继续输入缩小范围"; list.append(note);
+          }
+        }
+        list.classList.remove("hidden"); input.setAttribute("aria-expanded", "true");
+      }
+      function bindSearchCombo(inputId, listId, items, onSelect, selectedLabel) {
+        const input = $(inputId), list = $(listId);
+        const show = (query) => showComboOptions(inputId, listId, items(), query, onSelect, selectedLabel);
+        input.addEventListener("focus", () => show(""));
+        input.addEventListener("input", () => show(input.value));
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") { event.preventDefault(); closeCombo(inputId, listId, selectedLabel()); }
+          else if (event.key === "ArrowDown") {
+            const first = list.querySelector('[role="option"]');
+            if (first && !list.classList.contains("hidden")) { event.preventDefault(); first.focus(); }
+          } else if (event.key === "Enter") {
+            const first = list.querySelector('[role="option"]');
+            if (first && !list.classList.contains("hidden")) { event.preventDefault(); first.click(); }
+          }
+        });
+        input.addEventListener("blur", () => setTimeout(() => {
+          if (list.contains(document.activeElement)) return;
+          closeCombo(inputId, listId, selectedLabel());
+        }, 0));
+      }
+      function closeCombo(inputId, listId, value) {
+        const input = $(inputId); $(listId).classList.add("hidden");
+        input.setAttribute("aria-expanded", "false"); input.value = value;
+      }
+      function roiPipelineItems() {
+        return [
+          { value: "*", label: "全部 Pipeline 文件", search: "全部 Pipeline 文件" },
+          ...state.pipelines.map((pipeline) => ({ value: pipeline.path, label: `${pipeline.label} · ${pipeline.path}`, search: `${pipeline.label} ${pipeline.path}` })),
+        ].map((item) => ({ ...item, selected: $("roiPipelineSelect").value }));
+      }
+      function roiNodeItems() {
+        const file = $("roiPipelineSelect").value;
+        return state.entries.map((entry, index) => ({ entry, index })).filter(({ entry }) =>
+          (file === "*" || entry.file === file) && (Array.isArray(entry.roi) || typeof entry.roi === "string"))
+          .map(({ entry, index }) => {
+            const label = roiNodeLabel(entry);
+            return { value: String(index), label, search: `${entry.name} ${entry.type} ${entry.file}`, selected: $("roiNodeSelect").value };
+          });
+      }
+      function selectRoiPipeline(value) {
+        $("roiPipelineSelect").value = value;
+        closeCombo("roiPipelineSearch", "roiPipelineOptions", roiPipelineLabel(value));
+        renderRoiNodeOptions("");
+      }
+      function selectRoiNode(value) {
+        const entry = state.entries[Number(value)];
+        $("roiNodeSelect").value = value;
+        closeCombo("roiNodeSearch", "roiNodeOptions", entry ? roiNodeLabel(entry) : "");
+      }
+      function renderRoiPipelineOptions(selectedValue = $("roiPipelineSelect").value) {
+        const select = $("roiPipelineSelect");
+        select.innerHTML = "";
+        select.add(new Option("全部 Pipeline 文件", "*"));
+        for (const pipeline of state.pipelines) select.add(new Option(`${pipeline.label} · ${pipeline.path}`, pipeline.path));
+        select.value = selectedValue === "*" || state.pipelines.some((pipeline) => pipeline.path === selectedValue) ? selectedValue : "*";
+        $("roiPipelineSearch").value = roiPipelineLabel(select.value);
+      }
+      function renderRoiNodeOptions(selectedValue = $("roiNodeSelect").value) {
+        const file = $("roiPipelineSelect").value, select = $("roiNodeSelect");
+        select.innerHTML = "";
+        select.add(new Option("请选择节点", ""));
+        state.entries.forEach((entry, index) => {
+          if ((file === "*" || entry.file === file) && (Array.isArray(entry.roi) || typeof entry.roi === "string")) {
+            select.add(new Option(roiNodeLabel(entry), String(index)));
+          }
+        });
+        const selectedEntry = selectedValue === "" ? null : state.entries[Number(selectedValue)];
+        const isValid = selectedEntry && (file === "*" || selectedEntry.file === file) && (Array.isArray(selectedEntry.roi) || typeof selectedEntry.roi === "string");
+        select.value = isValid ? String(selectedValue) : "";
+        $("roiNodeSearch").value = isValid ? roiNodeLabel(selectedEntry) : "";
+        $("roiPipelineHint").textContent = "红框为识别 ROI，蓝框为动作 target（标注 action.type）。选择节点后点击按钮加载。";
+      }
+      function applyPipelineRoi() {
+        const index = $("roiNodeSelect").value;
+        if (index === "") return toast("请先选择 Pipeline 节点。");
+        const entry = state.entries[Number(index)];
+        if (!roiState.image) return toast("请先粘贴或选择一张图片。");
+        const boxes = [], roi = entry?.roi;
+        if (Array.isArray(roi) && roi.length === 4 && roi.every((value) => Number.isFinite(Number(value)))) {
+          const [x, y, width, height] = roi.map(Number);
+          const box = normalizeRoi([x, y, width === 0 ? roiState.image.naturalWidth : x + width, height === 0 ? roiState.image.naturalHeight : y + height]);
+          if (box) boxes.push({ ...box, kind: "recognition-roi", entryName: entry.name });
+        }
+        let targetBox = null;
+        const target = entry?.action_target;
+        if (Array.isArray(target) && target.length === 4 && target.every((value) => Number.isFinite(Number(value)))) {
+          const [x, y, width, height] = target.map(Number);
+          if (width > 0 && height > 0 && Number.isFinite(x + width) && Number.isFinite(y + height)) {
+            targetBox = normalizeRoi([x, y, x + width, y + height]);
+            if (targetBox) boxes.push({ ...targetBox, kind: "action-target", entryName: entry.name, actionType: entry.action_type || "未知动作" });
+          }
+        }
+        if (!boxes.length) {
+          if (typeof roi === "string") return toast(`识别 ROI 引用前序节点「${roi}」，且此节点没有可显示的固定动作 target。`);
+          return toast("此节点没有可显示的固定识别 ROI 或四数值动作 target。");
+        }
+        roiState.boxes.push(...boxes); roiState.selected = roiState.boxes.length - 1; roiState.preview = null;
+        drawRoiCanvas(); updateRoiUi();
+        const details = [entry.name];
+        if (boxes.some((box) => box.kind === "recognition-roi")) details.push(`识别 ROI [${roi.join(", ")}]`);
+        else if (typeof roi === "string") details.push(`识别 ROI 引用「${roi}」`);
+        if (entry.action_type) details.push(`${entry.action_type} 动作`);
+        if (targetBox) details.push(`target [${target.join(", ")}]`);
+        else if (entry.action_target != null) details.push("target 不是固定四数值矩形");
+        $("roiPipelineHint").textContent = details.join(" · ");
+        toast(`已加载 ${boxes.length} 个框${entry.action_type ? ` · ${entry.action_type}` : ""}`);
+      }
+      function renderNodeOptions() {
+        const file = $("pipelineSelect").value;
+        const select = $("nodeSelect"); select.innerHTML = "";
+        select.add(new Option("手动设置匹配参数", ""));
+        const entries = state.entries.filter((item) => file === "*" || item.file === file);
+        for (const entry of entries) {
+          const option = new Option(`[${entry.type}] ${entry.name}`, entry.name); option.dataset.type = entry.type; option.dataset.file = entry.file;
+          select.add(option);
+        }
+        if (state.currentNode && !entries.some((item) => item.name === state.currentNode.name)) state.currentNode = null;
+      }
+      function setMode(mode, keepNode = false) {
+        state.mode = mode;
+        if (!keepNode && state.currentNode && state.currentNode.type !== mode) {
+          state.currentNode = null; $("nodeSelect").value = "";
+          $("pipelineRoi").checked = false;
+        }
+        document.querySelectorAll(".mode-button").forEach((button) => button.classList.toggle("active", button.dataset.mode === mode));
+        $("templateParams").classList.toggle("active", mode === "TemplateMatch");
+        $("featureParams").classList.toggle("active", mode === "FeatureMatch");
+        $("colorParams").classList.toggle("active", mode === "ColorMatch");
+        $("templateCard").classList.toggle("hidden", mode === "ColorMatch");
+        $("runButton").textContent = `▶　运行 ${modeLabels[mode]}`;
+      }
+      function firstNumber(value, fallback) {
+        if (Array.isArray(value)) return firstNumber(value[0], fallback);
+        return Number.isFinite(Number(value)) ? Number(value) : fallback;
+      }
+      function firstColor(value, fallback) {
+        if (!Array.isArray(value)) return fallback;
+        if (value.length && Array.isArray(value[0])) value = value[0];
+        return [0, 1, 2].map((index) => Number.isFinite(Number(value[index])) ? Number(value[index]) : fallback[index]);
+      }
+      async function selectNode(name) {
+        state.currentNode = null;
+        if (!name) {
+          $("pipelineRoi").checked = false;
+          $("nodeHint").textContent = "手动模式：可上传/粘贴模板图，并自行设置识别参数和 ROI。";
+          $("templateAsset").textContent = state.template ? `${state.template.name} · 使用上传的模板图` : "未选择 Pipeline 模板";
+          updateTemplateScale(state.templateScale);
+          drawSourceCanvas();
+          return;
+        }
+        try {
+          const node = await api(`/api/node?entry=${encodeURIComponent(name)}`);
+          state.currentNode = node;
+          setMode(node.type, true);
+          const params = node.params || {};
+          const roi = params.roi;
+          $("pipelineRoi").checked = true;
+          if (Array.isArray(roi) && roi.length === 4) fields(["roiX", "roiY", "roiW", "roiH"]).forEach((el, index) => { el.value = roi[index]; });
+          else if (typeof roi === "string") fields(["roiX", "roiY", "roiW", "roiH"]).forEach((el) => { el.value = ""; });
+          if (node.type === "TemplateMatch") {
+            $("tmMethod").value = String(params.method ?? 5); $("tmThreshold").value = firstNumber(params.threshold, 0.7);
+            $("tmOrder").value = params.order_by || "Horizontal"; $("tmIndex").value = params.index ?? 0; $("tmGreen").checked = !!params.green_mask;
+          } else if (node.type === "FeatureMatch") {
+            $("fmDetector").value = params.detector || "SIFT"; $("fmCount").value = params.count ?? 4; $("fmRatio").value = params.ratio ?? 0.6;
+            $("fmOrder").value = params.order_by || "Horizontal"; $("fmIndex").value = params.index ?? 0; $("fmGreen").checked = !!params.green_mask;
+          } else {
+            $("cmMethod").value = String(params.method ?? 4); $("cmCount").value = params.count ?? 1; $("cmOrder").value = params.order_by || "Horizontal"; $("cmConnected").checked = !!params.connected;
+            firstColor(params.lower, [0, 0, 0]).forEach((value, index) => { $(`lower${index}`).value = value; });
+            firstColor(params.upper, [255, 255, 255]).forEach((value, index) => { $(`upper${index}`).value = value; });
+          }
+          const template = params.template;
+          $("templateAsset").textContent = state.template ? `${state.template.name} · 本次使用粘贴/上传的模板图` : (template ? `Pipeline 模板：${Array.isArray(template) ? template.join("、") : template}` : "此节点没有配置模板图");
+          updateTemplateScale(state.templateScale);
+          $("nodeHint").textContent = `${node.name} · ${node.type} · ${Array.isArray(roi) ? `ROI [${roi.join(", ")}]` : (roi ? `ROI 引用「${roi}」` : "全画面 ROI")}`;
+          drawSourceCanvas();
+        } catch (error) { showError(error.message); }
+      }
+      function readRoi() {
+        return fields(["roiX", "roiY", "roiW", "roiH"]).map((el) => {
+          const value = el.value.trim();
+          const number = value ? Number(value) : 0;
+          return Number.isFinite(number) ? Math.trunc(number) : 0;
+        });
+      }
+      function updateRoiHint() {
+        if (state.drawRoi) {
+          setDrawHint("拖动鼠标框选 ROI…", true);
+          return;
+        }
+        if ($("pipelineRoi").checked) {
+          if (!state.currentNode) {
+            setDrawHint("请先选择 Pipeline 节点，或取消“使用 Pipeline ROI”。");
+            return;
+          }
+          const roi = state.currentNode.params?.roi;
+          if (Array.isArray(roi) && roi.every((value) => Number(value) === 0)) setDrawHint("Pipeline ROI [0, 0, 0, 0] · 全画面范围。");
+          else if (Array.isArray(roi)) setDrawHint(`Pipeline ROI [${roi.join(", ")}] · 紫框预览。`);
+          else if (typeof roi === "string") setDrawHint(`Pipeline ROI 引用「${roi}」，运行时由前序节点决定位置。`);
+          else setDrawHint("当前节点使用全画面 ROI。");
+          return;
+        }
+        const hasManualValue = fields(["roiX", "roiY", "roiW", "roiH"]).some((el) => el.value.trim() !== "");
+        const roi = readRoi();
+        if (hasManualValue && roi.every((value) => value === 0)) setDrawHint("手动 ROI [0, 0, 0, 0] · 全画面范围。");
+        else setDrawHint(hasManualValue ? `手动 ROI [${roi.join(", ")}] · 蓝框实时预览。` : "坐标为 [x, y, w, h]；宽或高为 0 时表示延伸到边缘。");
+      }
+      function drawSourceCanvas() {
+        updateRoiHint();
+        if (!state.source?.image) return;
+        const canvas = $("sourceCanvas"), context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(state.source.image, 0, 0);
+        if ($("pipelineRoi").checked) {
+          if (state.currentNode && Array.isArray(state.currentNode.params?.roi)) drawRect(context, state.currentNode.params.roi, "#8356bd", [7, 4]);
+        } else {
+          const hasManualValue = fields(["roiX", "roiY", "roiW", "roiH"]).some((el) => el.value.trim() !== "");
+          const roi = readRoi();
+          if (hasManualValue && roi.some((value) => value !== 0)) drawRect(context, roi, "#287bb5", [7, 4]);
+        }
+      }
+      function drawRect(context, box, color, dash = []) {
+        if (!Array.isArray(box) || box.length !== 4) return;
+        const values = box.map(Number);
+        if (!values.every(Number.isFinite) || values.every((value) => value === 0)) return;
+        const [x, y, width, height] = values;
+        const canvas = context.canvas;
+        const clampX = (value) => Math.max(0, Math.min(canvas.width, value));
+        const clampY = (value) => Math.max(0, Math.min(canvas.height, value));
+        const right = width === 0 ? canvas.width : x + width;
+        const bottom = height === 0 ? canvas.height : y + height;
+        const left = clampX(Math.min(x, right)), top = clampY(Math.min(y, bottom));
+        const rectWidth = clampX(Math.max(x, right)) - left, rectHeight = clampY(Math.max(y, bottom)) - top;
+        if (rectWidth <= 0 || rectHeight <= 0) return;
+        const bounds = canvas.getBoundingClientRect();
+        const scale = bounds.width > 0 ? canvas.width / bounds.width : 1;
+        const contextWidth = Math.max(2, 2 * scale), fontSize = 12 * scale, padding = 4 * scale;
+        context.save();
+        context.fillStyle = color === "#8356bd" ? "rgba(131, 86, 189, 0.12)" : "rgba(40, 123, 181, 0.13)";
+        context.fillRect(left, top, rectWidth, rectHeight);
+        context.strokeStyle = color; context.lineWidth = contextWidth; context.setLineDash(dash);
+        context.strokeRect(left, top, rectWidth, rectHeight);
+        const label = `ROI [${values.join(", ")}]`;
+        context.font = `600 ${fontSize}px "Segoe UI", sans-serif`;
+        const labelWidth = context.measureText(label).width + padding * 2, labelHeight = fontSize + padding * 2;
+        const labelX = Math.max(0, Math.min(left, canvas.width - labelWidth));
+        const labelY = top >= labelHeight ? top - labelHeight : top;
+        context.setLineDash([]); context.fillStyle = color; context.fillRect(labelX, labelY, labelWidth, labelHeight);
+        context.fillStyle = "#fff"; context.textBaseline = "top"; context.fillText(label, labelX + padding, labelY + padding);
+        context.restore();
+      }
+      function switchView(view) {
+        if (view !== "roi" && roiState.dragCleanup) cancelRoiDrag();
+        activeView = view;
+        const matchActive = view === "match";
+        $("matchView").classList.toggle("hidden", !matchActive);
+        $("roiView").classList.toggle("hidden", matchActive);
+        $("roiView").setAttribute("aria-hidden", String(matchActive));
+        $("matchTab").classList.toggle("active", matchActive);
+        $("roiTab").classList.toggle("active", !matchActive);
+        $("matchTab").setAttribute("aria-selected", String(matchActive));
+        $("roiTab").setAttribute("aria-selected", String(!matchActive));
+      }
+      function setRoiZoom(value) {
+        roiState.zoom = Math.max(10, Math.min(300, Math.round(Number(value) || 100)));
+        $("roiZoom").value = String(roiState.zoom);
+        $("roiZoomValue").textContent = `${roiState.zoom}%`;
+        const canvas = $("roiCanvas");
+        if (roiState.image) {
+          canvas.style.width = `${Math.max(1, Math.round(canvas.width * roiState.zoom / 100))}px`;
+          canvas.style.height = `${Math.max(1, Math.round(canvas.height * roiState.zoom / 100))}px`;
+        }
+      }
+      function drawRoiCanvas() {
+        if (!roiState.image) return;
+        const canvas = $("roiCanvas"), context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(roiState.image, 0, 0);
+        const colors = ["#e34b3e", "#287bb5", "#8e5ed0", "#d48128", "#1c9b64"];
+        const drawBox = (box, index, preview = false) => {
+          if (!box) return;
+          const color = box.kind === "recognition-roi" ? "#e34b3e" : box.kind === "action-target" ? "#287bb5" : colors[index % colors.length];
+          const width = box.x2 - box.x1, height = box.y2 - box.y1;
+          context.save();
+          context.fillStyle = `${color}24`; context.fillRect(box.x1, box.y1, width, height);
+          context.strokeStyle = color; context.lineWidth = index === roiState.selected && !preview ? 4 : 2;
+          context.setLineDash(preview ? [8, 5] : []); context.strokeRect(box.x1, box.y1, width, height);
+          const label = preview ? "ROI 新建" : box.kind === "recognition-roi" ? "识别 ROI" : box.kind === "action-target" ? `${box.actionType || "动作"} target` : `ROI ${index + 1}`;
+          context.font = `600 ${Math.max(12, Math.min(22, canvas.width / 80))}px "Segoe UI", sans-serif`;
+          const pad = Math.max(4, canvas.width / 600), labelHeight = Math.max(20, canvas.width / 45);
+          const labelWidth = context.measureText(label).width + pad * 2;
+          const labelX = Math.max(0, Math.min(box.x1, canvas.width - labelWidth));
+          const labelY = box.y1 >= labelHeight ? box.y1 - labelHeight : box.y1;
+          context.setLineDash([]); context.fillStyle = color; context.fillRect(labelX, labelY, labelWidth, labelHeight);
+          context.fillStyle = "#fff"; context.textBaseline = "middle"; context.fillText(label, labelX + pad, labelY + labelHeight / 2);
+          context.restore();
+        };
+        roiState.boxes.forEach((box, index) => drawBox(box, index));
+        if (roiState.preview) drawBox(roiState.preview, roiState.boxes.length, true);
+      }
+      function updateRoiUi(syncFields = true) {
+        const box = roiState.preview || (roiState.selected >= 0 ? roiState.boxes[roiState.selected] : null);
+        const corners = box ? [box.x1, box.y1, box.x2, box.y2] : null;
+        const xywh = box ? [box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1] : null;
+        $("roiCornersOutput").textContent = corners ? `[${corners.join(", ")}]` : "—";
+        $("roiXywhOutput").textContent = xywh ? `[${xywh.join(", ")}]` : "—";
+        const hasActionTarget = roiState.boxes.some((item) => item.kind === "action-target");
+        $("roiCount").textContent = roiState.image ? `${roiState.boxes.length} 个${hasActionTarget ? "框" : "ROI"}` : "未载入图片";
+        $("roiXywhLabel").textContent = box?.kind === "action-target" ? "Action target [x, y, width, height]" : "Maa ROI [x, y, width, height]";
+        if (syncFields) ["roiX1", "roiY1", "roiX2", "roiY2"].forEach((id, index) => { $(id).value = corners ? String(corners[index]) : ""; });
+        const list = $("roiList"); list.replaceChildren();
+        roiState.boxes.forEach((item, index) => {
+          const button = document.createElement("button");
+          button.type = "button"; button.className = `roi-item${index === roiState.selected ? " active" : ""}`;
+          button.style.borderLeftWidth = "0.1875rem";
+          button.style.borderLeftColor = item.kind === "recognition-roi" ? "#e34b3e" : item.kind === "action-target" ? "#287bb5" : ["#e34b3e", "#287bb5", "#8e5ed0", "#d48128", "#1c9b64"][index % 5];
+          const name = document.createElement("span"), values = document.createElement("span");
+          name.textContent = item.kind === "recognition-roi" ? `${item.entryName} · 识别 ROI` : item.kind === "action-target" ? `${item.entryName} · ${item.actionType || "动作"} target` : `ROI ${index + 1}`;
+          name.title = name.textContent; values.textContent = `[${item.x1}, ${item.y1}, ${item.x2}, ${item.y2}]`;
+          button.append(name, values); button.addEventListener("click", () => { roiState.selected = index; drawRoiCanvas(); updateRoiUi(); });
+          list.append(button);
+        });
+      }
+      function normalizeRoi(values) {
+        if (!roiState.image || !values.every(Number.isFinite)) return null;
+        const clampX = (value) => Math.max(0, Math.min(roiState.image.naturalWidth, Math.round(value)));
+        const clampY = (value) => Math.max(0, Math.min(roiState.image.naturalHeight, Math.round(value)));
+        const xa = clampX(values[0]), xb = clampX(values[2]), ya = clampY(values[1]), yb = clampY(values[3]);
+        const box = { x1: Math.min(xa, xb), y1: Math.min(ya, yb), x2: Math.max(xa, xb), y2: Math.max(ya, yb) };
+        return box.x2 > box.x1 && box.y2 > box.y1 ? box : null;
+      }
+      function addRoi(box) {
+        roiState.boxes.push(box); roiState.selected = roiState.boxes.length - 1;
+        roiState.preview = null; drawRoiCanvas(); updateRoiUi();
+      }
+      function applyRoiFields() {
+        if (!roiState.image) return toast("请先粘贴或选择一张图片。");
+        const values = ["roiX1", "roiY1", "roiX2", "roiY2"].map((id) => $(id).value.trim() === "" ? NaN : Number($(id).value));
+        if (!values.every(Number.isFinite)) return toast("请填入有效的 x1、y1、x2、y2 坐标。");
+        const box = normalizeRoi(values);
+        if (!box) return toast("ROI 宽度和高度都必须大于 0。");
+        addRoi(box);
+      }
+      function applyRoiArray() {
+        const match = $("roiArrayInput").value.match(/^\s*\[?\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\]?\s*$/);
+        if (!match) return toast("请输入四个整数，例如 [701, 33, 952, 311]。");
+        ["roiX1", "roiY1", "roiX2", "roiY2"].forEach((id, index) => { $(id).value = match[index + 1]; });
+        applyRoiFields();
+      }
+      function applyRoiXywh() {
+        const match = $("roiXywhInput").value.match(/^\s*\[?\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\]?\s*$/);
+        if (!match) return toast("请输入 XYWH 四个整数，例如 [701, 33, 251, 278]。");
+        const [x, y, width, height] = match.slice(1).map(Number);
+        if (!(width > 0 && height > 0) || !Number.isFinite(x + width) || !Number.isFinite(y + height)) return toast("XYWH 的宽度和高度必须大于 0。");
+        ["roiX1", "roiY1", "roiX2", "roiY2"].forEach((id, index) => { $(id).value = String([x, y, x + width, y + height][index]); });
+        applyRoiFields();
+      }
+      function cancelRoiDrag() {
+        roiState.dragCleanup?.(); roiState.dragCleanup = null; roiState.preview = null;
+      }
+      function undoRoi() {
+        if (roiState.dragCleanup) { cancelRoiDrag(); drawRoiCanvas(); updateRoiUi(); return; }
+        if (!roiState.boxes.length) return;
+        roiState.boxes.pop(); roiState.selected = roiState.boxes.length - 1;
+        drawRoiCanvas(); updateRoiUi();
+      }
+      function clearRois() {
+        cancelRoiDrag(); roiState.boxes = []; roiState.selected = -1; $("roiArrayInput").value = ""; $("roiXywhInput").value = "";
+        drawRoiCanvas(); updateRoiUi();
+      }
+      function setRoiImage(dataUrl, name = "图片") {
+        const image = new Image();
+        image.onload = () => {
+          cancelRoiDrag(); roiState.image = image; roiState.boxes = []; roiState.selected = -1; roiState.preview = null;
+          const canvas = $("roiCanvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+          canvas.classList.remove("hidden"); $("roiPlaceholder").classList.add("hidden");
+          $("roiDimensions").textContent = `${image.naturalWidth} × ${image.naturalHeight}`;
+          setRoiZoom(100); drawRoiCanvas(); updateRoiUi(); toast(`${name}已载入 · ${image.naturalWidth} × ${image.naturalHeight}`);
+        };
+        image.onerror = () => toast("无法读取这张图片。"); image.src = dataUrl;
+      }
+      function loadRoiImage(file) {
+        if (!file || !file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = () => setRoiImage(String(reader.result), "图片");
+        reader.onerror = () => toast("读取图片失败。"); reader.readAsDataURL(file);
+      }
+      function clearRoiImage() {
+        cancelRoiDrag(); roiState.image = null; roiState.boxes = []; roiState.selected = -1; roiState.preview = null;
+        $("roiCanvas").classList.add("hidden"); $("roiPlaceholder").classList.remove("hidden"); $("roiDimensions").textContent = "";
+        setRoiZoom(100); $("roiArrayInput").value = ""; $("roiXywhInput").value = ""; updateRoiUi();
+      }
+      async function copyRoi() {
+        const box = roiState.selected >= 0 ? roiState.boxes[roiState.selected] : null;
+        if (!box) return toast("请先选择或绘制一个 ROI。");
+        const text = `[${box.x1}, ${box.y1}, ${box.x2}, ${box.y2}]\n[${box.x1}, ${box.y1}, ${box.x2 - box.x1}, ${box.y2 - box.y1}]`;
+        try { await navigator.clipboard.writeText(text); }
+        catch (_) {
+          const temporary = document.createElement("textarea"); temporary.value = text; temporary.style.position = "fixed"; temporary.style.opacity = "0";
+          document.body.append(temporary); temporary.select(); const copied = document.execCommand("copy"); temporary.remove();
+          if (!copied) return toast("复制失败，请检查浏览器剪贴板权限。");
+        }
+        toast(box.kind === "action-target" ? `已复制 ${box.actionType || "动作"} target 坐标。` : "已复制角点坐标和 XYWH 两种格式。");
+      }
+      function roiPoint(event) {
+        const canvas = $("roiCanvas"), bounds = canvas.getBoundingClientRect();
+        return {
+          x: Math.max(0, Math.min(canvas.width, Math.round((event.clientX - bounds.left) * canvas.width / bounds.width))),
+          y: Math.max(0, Math.min(canvas.height, Math.round((event.clientY - bounds.top) * canvas.height / bounds.height))),
+        };
+      }
+      function showError(message) { const el = $("errorBox"); el.textContent = message; el.classList.add("show"); }
+      function hideError() { $("errorBox").textContent = ""; $("errorBox").classList.remove("show"); }
+      function optionValues() {
+        const overrides = {};
+        if (!$("pipelineRoi").checked) overrides.roi = readRoi();
+        if (state.mode === "TemplateMatch") Object.assign(overrides, { method: Number($("tmMethod").value), threshold: Number($("tmThreshold").value), order_by: $("tmOrder").value, index: Number($("tmIndex").value), green_mask: $("tmGreen").checked });
+        if (state.mode === "FeatureMatch") Object.assign(overrides, { detector: $("fmDetector").value, count: Number($("fmCount").value), ratio: Number($("fmRatio").value), order_by: $("fmOrder").value, index: Number($("fmIndex").value), green_mask: $("fmGreen").checked });
+        if (state.mode === "ColorMatch") Object.assign(overrides, {
+          method: Number($("cmMethod").value), count: Number($("cmCount").value), order_by: $("cmOrder").value, connected: $("cmConnected").checked,
+          lower: [[Number($("lower0").value), Number($("lower1").value), Number($("lower2").value)]],
+          upper: [[Number($("upper0").value), Number($("upper1").value), Number($("upper2").value)]],
+        });
+        return overrides;
+      }
+      function metricText(value, digits = 3) { return typeof value === "number" ? value.toFixed(digits) : "—"; }
+      function resultBox(result) { return result?.box || result?.best?.box || null; }
+      function paintResult(result) {
+        const canvas = $("resultCanvas"), empty = $("resultEmpty"), image = new Image();
+        image.onload = () => {
+          canvas.width = image.naturalWidth; canvas.height = image.naturalHeight; canvas.classList.remove("hidden"); empty.classList.add("hidden");
+          const context = canvas.getContext("2d"); context.drawImage(image, 0, 0);
+          if (Array.isArray(result.roi)) drawRect(context, result.roi, "#8356bd", [8, 4]);
+          const box = resultBox(result);
+          if (box) {
+            const values = Array.isArray(box) ? box : [box.x, box.y, box.w, box.h];
+            context.save(); context.strokeStyle = result.hit ? "#22b875" : "#e48343"; context.lineWidth = Math.max(3, canvas.width / 500); context.strokeRect(...values);
+            context.fillStyle = result.hit ? "#22b875" : "#e48343"; context.font = `bold ${Math.max(14, canvas.width / 65)}px Segoe UI`; context.fillText(result.mode === "TemplateMatch" ? metricText(result.score) : `count ${result.count ?? "—"}`, values[0] + 3, Math.max(18, values[1] - 7)); context.restore();
+          }
+        };
+        image.src = state.source.dataUrl;
+      }
+      function renderResult(result) {
+        state.lastResult = result;
+        $("resultStatus").textContent = result.hit ? "命中" : "未命中";
+        $("resultStatus").className = `result-status ${result.hit ? "hit" : "miss"}`;
+        $("resultCaption").textContent = `${result.entry ? `${result.entry} · ` : "手动参数 · "}${result.mode} · ${result.image_width} × ${result.image_height}`;
+        const labels = result.mode === "TemplateMatch" ? ["最佳相似度", "命中阈值", "匹配位置", "候选结果"] : [result.mode === "FeatureMatch" ? "最佳匹配点数" : "最佳像素数", "最低要求", "匹配位置", "候选结果"];
+        ["metric1Label", "metric2Label", "metric3", "metric4"].forEach((id, index) => { if (index < 2) $(id).textContent = labels[index]; });
+        $("metric1").textContent = result.mode === "TemplateMatch" ? metricText(result.score) : (result.count ?? "—");
+        $("metric2").textContent = result.mode === "TemplateMatch" ? metricText(firstNumber(result.threshold, NaN)) : (result.count_threshold ?? "—");
+        const box = resultBox(result);
+        const position = Array.isArray(box) ? box.join(", ") : box ? `${box.x}, ${box.y}, ${box.w}, ${box.h}` : "—";
+        $("metric3").textContent = position; $("metric4").textContent = result.all_results.length;
+        const thresholdPassed = result.mode === "TemplateMatch" ? (typeof result.score === "number" && result.score >= firstNumber(result.threshold, 0.7)) : (typeof result.count === "number" && result.count >= Number(result.count_threshold || 1));
+        const message = result.mode === "TemplateMatch" ? `得分 ${metricText(result.score)}，阈值 ${metricText(firstNumber(result.threshold, NaN))}。` : `最佳结果 ${result.count ?? "无"}，最低要求 ${result.count_threshold ?? 1}。`;
+        $("resultDetail").textContent = `${message} ${thresholdPassed ? "达到当前阈值。" : "未达到当前阈值。"} 识别框坐标相对于输入截图。`;
+        $("candidateMetric").textContent = result.mode === "TemplateMatch" ? "得分" : "数量";
+        const tbody = $("resultRows"); tbody.innerHTML = "";
+        result.all_results.slice(0, 30).forEach((item, index) => {
+          const rect = item.box; const pos = Array.isArray(rect) ? rect : rect ? [rect.x, rect.y, rect.w, rect.h] : [];
+          const value = result.mode === "TemplateMatch" ? metricText(item.score) : (item.count ?? "—");
+          const tr = document.createElement("tr");
+          [String(index + 1), pos.join(", ") || "—", String(value), Array.isArray(result.roi) ? result.roi.join(", ") : "全画面"].forEach((text) => { const td = document.createElement("td"); td.textContent = text; tr.appendChild(td); });
+          tbody.appendChild(tr);
+        });
+        $("tableWrap").classList.toggle("hidden", result.all_results.length === 0);
+        paintResult(result); hideError();
+      }
+      async function runMatch() {
+        if (!state.source) return showError("请先选择、粘贴或截取一张待搜索画面。");
+        if (state.mode !== "ColorMatch" && !state.template && !state.currentNode?.params?.template) return showError("请粘贴/选择模板图，或在 Pipeline 中选择有 template 的节点。");
+        if (state.mode !== "ColorMatch" && state.templateScale !== 100 && !state.template) return showError("缩放只作用于上传/粘贴的模板图；请先载入模板图，或将比例恢复为 100%。");
+        const button = $("runButton"); button.disabled = true; button.textContent = "识别中…"; hideError();
+        try {
+          const data = await api("/api/match", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: state.mode, entry: state.currentNode?.type === state.mode ? state.currentNode.name : "", source: state.source.dataUrl, template: state.mode === "ColorMatch" ? (state.template?.dataUrl || null) : scaledTemplateData(), overrides: optionValues() }),
+          });
+          renderResult(data);
+        } catch (error) { showError(error.message); }
+        finally { button.disabled = false; button.textContent = `▶　运行 ${modeLabels[state.mode]}`; }
+      }
+      async function capture() {
+        const device = $("deviceSelect").value;
+        if (!device) return showError("请先选择设备配置。");
+        const button = $("captureButton"); button.disabled = true; button.textContent = "正在连接并截图…"; hideError();
+        try {
+          const data = await api("/api/screencap", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ device_id: device }) });
+          await setImage("source", `data:image/png;base64,${data.data}`, data.name);
+          toast(`截图完成 · ${data.width} × ${data.height}`);
+        } catch (error) { showError(error.message); }
+        finally { button.disabled = false; button.textContent = "⌖　从模拟器截取当前画面"; }
+      }
+      async function captureRoi() {
+        const device = $("roiDeviceSelect").value;
+        if (!device) return toast("请先选择模拟器设备。");
+        const button = $("roiCaptureButton"); button.disabled = true; button.textContent = "连接并截图中…";
+        try {
+          const data = await api("/api/screencap", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ device_id: device }) });
+          setRoiImage(`data:image/png;base64,${data.data}`, "模拟器截图");
+        } catch (error) { toast(error.message); }
+        finally { button.disabled = false; button.textContent = "⌖　从模拟器截屏"; }
+      }
+      function bindImageSlot(slot, cardId, stageId, inputId, uploadId) {
+        const card = $(cardId), stage = $(stageId), input = $(inputId);
+        $(uploadId).addEventListener("click", (event) => { event.stopPropagation(); state.activeSlot = slot; input.click(); });
+        input.addEventListener("change", () => { readFile(slot, input.files?.[0]); input.value = ""; });
+        card.addEventListener("click", () => { state.activeSlot = slot; });
+        stage.addEventListener("dragover", (event) => { event.preventDefault(); stage.classList.add("dragover"); state.activeSlot = slot; });
+        stage.addEventListener("dragleave", () => stage.classList.remove("dragover"));
+        stage.addEventListener("drop", (event) => { event.preventDefault(); stage.classList.remove("dragover"); const file = event.dataTransfer.files?.[0]; if (file) readFile(slot, file); });
+      }
+      function setDrawHint(message, active = false) { $("drawHint").textContent = message; $("drawHint").classList.toggle("draw-active", active); }
+      function imageSplitMetrics() {
+        const grid = $("imageGrid"), handle = $("imageResizeHandle");
+        const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
+        const uiScale = (Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16;
+        const available = grid.getBoundingClientRect().width - handle.getBoundingClientRect().width - gap * 2;
+        return {
+          available,
+          minSource: Math.min(320 * uiScale, available * 0.42),
+          minTemplate: Math.min(245 * uiScale, available * 0.38),
+          keyboardStep: 24 * uiScale,
+        };
+      }
+      function setImageSplit(sourceWidth, metrics) {
+        if (metrics.available <= 0) return;
+        const low = metrics.minSource, high = Math.max(low, metrics.available - metrics.minTemplate);
+        const source = Math.max(low, Math.min(high, sourceWidth));
+        const template = metrics.available - source;
+        const grid = $("imageGrid"), handle = $("imageResizeHandle");
+        grid.style.setProperty("--source-fr", `${source}fr`);
+        grid.style.setProperty("--template-fr", `${template}fr`);
+        handle.setAttribute("aria-valuemin", String(Math.round(low / metrics.available * 100)));
+        handle.setAttribute("aria-valuemax", String(Math.round(high / metrics.available * 100)));
+        handle.setAttribute("aria-valuenow", String(Math.round(source / metrics.available * 100)));
+      }
+      $("imageResizeHandle").addEventListener("pointerdown", (event) => {
+        if (window.matchMedia("(max-width: 1125px)").matches) return;
+        event.preventDefault();
+        const handle = event.currentTarget, metrics = imageSplitMetrics();
+        if (metrics.available <= 0) return;
+        const startX = event.clientX, startWidth = $("sourceCard").getBoundingClientRect().width;
+        handle.setPointerCapture(event.pointerId); handle.classList.add("dragging");
+        const move = (moveEvent) => setImageSplit(startWidth + moveEvent.clientX - startX, metrics);
+        const end = () => {
+          handle.removeEventListener("pointermove", move); handle.removeEventListener("pointerup", end); handle.removeEventListener("pointercancel", end);
+          handle.classList.remove("dragging");
+        };
+        handle.addEventListener("pointermove", move); handle.addEventListener("pointerup", end, { once: true });
+        handle.addEventListener("pointercancel", end, { once: true });
+      });
+      $("imageResizeHandle").addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        const metrics = imageSplitMetrics(), width = $("sourceCard").getBoundingClientRect().width;
+        setImageSplit(width + (event.key === "ArrowRight" ? metrics.keyboardStep : -metrics.keyboardStep), metrics);
+      });
+      $("sourceCanvas").addEventListener("pointerdown", (event) => {
+        if (!state.drawRoi || !state.source) return;
+        const canvas = $("sourceCanvas"), bounds = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / bounds.width, scaleY = canvas.height / bounds.height;
+        const startX = Math.max(0, Math.min(canvas.width, Math.round((event.clientX - bounds.left) * scaleX))), startY = Math.max(0, Math.min(canvas.height, Math.round((event.clientY - bounds.top) * scaleY)));
+        canvas.setPointerCapture(event.pointerId);
+        const move = (moveEvent) => {
+          const endX = Math.max(0, Math.min(canvas.width, Math.round((moveEvent.clientX - bounds.left) * scaleX)));
+          const endY = Math.max(0, Math.min(canvas.height, Math.round((moveEvent.clientY - bounds.top) * scaleY)));
+          fields(["roiX", "roiY", "roiW", "roiH"]).forEach((el, i) => { el.value = [Math.min(startX, endX), Math.min(startY, endY), Math.abs(endX - startX), Math.abs(endY - startY)][i]; });
+          $("pipelineRoi").checked = false; drawSourceCanvas();
+        };
+        const end = () => { canvas.removeEventListener("pointermove", move); canvas.removeEventListener("pointerup", end); canvas.removeEventListener("pointercancel", end); state.drawRoi = false; drawSourceCanvas(); };
+        canvas.addEventListener("pointermove", move); canvas.addEventListener("pointerup", end, { once: true });
+        canvas.addEventListener("pointercancel", end, { once: true });
+      });
+
+      bindImageSlot("source", "sourceCard", "sourceStage", "sourceFile", "sourceUpload");
+      bindImageSlot("template", "templateCard", "templateStage", "templateFile", "templateUpload");
+      document.addEventListener("paste", (event) => {
+        const items = Array.from(event.clipboardData?.items || []); const image = items.find((item) => item.type.startsWith("image/"));
+        if (!image) return;
+        event.preventDefault(); const file = image.getAsFile();
+        if (file && activeView === "roi") loadRoiImage(file);
+        else if (file) readFile(state.activeSlot, file);
+      });
+      $("matchTab").addEventListener("click", () => switchView("match"));
+      $("roiTab").addEventListener("click", () => switchView("roi"));
+      [$("matchTab"), $("roiTab")].forEach((tab) => tab.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault(); const next = tab.id === "matchTab" ? $("roiTab") : $("matchTab"); next.focus(); next.click();
+      }));
+      $("roiUpload").addEventListener("click", () => $("roiFile").click());
+      $("roiFile").addEventListener("change", () => { loadRoiImage($("roiFile").files?.[0]); $("roiFile").value = ""; });
+      $("roiClearImage").addEventListener("click", clearRoiImage);
+      $("roiRefreshDevices").addEventListener("click", loadDevices);
+      $("roiCaptureButton").addEventListener("click", captureRoi);
+      $("roiZoom").addEventListener("input", (event) => setRoiZoom(event.target.value));
+      $("roiZoomReset").addEventListener("click", () => setRoiZoom(100));
+      bindSearchCombo("roiPipelineSearch", "roiPipelineOptions", roiPipelineItems, selectRoiPipeline, () => roiPipelineLabel($("roiPipelineSelect").value));
+      bindSearchCombo("roiNodeSearch", "roiNodeOptions", roiNodeItems, selectRoiNode, () => {
+        const entry = state.entries[Number($("roiNodeSelect").value)]; return entry ? roiNodeLabel(entry) : "";
+      });
+      $("roiApplyPipeline").addEventListener("click", applyPipelineRoi);
+      $("roiApplyFields").addEventListener("click", applyRoiFields);
+      $("roiApplyArray").addEventListener("click", applyRoiArray);
+      $("roiArrayInput").addEventListener("keydown", (event) => { if (event.key === "Enter") applyRoiArray(); });
+      $("roiApplyXywh").addEventListener("click", applyRoiXywh);
+      $("roiXywhInput").addEventListener("keydown", (event) => { if (event.key === "Enter") applyRoiXywh(); });
+      $("roiUndo").addEventListener("click", undoRoi);
+      $("roiClear").addEventListener("click", clearRois);
+      $("roiCopy").addEventListener("click", copyRoi);
+      $("roiViewport").addEventListener("contextmenu", (event) => { event.preventDefault(); if (activeView === "roi") undoRoi(); });
+      $("roiViewport").addEventListener("dragover", (event) => { event.preventDefault(); $("roiViewport").classList.add("dragover"); });
+      $("roiViewport").addEventListener("dragleave", () => $("roiViewport").classList.remove("dragover"));
+      $("roiViewport").addEventListener("drop", (event) => {
+        event.preventDefault(); $("roiViewport").classList.remove("dragover");
+        const file = event.dataTransfer.files?.[0]; if (file) loadRoiImage(file);
+      });
+      $("roiCanvas").addEventListener("pointerdown", (event) => {
+        if (event.button !== 0 || !roiState.image || activeView !== "roi") return;
+        event.preventDefault(); const canvas = $("roiCanvas"), start = roiPoint(event), pointerId = event.pointerId;
+        canvas.setPointerCapture(pointerId); roiState.preview = { x1: start.x, y1: start.y, x2: start.x, y2: start.y };
+        updateRoiUi(); drawRoiCanvas();
+        const move = (moveEvent) => {
+          if (moveEvent.pointerId !== pointerId) return;
+          const point = roiPoint(moveEvent);
+          roiState.preview = { x1: Math.min(start.x, point.x), y1: Math.min(start.y, point.y), x2: Math.max(start.x, point.x), y2: Math.max(start.y, point.y) };
+          updateRoiUi(); drawRoiCanvas();
+        };
+        const cleanup = () => {
+          canvas.removeEventListener("pointermove", move); canvas.removeEventListener("pointerup", finish); canvas.removeEventListener("pointercancel", cancel);
+          if (roiState.dragCleanup === cleanup) roiState.dragCleanup = null;
+        };
+        const finish = (finishEvent) => {
+          if (finishEvent.pointerId !== pointerId) return;
+          const point = roiPoint(finishEvent);
+          const box = normalizeRoi([start.x, start.y, point.x, point.y]);
+          cleanup(); roiState.preview = null;
+          if (box) addRoi(box); else { drawRoiCanvas(); updateRoiUi(); }
+        };
+        const cancel = (cancelEvent) => { if (cancelEvent.pointerId !== pointerId) return; cleanup(); roiState.preview = null; drawRoiCanvas(); updateRoiUi(); };
+        roiState.dragCleanup = cleanup;
+        canvas.addEventListener("pointermove", move); canvas.addEventListener("pointerup", finish); canvas.addEventListener("pointercancel", cancel);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (activeView !== "roi") return;
+        if (event.key === "Escape") { event.preventDefault(); clearRois(); return; }
+        const editable = event.target instanceof HTMLElement && event.target.matches("input, textarea, select, [contenteditable='true']");
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z" && !editable) { event.preventDefault(); undoRoi(); }
+      });
+      document.querySelectorAll(".mode-button").forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
+      $("templateScaleSlider").addEventListener("input", (event) => updateTemplateScale(event.target.value));
+      $("templateScaleInput").addEventListener("input", (event) => {
+        const value = event.target.value.trim();
+        if (!value) return;
+        const numeric = Number(value);
+        if (Number.isFinite(numeric) && numeric >= 10 && numeric <= 300) updateTemplateScale(numeric);
+      });
+      $("templateScaleInput").addEventListener("change", (event) => updateTemplateScale(event.target.value));
+      updateTemplateScale(state.templateScale);
+      $("themeToggle").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true));
+      $("pipelineSelect").addEventListener("change", renderNodeOptions);
+      $("nodeSelect").addEventListener("change", (event) => selectNode(event.target.value));
+      $("refreshPipelines").addEventListener("click", () => loadPipelines(true).catch((error) => toast(error.message)));
+      $("roiRefreshPipelines").addEventListener("click", () => loadPipelines(true).catch((error) => toast(error.message)));
+      $("pipelineRoi").addEventListener("change", drawSourceCanvas);
+      fields(["roiX", "roiY", "roiW", "roiH"]).forEach((el) => el.addEventListener("input", () => { $("pipelineRoi").checked = false; drawSourceCanvas(); }));
+      $("drawRoiButton").addEventListener("click", () => {
+        if (!state.source) return toast("先放入待搜索画面，再框选 ROI。");
+        state.drawRoi = true; state.activeSlot = "source"; setDrawHint("拖动鼠标框选 ROI…", true);
+      });
+      $("runButton").addEventListener("click", runMatch);
+      $("captureButton").addEventListener("click", capture);
+      $("refreshDevices").addEventListener("click", loadDevices);
+      $("stopButton").addEventListener("click", async () => {
+        try { await api("/api/shutdown", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); document.body.innerHTML = "<main style='font:0.9375rem Segoe UI,sans-serif;margin:12vh auto;max-width:35rem;text-align:center;color:#334138'><h2>Maa 图像匹配实验室已关闭</h2><p>可以重新点击“启动图像匹配工具”快捷方式打开。</p></main>"; }
+        catch (error) { toast(error.message); }
+      });
+      loadHealth(); loadDevices(); loadPipelines().catch((error) => showError(error.message));
+    </script>
+  </body>
+</html>
