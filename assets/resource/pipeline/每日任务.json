@@ -1,1074 +1,24 @@
 {
     "$__mpe_config_日常": {
         "$__mpe_code": {
-            "prefix": "",
             "filePath": "D:\\code\\MGA - test\\assets\\resource\\pipeline\\每日任务.json",
-            "lastSyncTime": 1781750513808,
+            "filename": "日常",
             "isModifiedExternally": false,
-            "coordinateMode": "absolute-v1",
+            "lastSyncTime": 1775358748440,
+            "prefix": "",
             "savedViewport": {
-                "x": 646,
-                "y": 1035,
+                "x": 1319,
+                "y": 123,
                 "zoom": 0.63
             },
-            "filename": "日常",
-            "version": "v1.6.1"
+            "version": "v1.4.0"
         }
     },
     "$__mpe_external_返回主画面入口_日常": {
         "$__mpe_code": {
             "position": {
-                "x": 1218,
-                "y": 728
-            },
-            "extra_positions": [
-                {
-                    "x": 1218,
-                    "y": 728
-                },
-                {
-                    "x": 2465,
-                    "y": 454
-                },
-                {
-                    "x": 1719,
-                    "y": 195
-                },
-                {
-                    "x": 1684,
-                    "y": -418
-                },
-                {
-                    "x": -301,
-                    "y": 216
-                },
-                {
-                    "x": 3074,
-                    "y": -643
-                }
-            ]
-        }
-    },
-    "主画面检测": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "RANK"
-                ]
-            }
-        },
-        "timeout": 5000,
-        "next": [
-            "点击tap_to_next",
-            "进入商店",
-            "登录体力领取",
-            "领取战舰体力",
-            "AP消耗",
-            "开发任务",
-            "日常奖励",
-            "领取礼物",
-            "结束出口"
-        ],
-        "on_error": [
-            {
-                "name": "返回主画面入口",
-                "jump_back": true
-            }
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": -428,
-                "y": -362
-            }
-        }
-    },
-    "免费商品检测": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "免费"
-                ]
-            }
-        },
-        "timeout": 5000,
-        "focus": {
-            "Node.Recognition.Failed": "已经购买过免费商品"
-        },
-        "next": [
-            "执行免费商品购买"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 880,
-                "y": 375
-            }
-        }
-    },
-    "全部领取": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "全部领取"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "确认领取礼物"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 714,
-                "y": -1491
-            }
-        }
-    },
-    "关闭商品页面": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "关闭"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "购买成功退出"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1815,
-                "y": 407
-            }
-        }
-    },
-    "开发任务": {
-        "enabled": true,
-        "max_hit": 1,
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "开发"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "开始执行开发强化任务"
-        },
-        "next": [
-            "点击0079"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 286,
-                "y": -663
-            }
-        }
-    },
-    "执行": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    376,
-                    608,
-                    509,
-                    96
-                ],
-                "expected": [
-                    "执行"
-                ]
-            }
-        },
-        "pre_wait_freezes": 400,
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "等待画面",
-            "执行"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2485,
-                "y": -709
-            }
-        },
-        "max_hit": 3
-    },
-    "执行开发": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "执行开发"
-                ]
-            }
-        },
-        "pre_wait_freezes": 200,
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "执行"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2225,
-                "y": -710
-            }
-        }
-    },
-    "日常奖励": {
-        "enabled": false,
-        "max_hit": 1,
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "使命"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "进入日常奖励领取"
-        },
-        "next": [
-            "领取日常奖励"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 220,
-                "y": -1170
-            }
-        }
-    },
-    "检测失败退出": {
-        "pre_delay": 200,
-        "post_delay": 200,
-        "focus": {
-            "Node.Action.Starting": "未检测到免费商品，开始返回主画面"
-        },
-        "next": [
-            "返回主画面入口"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 860,
-                "y": 657
-            }
-        }
-    },
-    "点击0079": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": [
-                    "0079.png"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "点击终极"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 651,
-                "y": -718
-            }
-        }
-    },
-    "点击全部开发": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "全部开发"
-                ]
-            }
-        },
-        "pre_wait_freezes": 200,
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "开发等待"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1724,
-                "y": -715
-            }
-        }
-    },
-    "点击刚坦克": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": [
-                    "刚坦克.png"
-                ]
-            }
-        },
-        "pre_wait_freezes": 500,
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "点击全部开发"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1464,
-                "y": -715
-            }
-        }
-    },
-    "进入商店": {
-        "enabled": false,
-        "max_hit": 1,
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "商店"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "开始执行商店购买任务"
-        },
-        "next": [
-            "点击高级"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 237,
-                "y": 370
-            }
-        }
-    },
-    "点击地球联邦": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "地球联邦"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "点击刚坦克"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1210,
-                "y": -708
-            }
-        }
-    },
-    "点击战舰": {
-        "recognition": {
-            "param": {
-                "expected": [
-                    "巡航"
-                ]
-            },
-            "type": "OCR"
-        },
-        "action": {
-            "param": {
-                "target_offset": [
-                    0,
-                    0,
-                    0,
-                    0
-                ]
-            },
-            "type": "Click"
-        },
-        "timeout": 2000,
-        "next": [
-            "领取"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 662,
-                "y": -512
-            }
-        }
-    },
-    "点击终极": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "终极"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "点击地球联邦"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 942,
-                "y": -718
-            }
-        }
-    },
-    "点击高级": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "高级"
-                ]
-            }
-        },
-        "pre_delay": 200,
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 2000,
-        "next": [
-            "免费商品检测"
-        ],
-        "on_error": [
-            "检测失败退出"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 528,
-                "y": 373
-            }
-        }
-    },
-    "登录体力领取": {
-        "enabled": false,
-        "max_hit": 1,
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "使命"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "开始领取登录体力"
-        },
-        "next": [
-            "领取体力"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 294,
-                "y": -10
-            }
-        }
-    },
-    "确认购买": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    663,
-                    630,
-                    221,
-                    72
-                ],
-                "expected": [
-                    "购买"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "attach": {},
-        "next": [
-            "关闭商品页面"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1501,
-                "y": 380
-            }
-        }
-    },
-    "确认领取战舰体力": {
-        "recognition": {
-            "param": {
-                "expected": [
-                    "OK",
-                    "0K",
-                    "@K"
-                ]
-            },
-            "type": "OCR"
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Action.Succeeded": "战舰体力领取成功",
-            "Node.Recognition.Failed": "未领取成功"
-        },
-        "next": [
-            "返回主画面入口"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1324,
-                "y": -490
-            }
-        }
-    },
-    "确认领取日常奖励": {
-        "recognition": {
-            "param": {
-                "expected": [
-                    "OK",
-                    "0K",
-                    "@K"
-                ]
-            },
-            "type": "OCR"
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "日常奖励领取成功"
-        },
-        "$__mpe_code": {
-            "position": {
-                "x": 1059,
-                "y": -1187
-            }
-        }
-    },
-    "确认领取登录体力": {
-        "recognition": {
-            "param": {
-                "template": [
-                    "OK.png"
-                ]
-            },
-            "type": "TemplateMatch"
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "体力领取成功退出"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 943,
-                "y": -15
-            }
-        }
-    },
-    "确认领取礼物": {
-        "recognition": {
-            "param": {
-                "expected": [
-                    "OK",
-                    "0K",
-                    "@K"
-                ]
-            },
-            "type": "OCR"
-        },
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 2000,
-        "$__mpe_code": {
-            "position": {
-                "x": 1121,
-                "y": -1489
-            }
-        }
-    },
-    "等待画面": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "TAP"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "post_wait_freezes": 200,
-        "focus": {
-            "Node.Action.Succeeded": "开发强化任务成功"
-        },
-        "next": [
-            "返回主画面入口"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2745,
-                "y": -709
-            }
-        }
-    },
-    "结束出口": {
-        "enabled": true,
-        "action": {
-            "type": "StopTask"
-        },
-        "focus": {
-            "Node.Recognition.Starting": "任务结束"
-        },
-        "$__mpe_code": {
-            "position": {
-                "x": 143,
-                "y": -1816
-            }
-        }
-    },
-    "购买成功退出": {
-        "pre_delay": 200,
-        "post_delay": 200,
-        "focus": {
-            "Node.Recognition.Starting": "免费购买已完成"
-        },
-        "next": [
-            "返回主画面入口"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2145,
-                "y": 397
-            }
-        }
-    },
-    "领取": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "全部回收"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 2000,
-        "next": [
-            "确认领取战舰体力"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 960,
-                "y": -503
-            }
-        }
-    },
-    "领取体力": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "全部领取"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 10000,
-        "next": [
-            "确认领取登录体力"
-        ],
-        "on_error": [
-            "体力领取失败"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 622,
-                "y": 18
-            }
-        }
-    },
-    "领取战舰体力": {
-        "enabled": false,
-        "max_hit": 1,
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "个人基地"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 2000,
-        "focus": {
-            "Node.Recognition.Succeeded": "开始领取战舰体力"
-        },
-        "next": [
-            "点击战舰"
-        ],
-        "on_error": [
-            "向左滑动"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 314,
-                "y": -358
-            }
-        }
-    },
-    "领取日常奖励": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "全部领取"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 2000,
-        "next": [
-            "确认领取日常奖励"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 711,
-                "y": -1197
-            }
-        }
-    },
-    "领取礼物": {
-        "enabled": false,
-        "max_hit": 1,
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "礼物"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "开始领取礼物"
-        },
-        "next": [
-            "全部领取"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 225,
-                "y": -1532
-            }
-        }
-    },
-    "开始唤醒": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "START"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "timeout": 45000,
-        "next": [
-            "游戏唤醒_状态轮询"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": -1468,
-                "y": -344
-            }
-        }
-    },
-    "唤醒失败": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "重试",
-                    "人类",
-                    "返回标题"
-                ]
-            }
-        },
-        "action": {
-            "type": "StopTask"
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "MGA_TASK_FAILED: 发生意外错误，请检查网络以及模拟器状况"
-        },
-        "$__mpe_code": {
-            "position": {
-                "x": -1344,
-                "y": 90
-            }
-        }
-    },
-    "日常任务入口": {
-        "timeout": 2000,
-        "next": [
-            {
-                "name": "主画面检测",
-                "jump_back": true
-            }
-        ],
-        "on_error": [
-            {
-                "name": "返回主画面入口",
-                "jump_back": true
-            }
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": -782,
-                "y": -37
-            }
-        }
-    },
-    "体力领取成功退出": {
-        "focus": {
-            "Node.Action.Starting": "体力领取成功"
-        },
-        "next": [
-            "返回主画面入口"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1362,
-                "y": -2
-            }
-        }
-    },
-    "体力领取失败": {
-        "action": {
-            "type": "Custom"
-        },
-        "focus": {
-            "Node.Action.Starting": "体力领取失败"
-        },
-        "next": [
-            "返回主画面入口"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 950,
-                "y": 161
-            }
-        }
-    },
-    "尝试战舰巡航复位": {
-        "next": [
-            "上复位"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 631,
-                "y": -176
-            }
-        }
-    },
-    "上复位": {
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    635,
-                    91,
-                    54,
-                    41
-                ],
-                "end": [
-                    [
-                        746,
-                        478,
-                        29,
-                        65
-                    ]
-                ]
-            }
-        },
-        "repeat": 2,
-        "repeat_delay": 200,
-        "next": [
-            "右复位"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 950,
-                "y": -229
-            }
-        }
-    },
-    "右复位": {
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    1010,
-                    335,
-                    157,
-                    43
-                ],
-                "end": [
-                    [
-                        147,
-                        334,
-                        155,
-                        33
-                    ]
-                ]
-            }
-        },
-        "repeat": 2,
-        "repeat_delay": 200,
-        "next": [
-            "向左滑动"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1227,
-                "y": -221
-            }
-        }
-    },
-    "向左滑动": {
-        "action": {
-            "type": "Swipe",
-            "param": {
-                "begin": [
-                    294,
-                    249,
-                    105,
-                    27
-                ],
-                "end": [
-                    [
-                        841,
-                        279,
-                        160,
-                        38
-                    ]
-                ],
-                "duration": [
-                    500
-                ]
-            }
-        },
-        "next": [
-            "点击战舰"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1483,
-                "y": -205
-            }
-        },
-        "max_hit": 3,
-        "on_error": [
-            "向左滑动",
-            "战舰体力查找失败"
-        ],
-        "timeout": 2000
-    },
-    "开发等待": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    571,
-                    43,
-                    143,
-                    41
-                ],
-                "expected": [
-                    "全部开发"
-                ]
-            }
-        },
-        "next": [
-            "执行开发"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1964,
-                "y": -701
-            }
-        }
-    },
-    "执行免费商品购买": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "购买"
-                ],
-                "order_by": "Horizontal",
-                "index": 0
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "确认购买"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1194,
-                "y": 394
+                "x": -1276,
+                "y": 299
             }
         }
     },
@@ -1090,6 +40,71 @@
             "Node.Recognition.Succeeded": "进入每日AP消耗任务"
         },
         "max_hit": 1
+    },
+    "上复位": {
+        "$__mpe_code": {
+            "position": {
+                "x": 944,
+                "y": -287
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    574,
+                    319,
+                    56,
+                    17
+                ],
+                "end": [
+                    [
+                        493,
+                        503,
+                        44,
+                        19
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "next": [
+            "右复位"
+        ],
+        "repeat": 4
+    },
+    "主画面检测": {
+        "$__mpe_code": {
+            "position": {
+                "x": -391,
+                "y": -321
+            }
+        },
+        "next": [
+            "点击tap_to_next",
+            "进入商店",
+            "登录体力领取",
+            "领取战舰体力",
+            "AP消耗",
+            "开发任务",
+            "日常奖励",
+            "领取礼物",
+            "结束出口"
+        ],
+        "on_error": [
+            {
+                "jump_back": true,
+                "name": "返回主画面"
+            }
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "RANK"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
     },
     "点击tap_to_next": {
         "$__mpe_code": {
@@ -1121,6 +136,176 @@
         },
         "timeout": 3000
     },
+    "体力领取失败": {
+        "$__mpe_code": {
+            "position": {
+                "x": 964,
+                "y": -15
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Starting": "体力领取失败，开始返回主页"
+        }
+    },
+    "体力领取成功退出": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1387,
+                "y": -87
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Starting": "体力领取成功，开始返回主页"
+        }
+    },
+    "免费商品检测": {
+        "$__mpe_code": {
+            "position": {
+                "x": 905,
+                "y": 207
+            }
+        },
+        "focus": {
+            "Node.Recognition.Failed": "已经购买过免费商品"
+        },
+        "next": [
+            "商品购买"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "免费"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 5000
+    },
+    "全部领取": {
+        "$__mpe_code": {
+            "position": {
+                "x": 847,
+                "y": -1263
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "确认领取礼物"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部领取"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "关闭商品页面": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1778,
+                "y": 308
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "购买成功退出"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "关闭"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "右复位": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1237,
+                "y": -274
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    1010,
+                    335,
+                    157,
+                    43
+                ],
+                "end": [
+                    [
+                        147,
+                        334,
+                        155,
+                        33
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "next": [
+            "向左滑动"
+        ],
+        "repeat": 4
+    },
+    "向左滑动": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1542,
+                "y": -263
+            }
+        },
+        "action": {
+            "param": {
+                "begin": [
+                    294,
+                    249,
+                    105,
+                    27
+                ],
+                "end": [
+                    [
+                        841,
+                        279,
+                        160,
+                        38
+                    ]
+                ]
+            },
+            "type": "Swipe"
+        },
+        "max_hit": 3,
+        "next": [
+            "点击战舰"
+        ],
+        "on_error": [
+            "向左滑动",
+            "战舰体力查找失败"
+        ],
+        "timeout": 2000
+    },
     "战舰体力查找失败": {
         "$__mpe_code": {
             "position": {
@@ -1136,6 +321,31 @@
         },
         "focus": {
             "Node.Action.Starting": "MGA_TASK_FAILED: 战舰体力领取失败，4次未找到战舰，跳过该分支，开始返回主页"
+        }
+    },
+    "唤醒失败": {
+        "$__mpe_code": {
+            "position": {
+                "x": -1050,
+                "y": 39
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "StopTask"
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "MGA_TASK_FAILED: 发生意外错误，请检查网络以及模拟器状况"
+        },
+        "recognition": {
+            "param": {
+                "expected": [
+                    "重试",
+                    "人类",
+                    "返回标题"
+                ]
+            },
+            "type": "OCR"
         }
     },
     "商品购买": {
@@ -1154,6 +364,69 @@
         "next": [
             "确认购买"
         ]
+    },
+    "尝试战舰巡航复位": {
+        "$__mpe_code": {
+            "position": {
+                "x": 664,
+                "y": -251
+            }
+        },
+        "next": [
+            "上复位"
+        ]
+    },
+    "开发任务": {
+        "$__mpe_code": {
+            "position": {
+                "x": 331,
+                "y": -701
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "enabled": true,
+        "focus": {
+            "Node.Recognition.Succeeded": "开始执行开发强化任务"
+        },
+        "max_hit": 1,
+        "next": [
+            "点击00799"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "开发"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "开始唤醒": {
+        "$__mpe_code": {
+            "position": {
+                "x": -1454,
+                "y": -308
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "游戏唤醒_状态轮询"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "START"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 45000
     },
     "游戏唤醒_状态轮询": {
         "$__mpe_code": {
@@ -1295,6 +568,130 @@
             "type": "Custom"
         }
     },
+    "执行": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2244,
+                "y": -715
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "max_hit": 3,
+        "next": [
+            "等待画面",
+            "执行"
+        ],
+        "pre_wait_freezes": 200,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "执行"
+                ],
+                "roi": [
+                    376,
+                    608,
+                    509,
+                    96
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "执行开发": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1984,
+                "y": -715
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "执行"
+        ],
+        "pre_wait_freezes": 200,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "执行开发"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "日常任务入口": {
+        "$__mpe_code": {
+            "position": {
+                "x": -782,
+                "y": -37
+            }
+        },
+        "next": [
+            {
+                "jump_back": true,
+                "name": "主画面检测"
+            }
+        ],
+        "on_error": [
+            {
+                "jump_back": true,
+                "name": "返回主画面"
+            }
+        ],
+        "timeout": 2000
+    },
+    "日常奖励": {
+        "$__mpe_code": {
+            "position": {
+                "x": 337,
+                "y": -950
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "enabled": false,
+        "focus": {
+            "Node.Recognition.Succeeded": "进入日常奖励领取"
+        },
+        "max_hit": 1,
+        "next": [
+            "领取日常奖励"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "使命"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "检测失败退出": {
+        "$__mpe_code": {
+            "position": {
+                "x": 895,
+                "y": 469
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Action.Starting": "未检测到免费商品，开始返回主画面"
+        },
+        "post_delay": 200,
+        "pre_delay": 200
+    },
     "测试节点": {
         "$__mpe_code": {
             "position": {
@@ -1329,6 +726,401 @@
             "type": "TemplateMatch"
         }
     },
+    "点击全部开发": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1724,
+                "y": -715
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "开发等待"
+        ],
+        "pre_wait_freezes": 200,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部开发"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "开发等待": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1964,
+                "y": -701
+            }
+        },
+        "next": [
+            "执行开发"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部开发"
+                ],
+                "roi": [
+                    571,
+                    43,
+                    143,
+                    41
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "点击刚坦克": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1464,
+                "y": -715
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "点击全部开发"
+        ],
+        "pre_wait_freezes": 500,
+        "recognition": {
+            "param": {
+                "template": [
+                    "刚坦克.png"
+                ]
+            },
+            "type": "TemplateMatch"
+        }
+    },
+    "点击地球联邦": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1202,
+                "y": -681
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "点击刚坦克"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "地球联邦"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "点击战舰": {
+        "$__mpe_code": {
+            "position": {
+                "x": 675,
+                "y": -545
+            }
+        },
+        "action": {
+            "param": {
+                "target_offset": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "type": "Click"
+        },
+        "next": [
+            "领取"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "巡航"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "点击终极": {
+        "$__mpe_code": {
+            "position": {
+                "x": 942,
+                "y": -718
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "点击地球联邦"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "终极"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "点击高级": {
+        "$__mpe_code": {
+            "position": {
+                "x": 528,
+                "y": 373
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "免费商品检测"
+        ],
+        "on_error": [
+            "检测失败退出"
+        ],
+        "pre_delay": 200,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "高级"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "登录体力领取": {
+        "$__mpe_code": {
+            "position": {
+                "x": 329,
+                "y": -62
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "enabled": false,
+        "focus": {
+            "Node.Recognition.Succeeded": "开始领取登录体力"
+        },
+        "max_hit": 1,
+        "next": [
+            "领取体力"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "使命"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "确认购买": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1524,
+                "y": 296
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "attach": {},
+        "next": [
+            "关闭商品页面"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "购买"
+                ],
+                "roi": [
+                    663,
+                    630,
+                    221,
+                    72
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "确认领取战舰体力": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1344,
+                "y": -517
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Action.Succeeded": "战舰体力领取成功",
+            "Node.Recognition.Failed": "未领取成功"
+        },
+        "next": [
+            "战舰巡航结算"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "OK",
+                    "0K",
+                    "@K"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "确认领取日常奖励": {
+        "$__mpe_code": {
+            "position": {
+                "x": 975,
+                "y": -951
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "日常奖励领取成功"
+        },
+        "recognition": {
+            "param": {
+                "expected": [
+                    "OK",
+                    "0K",
+                    "@K"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "确认领取登录体力": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1010,
+                "y": -159
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "体力领取成功退出"
+        ],
+        "recognition": {
+            "param": {
+                "template": [
+                    "OK.png"
+                ]
+            },
+            "type": "TemplateMatch"
+        }
+    },
+    "确认领取礼物": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1232,
+                "y": -1261
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "recognition": {
+            "param": {
+                "expected": [
+                    "OK",
+                    "0K",
+                    "@K"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "等待画面": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2504,
+                "y": -715
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Action.Succeeded": "开发强化任务成功"
+        },
+        "post_wait_freezes": 200,
+        "recognition": {
+            "param": {
+                "expected": [
+                    "TAP"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "结束出口": {
+        "$__mpe_code": {
+            "position": {
+                "x": 320,
+                "y": -1436
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "StopTask"
+        },
+        "enabled": true,
+        "focus": {
+            "Node.Recognition.Starting": "任务结束"
+        }
+    },
+    "购买成功退出": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2065,
+                "y": 284
+            }
+        },
+        "action": {
+            "param": {
+                "custom_action": "强制返回主页"
+            },
+            "type": "Custom"
+        },
+        "focus": {
+            "Node.Recognition.Starting": "免费购买已完成"
+        },
+        "post_delay": 200,
+        "pre_delay": 200
+    },
     "返回主画面": {
         "$__mpe_code": {
             "position": {
@@ -1346,5 +1138,171 @@
             "Node.Action.Failed": "MGA_TASK_FAILED: 强制返回主页失败"
         },
         "timeout": 5000
+    },
+    "进入商店": {
+        "$__mpe_code": {
+            "position": {
+                "x": 218,
+                "y": 285
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "enabled": false,
+        "focus": {
+            "Node.Recognition.Succeeded": "开始执行商店购买任务"
+        },
+        "max_hit": 1,
+        "next": [
+            "点击高级"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "商店"
+                ]
+            },
+            "type": "OCR"
+        }
+    },
+    "领取": {
+        "$__mpe_code": {
+            "position": {
+                "x": 970,
+                "y": -523
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "确认领取战舰体力"
+        ],
+        "on_error": [
+            "战舰巡航结算"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部回收"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "领取体力": {
+        "$__mpe_code": {
+            "position": {
+                "x": 630,
+                "y": -94
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "确认领取登录体力"
+        ],
+        "on_error": [
+            "体力领取失败"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部领取"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 10000
+    },
+    "领取战舰体力": {
+        "$__mpe_code": {
+            "position": {
+                "x": 329,
+                "y": -405
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "enabled": false,
+        "focus": {
+            "Node.Recognition.Succeeded": "开始领取战舰体力"
+        },
+        "max_hit": 1,
+        "next": [
+            "点击战舰"
+        ],
+        "on_error": [
+            "向左滑动"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "个人基地"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "领取日常奖励": {
+        "$__mpe_code": {
+            "position": {
+                "x": 646,
+                "y": -961
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "next": [
+            "确认领取日常奖励"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "全部领取"
+                ]
+            },
+            "type": "OCR"
+        },
+        "timeout": 2000
+    },
+    "领取礼物": {
+        "$__mpe_code": {
+            "position": {
+                "x": 309,
+                "y": -1255
+            }
+        },
+        "action": {
+            "param": {},
+            "type": "Click"
+        },
+        "enabled": false,
+        "focus": {
+            "Node.Recognition.Succeeded": "开始领取礼物"
+        },
+        "max_hit": 1,
+        "next": [
+            "全部领取"
+        ],
+        "recognition": {
+            "param": {
+                "expected": [
+                    "礼物"
+                ]
+            },
+            "type": "OCR"
+        }
     }
 }
