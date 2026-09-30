@@ -108,7 +108,7 @@ def install_resource():
 def install_chores():
     """复制杂项文件"""
     print("Copying docs...")
-    for file in ["README.md", "LICENSE"]:
+    for file in ["README.md", "LICENSE", "启动MGA.cmd", "adb路径配置.cmd", "start_mga.ps1"]:
         src = working_dir / file
         if src.exists():
             shutil.copy2(src, install_path)
@@ -117,12 +117,31 @@ def install_agent():
     """复制 Agent 脚本"""
     print("Copying agent scripts...")
     agent_src = working_dir / "agent"
-    if agent_src.exists():
-        shutil.copytree(
-            agent_src,
-            install_path / "agent",
-            dirs_exist_ok=True,
-        )
+    required_modules = (
+        "start_agent.py",
+        "SmartShopBuy.py",
+        "ReturnHome.py",
+        "StageSelect.py",
+        "BatchStageSweep.py",
+        "DailyBattle.py",
+        "GP.py",
+        "RunTask.py",
+        "RoleRequirementTracker.py",
+        "RoleRequirementDelivery.py",
+        "RoleRequirementCommission.py",
+    )
+    missing = [name for name in required_modules if not (agent_src / name).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Required Agent scripts are missing: {', '.join(missing)}")
+
+    shutil.copytree(
+        agent_src,
+        install_path / "agent",
+        dirs_exist_ok=True,
+    )
+    missing = [name for name in required_modules if not (install_path / "agent" / name).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Packaged Agent scripts are missing: {', '.join(missing)}")
 
 if __name__ == "__main__":
     install_path.mkdir(parents=True, exist_ok=True)

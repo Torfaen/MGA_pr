@@ -3,23 +3,50 @@
         "$__mpe_code": {
             "prefix": "",
             "filePath": "D:\\code\\MGA - test\\assets\\resource\\pipeline\\战斗.json",
-            "lastSyncTime": 1781751760253,
+            "lastSyncTime": 1776057514466,
             "isModifiedExternally": false,
-            "coordinateMode": "absolute-v1",
             "savedViewport": {
-                "x": 1293,
-                "y": 649,
-                "zoom": 0.69
+                "x": -1632,
+                "y": 1405,
+                "zoom": 0.63
             },
             "filename": "战斗",
-            "version": "v1.6.1"
+            "version": "v1.4.1"
         }
     },
-    "$__mpe_external_返回主画面入口_战斗": {
+    "体力耗尽": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "关闭"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "next": [
+            "退出关卡"
+        ],
         "$__mpe_code": {
             "position": {
-                "x": -767,
-                "y": -227
+                "x": 5725,
+                "y": -1687
+            }
+        }
+    },
+    "战斗出口": {
+        "action": {
+            "type": "StopTask",
+            "param": {}
+        },
+        "focus": "战斗任务完成",
+        "$__mpe_code": {
+            "position": {
+                "x": 5799,
+                "y": -1308
             }
         }
     },
@@ -40,7 +67,8 @@
         },
         "pre_wait_freezes": 200,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": {
             "time": 1000,
@@ -128,6 +156,20 @@
             }
         }
     },
+    "主页返回": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "强制返回主页"
+            }
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": -819,
+                "y": -224
+            }
+        }
+    },
     "体力不够退出": {
         "recognition": {
             "type": "OCR",
@@ -138,7 +180,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "focus": {
             "Node.Action.Succeeded": "体力不够，退出任务"
@@ -289,7 +332,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": 500,
         "next": [
@@ -373,7 +417,8 @@
         },
         "pre_wait_freezes": 2000,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "focus": {
             "Node.Recognition.Succeeded": "本次战斗完成，开始下一次战斗"
@@ -405,7 +450,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": 2000,
         "rate_limit": 500,
@@ -452,7 +498,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "$__mpe_code": {
             "position": {
@@ -507,7 +554,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "进入对应历史关卡"
@@ -531,9 +579,10 @@
                 ]
             }
         },
-        "pre_wait_freezes": 100,
+        "pre_wait_freezes": 200,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "focus": {
             "Node.Recognition.Succeeded": "成功识别到目标"
@@ -590,7 +639,8 @@
         },
         "pre_wait_freezes": 150,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "timeout": 500000,
         "rate_limit": 10000,
@@ -624,7 +674,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "进入主要关卡"
@@ -638,15 +689,16 @@
     },
     "意外失败": {
         "action": {
-            "type": "StopTask"
+            "type": "StopTask",
+            "param": {}
         },
         "focus": {
             "Node.Recognition.Succeeded": "MGA_TASK_FAILED: 关卡意外失败"
         },
         "$__mpe_code": {
             "position": {
-                "x": 4023,
-                "y": -1042
+                "x": 3999,
+                "y": -1110
             }
         }
     },
@@ -747,6 +799,7 @@
                 "expected": [
                     "执行",
                     "下载",
+                    "AP不足",
                     "出击",
                     "出击次数",
                     "MENU",
@@ -772,6 +825,7 @@
         "timeout": 500000,
         "rate_limit": 1000,
         "next": [
+            "故事开荒_体力不足异常检测",
             "故事开荒_固定小队执行",
             "故事开荒_资源下载",
             "故事开荒_消耗次数出击",
@@ -803,15 +857,8 @@
         "recognition": {
             "type": "OCR",
             "param": {
-                "roi": [
-                    536,
-                    280,
-                    188,
-                    73
-                ],
-                "expected": [
-                    "AP不足"
-                ]
+                "roi": [536, 280, 188, 73],
+                "expected": ["AP不足"]
             }
         },
         "action": {
@@ -832,18 +879,9 @@
         "recognition": {
             "type": "TemplateMatch",
             "param": {
-                "roi": [
-                    643,
-                    531,
-                    243,
-                    73
-                ],
-                "template": [
-                    "按钮_是.png"
-                ],
-                "threshold": [
-                    0.75
-                ]
+                "roi": [643, 531, 243, 73],
+                "template": ["按钮_是.png"],
+                "threshold": [0.75]
             }
         },
         "action": {
@@ -864,15 +902,8 @@
         "recognition": {
             "type": "OCR",
             "param": {
-                "roi": [
-                    399,
-                    530,
-                    225,
-                    72
-                ],
-                "expected": [
-                    "取消"
-                ]
+                "roi": [399, 530, 225, 72],
+                "expected": ["取消"]
             }
         },
         "action": {
@@ -892,18 +923,9 @@
         "recognition": {
             "type": "TemplateMatch",
             "param": {
-                "roi": [
-                    0,
-                    0,
-                    170,
-                    90
-                ],
-                "template": [
-                    "返回.png"
-                ],
-                "threshold": [
-                    0.75
-                ]
+                "roi": [0, 0, 170, 90],
+                "template": ["返回.png"],
+                "threshold": [0.75]
             }
         },
         "action": {
@@ -936,9 +958,7 @@
         "recognition": {
             "type": "OCR",
             "param": {
-                "expected": [
-                    "关闭"
-                ]
+                "expected": ["关闭"]
             }
         },
         "action": {
@@ -2213,26 +2233,25 @@
         }
     },
     "战斗入口": {
-        "timeout": 2000,
+        "timeout": 5000,
         "next": [
-            "战斗检测主画面"
-        ],
-        "on_error": [
+            "战斗检测主画面",
             {
-                "name": "返回主画面入口",
+                "name": "主页返回",
                 "jump_back": true
             }
         ],
         "$__mpe_code": {
             "position": {
-                "x": -1184,
-                "y": -507
+                "x": -1188,
+                "y": -498
             }
         }
     },
     "战斗寻找错误退出": {
         "action": {
-            "type": "StopTask"
+            "type": "StopTask",
+            "param": {}
         },
         "focus": {
             "Node.Action.Succeeded": "战斗寻找意外错误"
@@ -2261,8 +2280,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": -766,
-                "y": -511
+                "x": -768,
+                "y": -498
             }
         }
     },
@@ -2276,7 +2295,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "略过结果_状态轮询"
@@ -2434,7 +2454,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "执行关卡略过"
@@ -2494,11 +2515,11 @@
                 ]
             }
         },
-        "post_wait_freezes": 50,
+        "post_wait_freezes": 200,
         "$__mpe_code": {
             "position": {
-                "x": 585,
-                "y": -181
+                "x": 741,
+                "y": -184
             }
         }
     },
@@ -2514,7 +2535,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "focus": {
             "Node.Action.Succeeded": "关卡略过成功"
@@ -2551,7 +2573,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": 1000,
         "next": [
@@ -2602,7 +2625,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": 3500,
         "focus": {
@@ -2678,7 +2702,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "timeout": 200,
         "next": [
@@ -2693,8 +2718,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": -23,
-                "y": -520
+                "x": 2,
+                "y": -487
             }
         }
     },
@@ -2745,7 +2770,8 @@
         },
         "pre_wait_freezes": 200,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "出击任务"
@@ -2768,7 +2794,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "寻找目标历史关卡"
@@ -2788,105 +2815,48 @@
         "action": {
             "type": "Swipe",
             "param": {
-                "begin": [
-                    111,
-                    337,
-                    26,
-                    27
-                ],
-                "end": [
-                    [
-                        111,
-                        150,
-                        26,
-                        27
-                    ]
-                ]
+                "begin": [111, 337, 26, 27],
+                "end": [[111, 150, 26, 27]]
             }
         },
         "post_wait_freezes": 200,
-        "next": [
-            "寻找目标历史关卡"
-        ],
-        "on_error": [
-            "历史故事上滑重试2"
-        ],
+        "next": ["寻找目标历史关卡"],
+        "on_error": ["历史故事上滑重试2"],
         "timeout": 1500,
         "$__mpe_code": {
-            "position": {
-                "x": 574,
-                "y": -1099
-            }
+            "position": {"x": 574, "y": -1099}
         }
     },
     "历史故事上滑重试2": {
         "action": {
             "type": "Swipe",
             "param": {
-                "begin": [
-                    111,
-                    337,
-                    26,
-                    27
-                ],
-                "end": [
-                    [
-                        111,
-                        150,
-                        26,
-                        27
-                    ]
-                ]
+                "begin": [111, 337, 26, 27],
+                "end": [[111, 150, 26, 27]]
             }
         },
         "post_wait_freezes": 200,
-        "next": [
-            "寻找目标历史关卡"
-        ],
-        "on_error": [
-            "历史故事上滑重试3"
-        ],
+        "next": ["寻找目标历史关卡"],
+        "on_error": ["历史故事上滑重试3"],
         "timeout": 1500,
         "$__mpe_code": {
-            "position": {
-                "x": 834,
-                "y": -1099
-            }
+            "position": {"x": 834, "y": -1099}
         }
     },
     "历史故事上滑重试3": {
         "action": {
             "type": "Swipe",
             "param": {
-                "begin": [
-                    111,
-                    337,
-                    26,
-                    27
-                ],
-                "end": [
-                    [
-                        111,
-                        150,
-                        26,
-                        27
-                    ]
-                ]
+                "begin": [111, 337, 26, 27],
+                "end": [[111, 150, 26, 27]]
             }
         },
         "post_wait_freezes": 200,
-        "next": [
-            "寻找目标历史关卡"
-        ],
-        "on_error": [
-            "战斗寻找错误退出"
-        ],
+        "next": ["寻找目标历史关卡"],
+        "on_error": ["战斗寻找错误退出"],
         "timeout": 1500,
         "$__mpe_code": {
-            "position": {
-                "x": 1094,
-                "y": -1099
-            }
+            "position": {"x": 1094, "y": -1099}
         }
     },
     "进入历史关卡选择": {
@@ -2906,7 +2876,8 @@
         },
         "pre_delay": 1000,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": 200,
         "timeout": 200,
@@ -2942,7 +2913,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "进入历史关卡选择"
@@ -2963,9 +2935,10 @@
                 ]
             }
         },
-        "pre_wait_freezes": 200,
+        "pre_wait_freezes": 20,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "post_wait_freezes": 200,
         "timeout": 1000,
@@ -2996,7 +2969,8 @@
         },
         "pre_wait_freezes": 1000,
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "focus": {
             "Node.Action.Succeeded": "退出关卡"
@@ -3021,7 +2995,8 @@
             }
         },
         "action": {
-            "type": "StopTask"
+            "type": "StopTask",
+            "param": {}
         },
         "focus": {
             "Node.Recognition.Succeeded": "扫荡次数达到上限，退出任务"
@@ -3043,7 +3018,8 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {}
         },
         "next": [
             "关卡结算"
@@ -3052,54 +3028,6 @@
             "position": {
                 "x": 4604,
                 "y": -1128
-            }
-        }
-    },
-    "体力耗尽": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "关闭"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "退出关卡"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 5725,
-                "y": -1687
-            }
-        }
-    },
-    "战斗出口": {
-        "action": {
-            "type": "StopTask"
-        },
-        "focus": "战斗任务完成",
-        "$__mpe_code": {
-            "position": {
-                "x": 5799,
-                "y": -1308
-            }
-        }
-    },
-    "主页返回": {
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "强制返回主页"
-            }
-        },
-        "$__mpe_code": {
-            "position": {
-                "x": -819,
-                "y": -224
             }
         }
     }

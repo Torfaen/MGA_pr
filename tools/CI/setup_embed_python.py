@@ -79,9 +79,9 @@ def setup_embed_python():
     os.remove(get_pip_path)
 
     # 5. 安装基础依赖
-    print("Installing dependencies (maafw, numpy)...")
+    print("Installing dependencies from requirements.txt...")
     subprocess.check_call([str(PYTHON_EXE), "-m", "pip", "install", "--upgrade", "pip"])
-    subprocess.check_call([str(PYTHON_EXE), "-m", "pip", "install", "maafw", "numpy"])
+    subprocess.check_call([str(PYTHON_EXE), "-m", "pip", "install", "-r", str(PROJECT_ROOT / "requirements.txt")])
 
     # 6. 补齐标准库 (从宿主环境复制 Lib)
     host_python_lib = Path(sys.executable).parent / "Lib"
