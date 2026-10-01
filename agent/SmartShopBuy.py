@@ -9,7 +9,7 @@ class SmartShopBuy(CustomAction):
         try:
             # 1. 截图与识别
             image = context.tasker.controller.post_screencap().wait().get()
-            
+
             # 识别“免费”
             rec_free = context.run_recognition("Free_Tag_OCR", image, {
                 "Free_Tag_OCR": {"recognition": "OCR", "expected": "免费"}
@@ -30,12 +30,12 @@ class SmartShopBuy(CustomAction):
             free_box = rec_free.best_result.box
             free_cx = free_box[0] + free_box[2] / 2
             free_cy = free_box[1] + free_box[3] / 2
-            
+
             print(f"[智能购买] 免费标签中心: ({free_cx:.1f}, {free_cy:.1f})")
 
             # 3. 核心逻辑：筛选文本 + 寻找“左下方” + “距离最近”
             best_btn = None
-            min_dist_sq = float('inf') 
+            min_dist_sq = float('inf')
 
             for btn in rec_buy.filtered_results:
                 text = getattr(btn, "text","")

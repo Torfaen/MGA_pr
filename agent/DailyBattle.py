@@ -9,7 +9,7 @@ class DailyBattle(CustomAction):
         context.run_task("战斗入口")
         print("完成第一次战斗")
         context.run_task("战斗入口",pipeline_override={
-                    
+
                         "关卡匹配": {
                         "action": {
                         "param": {
@@ -22,7 +22,7 @@ class DailyBattle(CustomAction):
                         }
                         }
         }
-                    
-                    
+
+
                 )
         print("完成第二次战斗")
