@@ -285,7 +285,7 @@
             "Node.Recognition.Succeeded": "强敌目标进入成功：已识别「选择关卡」"
         },
         "next": [
-            "略过关卡",
+            "强敌来袭：略过合法性检测",
             "强敌来袭：进入出击准备"
         ],
         "$__mpe_code": {
@@ -385,7 +385,7 @@
     },
     "强敌来袭：选择强敌来袭": {
         "recognition": {
-            "type": "OCR",
+            "type": "TemplateMatch",
             "param": {
                 "roi": [
                     0,
@@ -393,8 +393,8 @@
                     256,
                     720
                 ],
-                "expected": [
-                    "强敌来袭"
+                "template": [
+                    "强敌来袭/强敌来袭.PNG"
                 ]
             }
         },
@@ -445,7 +445,7 @@
             "type": "TemplateMatch",
             "param": {
                 "template": [
-                    "强敌来袭/斯德毕尔.PNG"
+                    "强敌来袭/里格・林格.PNG"
                 ],
                 "threshold": [
                     0.65
@@ -504,5 +504,70 @@
                 "y": -708
             }
         }
+    },
+    "强敌来袭：略过合法性检测": {
+        "enabled": true,
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "next": [
+            "强敌来袭：略过不可用",
+            "强敌来袭：略过合法"
+        ],
+        "timeout": 3000
+    },
+    "强敌来袭：略过不可用": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    641,
+                    2,
+                    636,
+                    654
+                ],
+                "template": [
+                    "强敌来袭/略过锁定.PNG"
+                ],
+                "threshold": [
+                    0.85
+                ]
+            }
+        },
+        "action": {
+            "type": "StopTask",
+            "param": {}
+        },
+        "focus": {
+            "Node.Action.Starting": "MGA_TASK_FAILED: 强敌关卡略过尚未解锁，请手动通关后重试，停止任务"
+        }
+    },
+    "强敌来袭：略过合法": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    641,
+                    2,
+                    636,
+                    654
+                ],
+                "template": [
+                    "强敌来袭/略过锁定.PNG"
+                ],
+                "threshold": [
+                    0.85
+                ]
+            }
+        },
+        "inverse": true,
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "next": [
+            "略过关卡"
+        ]
     }
 }
