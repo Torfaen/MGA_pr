@@ -32,4 +32,4 @@ jobs:
 
       - name: Check Resource
         run: |
-            python ${{ github.workspace }}/tools/CI/check_resource.py ${{ github.workspace }}/assets/resource/
+            python ./tools/CI/check_resource.py ./assets/resource/

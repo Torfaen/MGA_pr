@@ -469,3 +469,9 @@ tools/CI/build_install_windows.ps1
 /assets/resource/units_info/cache/
 /启动图像匹配工具.lnk
 /tools/match-lab/启动匹配实验室.lnk
+
+# Local matching tool and bug report exports
+/tools/match-lab/
+/bug-report-auto/
+/bug-report-enemy-sweep/
+/bug-report-sweep-roi/

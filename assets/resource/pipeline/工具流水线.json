@@ -348,10 +348,26 @@
             }
         },
         "next": [
+            "点击tap to next",
             "点击关闭/取消",
             "点击主画面",
             "点击返回"
         ],
+        "timeout": 2000
+    },
+    "点击tap to next": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": ["TAP"]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_delay": 400,
+        "next": ["返回主画面入口"],
         "timeout": 2000
     }
 }
