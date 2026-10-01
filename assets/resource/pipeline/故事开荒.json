@@ -128,6 +128,7 @@
         "rate_limit": 1000,
         "next": [
             "故事开荒_体力不足异常检测",
+            "故事开荒_编制异常确认",
             "故事开荒_固定小队执行",
             "故事开荒_资源下载",
             "故事开荒_消耗次数出击",
@@ -135,7 +136,7 @@
             "故事开荒_点击出击",
             "故事开荒_剧情Skip",
             "故事开荒_寻找点击Menu",
-            "故事开荒_点击战斗说明",
+            "故事开荒_点击TapToNext",
             "故事开荒_战斗结束过渡等待",
             "故事开荒_进入auto检查",
             "故事开荒_进入倍速检查",
@@ -317,15 +318,58 @@
             }
         }
     },
+    "故事开荒_编制异常确认": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [302, 182, 686, 155],
+                "expected": ["不符合地形", "编制内有空位"]
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "timeout": 10000,
+        "rate_limit": 1000,
+        "next": [
+            "故事开荒_编制异常点击出击"
+        ],
+        "on_error": [
+            "故事开荒_出击后状态轮询"
+        ]
+    },
+    "故事开荒_编制异常点击出击": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [650, 530, 235, 80],
+                "expected": ["出击"]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {}
+        },
+        "post_wait_freezes": 500,
+        "timeout": 120000,
+        "rate_limit": 1000,
+        "next": [
+            "故事开荒_出击后状态轮询"
+        ],
+        "on_error": [
+            "故事开荒_出击后状态轮询"
+        ]
+    },
     "故事开荒_消耗次数出击": {
         "recognition": {
             "type": "OCR",
             "param": {
                 "roi": [
-                    640,
-                    560,
-                    260,
-                    90
+                    637,
+                    526,
+                    264,
+                    121
                 ],
                 "expected": [
                     "出击"
@@ -550,23 +594,15 @@
             }
         }
     },
-    "故事开荒_点击战斗说明": {
+    "故事开荒_点击TapToNext": {
         "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "roi": [
-                    0,
-                    360,
-                    1280,
-                    360
-                ],
-                "template": [
-                    "战斗说明TAP_TO_NEXT.png"
-                ],
-                "threshold": [
-                    0.75
-                ]
-            }
+          "type": "OCR",
+          "param": {
+            "roi": [381, 558, 519, 162],
+            "expected": [
+              "TAP"
+            ]
+          }
         },
         "pre_wait_freezes": 300,
         "action": {
@@ -660,7 +696,7 @@
         "next": [
             "故事开荒_剧情Skip",
             "故事开荒_寻找点击Menu",
-            "故事开荒_点击战斗说明",
+            "故事开荒_点击TapToNext",
             "故事开荒_进入auto检查",
             "故事开荒_进入倍速检查",
             "故事开荒_奖励回故事",
@@ -737,7 +773,7 @@
         "next": [
             "故事开荒_剧情Skip",
             "故事开荒_寻找点击Menu",
-            "故事开荒_点击战斗说明",
+            "故事开荒_点击TapToNext",
             "故事开荒_战斗结束过渡等待",
             "故事开荒_奖励回故事",
             "故事开荒_奖励选关",
@@ -1028,33 +1064,51 @@
     },
     "故事开荒_结算后状态轮询": {
         "recognition": {
-            "type": "OCR",
-            "param": {
+          "type": "Or",
+          "param": {
+            "any_of": [
+              {
+                "recognition": "OCR",
                 "roi": [
-                    0,
-                    0,
-                    1280,
-                    590
+                  1080,
+                  120,
+                  200,
+                  260
                 ],
                 "expected": [
-                    "故事",
-                    "选择关卡",
-                    "继续",
-                    "REWARD",
-                    "BATTLE CLEAR",
-                    "达成胜利条件",
-                    "MENU",
-                    "SKIP",
-                    "TAP",
-                    "NEXT",
-                    "STAGE",
-                    "事件关卡",
-                    "历史关卡",
-                    "Loading",
-                    "Louding",
-                    "ロード"
-                ]
-            }
+                  "SKIP"
+                ],
+                "sub_name": "结算后_SKIP识别"
+              },
+              {
+                "recognition": "OCR",
+                "roi": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "expected": [
+                  "故事",
+                  "选择关卡",
+                  "继续",
+                  "REWARD",
+                  "BATTLE CLEAR",
+                  "达成胜利条件",
+                  "MENU",
+                  "TAP",
+                  "NEXT",
+                  "STAGE",
+                  "事件关卡",
+                  "历史关卡",
+                  "Loading",
+                  "Louding",
+                  "ロード"
+                ],
+                "sub_name": "结算后_全屏状态识别"
+              }
+            ]
+          }
         },
         "timeout": 500000,
         "rate_limit": 1000,
@@ -1066,8 +1120,7 @@
             "故事开荒_结算明细等待",
             "故事开荒_奖励后剧情Skip",
             "故事开荒_奖励后剧情Menu",
-            "故事开荒_点击战斗说明OCR",
-            "故事开荒_点击战斗说明",
+            "故事开荒_点击TapToNext",
             "故事开荒_回到关卡页"
         ],
         "on_error": [
@@ -1258,27 +1311,48 @@
     },
     "故事开荒_进入倍速检查": {
         "recognition": {
-            "type": "ColorMatch",
-            "param": {
+          "type": "And",
+          "param": {
+            "all_of": [
+              {
+                "recognition": "TemplateMatch",
                 "roi": [
-                    1100,
-                    16,
-                    68,
-                    37
+                  1100,
+                  16,
+                  68,
+                  37
+                ],
+                "template": [
+                  "倍速.png"
+                ],
+                "threshold": [
+                  0.6
+                ]
+              },
+              {
+                "recognition": "ColorMatch",
+                "roi": [
+                  1100,
+                  16,
+                  68,
+                  37
                 ],
                 "method": 4,
                 "lower": [
-                    220,
-                    220,
-                    220
+                  220,
+                  220,
+                  220
                 ],
                 "upper": [
-                    255,
-                    255,
-                    255
+                  255,
+                  255,
+                  255
                 ],
                 "count": 100
-            }
+              }
+            ],
+            "box_index": 0
+          }
         },
         "timeout": 500000,
         "rate_limit": 1000,
@@ -1322,7 +1396,7 @@
             }
         },
         "pre_delay": 1000,
-        "timeout": 1000,
+        "timeout": 500000,
         "next": [
             "故事开荒_战斗中状态轮询"
         ],
@@ -1372,7 +1446,7 @@
             }
         },
         "post_wait_freezes": 1000,
-        "timeout": 1000,
+        "timeout": 500000,
         "next": [
             "故事开荒_战斗中状态轮询"
         ],
