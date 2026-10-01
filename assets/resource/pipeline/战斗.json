@@ -735,7 +735,7 @@
     "战斗入口": {
         "timeout": 5000,
         "next": [
-            "战斗检测主画面",
+            "检测主画面",
             {
                 "name": "主页返回",
                 "jump_back": true
@@ -763,10 +763,11 @@
             }
         }
     },
-    "战斗检测主画面": {
+    "检测主画面": {
         "recognition": {
             "type": "OCR",
             "param": {
+                "roi": [0, 0, 244, 179],
                 "expected": [
                     "RANK"
                 ]
@@ -833,7 +834,7 @@
     },
     "略过结果_TAP_TO_NEXT": {
         "recognition": {
-            "type": "TemplateMatch",
+            "type": "OCR",
             "param": {
                 "roi": [
                     0,
@@ -841,11 +842,8 @@
                     1280,
                     360
                 ],
-                "template": [
-                    "战斗说明TAP_TO_NEXT.png"
-                ],
-                "threshold": [
-                    0.75
+                "expected": [
+                    "TAP"
                 ]
             }
         },

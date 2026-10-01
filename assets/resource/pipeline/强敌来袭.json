@@ -125,7 +125,7 @@
     "强敌来袭：入口": {
         "timeout": 5000,
         "next": [
-            "强敌来袭：检测主画面",
+            "检测主画面",
             {
                 "name": "强敌来袭：主页返回",
                 "jump_back": true
@@ -199,38 +199,6 @@
             }
         }
     },
-    "强敌来袭：开始进入关卡": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    0,
-                    630,
-                    1280,
-                    90
-                ],
-                "expected": [
-                    "关卡"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {}
-        },
-        "focus": {
-            "Node.Action.Succeeded": "进入关卡点击成功（强敌来袭）"
-        },
-        "next": [
-            "强敌来袭：进入事件关"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": -414,
-                "y": -340
-            }
-        }
-    },
     "强敌来袭：强敌界面检测": {
         "recognition": {
             "type": "OCR",
@@ -292,28 +260,6 @@
             "position": {
                 "x": 1959,
                 "y": -512
-            }
-        }
-    },
-    "强敌来袭：检测主画面": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "RANK"
-                ]
-            }
-        },
-        "focus": {
-            "Node.Recognition.Succeeded": "检测到当前为主画面（强敌来袭）"
-        },
-        "next": [
-            "强敌来袭：开始进入关卡"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": -770,
-                "y": -340
             }
         }
     },
