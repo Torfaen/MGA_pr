@@ -465,19 +465,38 @@
     },
     "强敌来袭：略过不可用": {
         "recognition": {
-            "type": "TemplateMatch",
+            "type": "Or",
             "param": {
-                "roi": [
-                    641,
-                    2,
-                    636,
-                    654
-                ],
-                "template": [
-                    "强敌来袭/略过锁定.PNG"
-                ],
-                "threshold": [
-                    0.85
+                "any_of": [
+                    {
+                        "recognition": "TemplateMatch",
+                        "roi": [
+                            641,
+                            2,
+                            636,
+                            654
+                        ],
+                        "template": [
+                            "强敌来袭/略过锁定.PNG"
+                        ],
+                        "threshold": [
+                            0.85
+                        ],
+                        "sub_name": "略过锁定图标"
+                    },
+                    {
+                        "recognition": "OCR",
+                        "roi": [
+                            1175,
+                            75,
+                            66,
+                            37
+                        ],
+                        "expected": [
+                            "0/"
+                        ],
+                        "sub_name": "略过次数耗尽"
+                    }
                 ]
             }
         },
@@ -486,24 +505,43 @@
             "param": {}
         },
         "focus": {
-            "Node.Action.Starting": "MGA_TASK_FAILED: 强敌关卡略过尚未解锁，请手动通关后重试，停止任务"
+            "Node.Action.Starting": "MGA_TASK_FAILED: 强敌关卡略过尚未解锁或略过次数已用完，停止任务"
         }
     },
     "强敌来袭：略过合法": {
         "recognition": {
-            "type": "TemplateMatch",
+            "type": "Or",
             "param": {
-                "roi": [
-                    641,
-                    2,
-                    636,
-                    654
-                ],
-                "template": [
-                    "强敌来袭/略过锁定.PNG"
-                ],
-                "threshold": [
-                    0.85
+                "any_of": [
+                    {
+                        "recognition": "TemplateMatch",
+                        "roi": [
+                            641,
+                            2,
+                            636,
+                            654
+                        ],
+                        "template": [
+                            "强敌来袭/略过锁定.PNG"
+                        ],
+                        "threshold": [
+                            0.85
+                        ],
+                        "sub_name": "略过锁定图标"
+                    },
+                    {
+                        "recognition": "OCR",
+                        "roi": [
+                            1175,
+                            75,
+                            66,
+                            37
+                        ],
+                        "expected": [
+                            "0/"
+                        ],
+                        "sub_name": "略过次数耗尽"
+                    }
                 ]
             }
         },
