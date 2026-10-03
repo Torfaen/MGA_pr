@@ -476,7 +476,8 @@
                     640
                 ],
                 "template": [
-                    "角色要求/委托开发_N.png"
+                    "角色要求/委托开发_N.png",
+                    "角色要求/委托开发_N小.png"
                 ],
                 "detector": "SIFT",
                 "count": 4,
@@ -536,7 +537,8 @@
                     640
                 ],
                 "template": [
-                    "角色要求/委托开发_R.png"
+                    "角色要求/委托开发_R.png",
+                    "角色要求/委托开发_R小.png"
                 ],
                 "detector": "SIFT",
                 "count": 4,
@@ -596,7 +598,8 @@
                     640
                 ],
                 "template": [
-                    "角色要求/委托开发_SR.png"
+                    "角色要求/委托开发_SR.png",
+                    "角色要求/委托开发_SR小.png"
                 ],
                 "detector": "SIFT",
                 "count": 4,
