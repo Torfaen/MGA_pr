@@ -387,7 +387,7 @@
             "param": {},
             "type": "Click"
         },
-        "enabled": true,
+        "enabled": false,
         "focus": {
             "Node.Recognition.Succeeded": "开始执行开发强化任务"
         },
