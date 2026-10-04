@@ -61,7 +61,10 @@
         "recognition": {
             "param": {
                 "method": 5,
-                "template": "AccelGundamListIcon.PNG",
+                "template": [
+                    "加速器/AccelGundamListIcon.PNG",
+                    "加速器/GundamListIcon2.PNG"
+                ],
                 "threshold": [
                     0.6
                 ]
