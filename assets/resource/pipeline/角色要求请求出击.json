@@ -4,50 +4,51 @@
             "filename": "角色要求请求出击"
         }
     },
-    "角色要求_检测左角色请求出击_全检查": {
-        "recognition": { "type": "OCR", "param": { "expected": ["请求出击"], "roi": [640, 80, 600, 300] } },
-        "action": { "type": "DoNothing", "param": {} },
-        "next": ["角色要求_处理左角色请求出击"]
+    "角色要求_检测请求出击_全检查": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "请求出击"
+                ],
+                "roi": [
+                    640,
+                    80,
+                    600,
+                    300
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "next": [
+            "角色要求_处理请求出击"
+        ]
     },
-    "角色要求_检测中角色请求出击_全检查": {
-        "recognition": { "type": "OCR", "param": { "expected": ["请求出击"], "roi": [640, 80, 600, 300] } },
-        "action": { "type": "DoNothing", "param": {} },
-        "next": ["角色要求_处理中角色请求出击"]
-    },
-    "角色要求_检测右角色请求出击_全检查": {
-        "recognition": { "type": "OCR", "param": { "expected": ["请求出击"], "roi": [640, 80, 600, 300] } },
-        "action": { "type": "DoNothing", "param": {} },
-        "next": ["角色要求_处理右角色请求出击"]
-    },
-    "角色要求_处理左角色请求出击": {
-        "recognition": { "type": "DirectHit", "param": {} },
-        "action": { "type": "Custom", "param": { "custom_action": "角色要求执行并记录", "custom_action_param": { "slot": "左", "type": "请求出击", "entry": "角色要求_请求出击入口状态分流" } } },
-        "next": ["角色要求_等待角色列表_全检查"],
-        "on_error": ["角色要求_左角色请求出击失败状态"]
-    },
-    "角色要求_处理中角色请求出击": {
-        "recognition": { "type": "DirectHit", "param": {} },
-        "action": { "type": "Custom", "param": { "custom_action": "角色要求执行并记录", "custom_action_param": { "slot": "中", "type": "请求出击", "entry": "角色要求_请求出击入口状态分流" } } },
-        "next": ["角色要求_等待角色列表_全检查"],
-        "on_error": ["角色要求_中角色请求出击失败状态"]
-    },
-    "角色要求_处理右角色请求出击": {
-        "recognition": { "type": "DirectHit", "param": {} },
-        "action": { "type": "Custom", "param": { "custom_action": "角色要求执行并记录", "custom_action_param": { "slot": "右", "type": "请求出击", "entry": "角色要求_请求出击入口状态分流" } } },
-        "next": ["角色要求_等待角色列表_全检查"],
-        "on_error": ["角色要求_右角色请求出击失败状态"]
-    },
-    "角色要求_左角色请求出击失败状态": {
-        "action": { "type": "DoNothing", "param": {} },
-        "next": ["角色要求_左角色返回列表_全检查"]
-    },
-    "角色要求_中角色请求出击失败状态": {
-        "action": { "type": "DoNothing", "param": {} },
-        "next": ["角色要求_中角色返回列表_全检查"]
-    },
-    "角色要求_右角色请求出击失败状态": {
-        "action": { "type": "DoNothing", "param": {} },
-        "next": ["角色要求_右角色返回列表_全检查"]
+    "角色要求_处理请求出击": {
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "角色要求执行并记录",
+                "custom_action_param": {
+                    "slot": "当前",
+                    "type": "请求出击",
+                    "entry": "角色要求_请求出击入口状态分流"
+                }
+            }
+        },
+        "next": [
+            "角色要求_等待角色列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_处理失败返回列表"
+        ]
     },
     "角色要求_请求出击入口状态分流": {
         "recognition": { "type": "DirectHit", "param": {} },

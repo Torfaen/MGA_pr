@@ -4,7 +4,7 @@
             "filename": "角色要求委托开发"
         }
     },
-    "角色要求_检测左角色委托开发_全检查": {
+    "角色要求_检测委托开发_全检查": {
         "recognition": {
             "type": "OCR",
             "param": {
@@ -25,13 +25,13 @@
         },
         "timeout": 3000,
         "next": [
-            "角色要求_处理左角色委托开发"
+            "角色要求_处理委托开发"
         ],
         "on_error": [
-            "角色要求_记录左角色跳过"
+            "角色要求_记录当前角色跳过"
         ]
     },
-    "角色要求_处理左角色委托开发": {
+    "角色要求_处理委托开发": {
         "recognition": {
             "type": "DirectHit",
             "param": {}
@@ -41,7 +41,7 @@
             "param": {
                 "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
-                    "slot": "左",
+                    "slot": "当前",
                     "type": "委托开发",
                     "entry": "角色要求_委托开发入口状态分流"
                 }
@@ -52,160 +52,7 @@
             "角色要求_等待角色列表_全检查"
         ],
         "on_error": [
-            "角色要求_左角色委托开发失败状态"
-        ]
-    },
-    "角色要求_左角色委托开发失败状态": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {}
-        },
-        "action": {
-            "type": "DoNothing",
-            "param": {}
-        },
-        "timeout": 10000,
-        "next": [
-            "角色要求_左角色返回列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ]
-    },
-    "角色要求_检测中角色委托开发_全检查": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "委托开发"
-                ],
-                "roi": [
-                    640,
-                    80,
-                    600,
-                    300
-                ]
-            }
-        },
-        "action": {
-            "type": "DoNothing",
-            "param": {}
-        },
-        "timeout": 3000,
-        "next": [
-            "角色要求_处理中角色委托开发"
-        ],
-        "on_error": [
-            "角色要求_记录中角色跳过"
-        ]
-    },
-    "角色要求_处理中角色委托开发": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {}
-        },
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "角色要求执行并记录",
-                "custom_action_param": {
-                    "slot": "中",
-                    "type": "委托开发",
-                    "entry": "角色要求_委托开发入口状态分流"
-                }
-            }
-        },
-        "timeout": 10000,
-        "next": [
-            "角色要求_等待角色列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_中角色委托开发失败状态"
-        ]
-    },
-    "角色要求_中角色委托开发失败状态": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {}
-        },
-        "action": {
-            "type": "DoNothing",
-            "param": {}
-        },
-        "timeout": 10000,
-        "next": [
-            "角色要求_中角色返回列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ]
-    },
-    "角色要求_检测右角色委托开发_全检查": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "expected": [
-                    "委托开发"
-                ],
-                "roi": [
-                    640,
-                    80,
-                    600,
-                    300
-                ]
-            }
-        },
-        "action": {
-            "type": "DoNothing",
-            "param": {}
-        },
-        "timeout": 3000,
-        "next": [
-            "角色要求_处理右角色委托开发"
-        ],
-        "on_error": [
-            "角色要求_记录右角色跳过"
-        ]
-    },
-    "角色要求_处理右角色委托开发": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {}
-        },
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "角色要求执行并记录",
-                "custom_action_param": {
-                    "slot": "右",
-                    "type": "委托开发",
-                    "entry": "角色要求_委托开发入口状态分流"
-                }
-            }
-        },
-        "timeout": 10000,
-        "next": [
-            "角色要求_等待角色列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_右角色委托开发失败状态"
-        ]
-    },
-    "角色要求_右角色委托开发失败状态": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {}
-        },
-        "action": {
-            "type": "DoNothing",
-            "param": {}
-        },
-        "timeout": 10000,
-        "next": [
-            "角色要求_右角色返回列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
+            "角色要求_处理失败返回列表"
         ]
     },
     "角色要求_委托开发入口状态分流": {
