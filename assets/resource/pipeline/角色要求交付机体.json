@@ -4,7 +4,7 @@
             "filename": "角色要求交付机体"
         }
     },
-    "角色要求_检测左角色交付机体_全检查": {
+    "角色要求_检测交付机体_全检查": {
         "$__mpe_code": {
             "position": {
                 "x": 0,
@@ -16,10 +16,10 @@
             "type": "DoNothing"
         },
         "next": [
-            "角色要求_处理左角色交付机体"
+            "角色要求_处理交付机体"
         ],
         "on_error": [
-            "角色要求_记录左角色跳过"
+            "角色要求_记录当前角色跳过"
         ],
         "recognition": {
             "param": {
@@ -37,73 +37,7 @@
         },
         "timeout": 3000
     },
-    "角色要求_检测中角色交付机体_全检查": {
-        "$__mpe_code": {
-            "position": {
-                "x": 0,
-                "y": -160
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_处理中角色交付机体"
-        ],
-        "on_error": [
-            "角色要求_记录中角色跳过"
-        ],
-        "recognition": {
-            "param": {
-                "expected": [
-                    "交付机体"
-                ],
-                "roi": [
-                    640,
-                    80,
-                    600,
-                    300
-                ]
-            },
-            "type": "OCR"
-        },
-        "timeout": 3000
-    },
-    "角色要求_检测右角色交付机体_全检查": {
-        "$__mpe_code": {
-            "position": {
-                "x": 0,
-                "y": 0
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_处理右角色交付机体"
-        ],
-        "on_error": [
-            "角色要求_记录右角色跳过"
-        ],
-        "recognition": {
-            "param": {
-                "expected": [
-                    "交付机体"
-                ],
-                "roi": [
-                    640,
-                    80,
-                    600,
-                    300
-                ]
-            },
-            "type": "OCR"
-        },
-        "timeout": 3000
-    },
-    "角色要求_处理左角色交付机体": {
+    "角色要求_处理交付机体": {
         "$__mpe_code": {
             "position": {
                 "x": 240,
@@ -114,7 +48,7 @@
             "param": {
                 "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
-                    "slot": "左",
+                    "slot": "当前",
                     "type": "交付机体",
                     "entry": "角色要求_交付机体入口状态分流"
                 }
@@ -125,67 +59,7 @@
             "角色要求_等待角色列表_全检查"
         ],
         "on_error": [
-            "角色要求_左角色交付机体失败状态"
-        ],
-        "recognition": {
-            "param": {},
-            "type": "DirectHit"
-        },
-        "timeout": 10000
-    },
-    "角色要求_处理中角色交付机体": {
-        "$__mpe_code": {
-            "position": {
-                "x": 240,
-                "y": -160
-            }
-        },
-        "action": {
-            "param": {
-                "custom_action": "角色要求执行并记录",
-                "custom_action_param": {
-                    "slot": "中",
-                    "type": "交付机体",
-                    "entry": "角色要求_交付机体入口状态分流"
-                }
-            },
-            "type": "Custom"
-        },
-        "next": [
-            "角色要求_等待角色列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_中角色交付机体失败状态"
-        ],
-        "recognition": {
-            "param": {},
-            "type": "DirectHit"
-        },
-        "timeout": 10000
-    },
-    "角色要求_处理右角色交付机体": {
-        "$__mpe_code": {
-            "position": {
-                "x": 240,
-                "y": 0
-            }
-        },
-        "action": {
-            "param": {
-                "custom_action": "角色要求执行并记录",
-                "custom_action_param": {
-                    "slot": "右",
-                    "type": "交付机体",
-                    "entry": "角色要求_交付机体入口状态分流"
-                }
-            },
-            "type": "Custom"
-        },
-        "next": [
-            "角色要求_等待角色列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_右角色交付机体失败状态"
+            "角色要求_处理失败返回列表"
         ],
         "recognition": {
             "param": {},
@@ -1320,62 +1194,5 @@
             "type": "DirectHit"
         },
         "timeout": 5000
-    },
-    "角色要求_左角色交付机体失败状态": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2920,
-                "y": 440
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_左角色返回列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ],
-        "timeout": 10000
-    },
-    "角色要求_中角色交付机体失败状态": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2920,
-                "y": 520
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_中角色返回列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ],
-        "timeout": 10000
-    },
-    "角色要求_右角色交付机体失败状态": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2920,
-                "y": 600
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_右角色返回列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ],
-        "timeout": 10000
     }
 }

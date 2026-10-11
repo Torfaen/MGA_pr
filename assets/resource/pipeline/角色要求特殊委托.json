@@ -1,0 +1,257 @@
+{
+    "$__mpe_config_角色要求特殊委托": {
+        "$__mpe_code": { "filename": "角色要求特殊委托" }
+    },
+    "角色要求_检测特殊委托_全检查": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "特殊委托",
+                    "特殊要求"
+                ],
+                "roi": [
+                    760,
+                    100,
+                    455,
+                    95
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "next": [
+            "角色要求_特殊委托交付机体",
+            "角色要求_特殊委托调度资金",
+            "角色要求_特殊委托消耗AP",
+            "角色要求_特殊委托HARD主要关卡",
+            "角色要求_特殊委托事件关卡",
+            "角色要求_特殊委托击破单位",
+            "角色要求_特殊委托获得单位"
+        ],
+        "on_error": [
+            "角色要求_记录特殊委托不明"
+        ],
+        "timeout": 3000
+    },
+    "角色要求_特殊委托交付机体": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "[\\[［]\\s*(?:SSR|SR|R|N)\\s*[\\]］1Il]"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "左角色特殊委托判定为交付机体"
+        },
+        "next": [
+            "角色要求_处理交付机体"
+        ]
+    },
+    "角色要求_特殊委托调度资金": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "CAPITAL"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "左角色特殊委托判定为调度资金"
+        },
+        "next": [
+            "角色要求_处理调度资金"
+        ]
+    },
+    "角色要求_特殊委托消耗AP": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "AP(?:$|[^A-Za-z])"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "左角色特殊委托判定为消耗AP，进入请求出击流程"
+        },
+        "next": [
+            "角色要求_处理请求出击"
+        ]
+    },
+    "角色要求_特殊委托HARD主要关卡": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "HARD"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "当前",
+                    "reason": "特殊委托：HARD主要关卡尚未支持"
+                }
+            }
+        },
+        "next": [
+            "角色要求_当前角色返回列表_全检查"
+        ]
+    },
+    "角色要求_特殊委托事件关卡": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "事件关卡"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "当前",
+                    "reason": "特殊委托：事件关卡尚未支持"
+                }
+            }
+        },
+        "next": [
+            "角色要求_当前角色返回列表_全检查"
+        ]
+    },
+    "角色要求_特殊委托击破单位": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "击破"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "当前",
+                    "reason": "特殊委托：击破单位尚未支持"
+                }
+            }
+        },
+        "next": [
+            "角色要求_当前角色返回列表_全检查"
+        ]
+    },
+    "角色要求_特殊委托获得单位": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "获得"
+                ],
+                "roi": [
+                    760,
+                    225,
+                    455,
+                    80
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "当前",
+                    "reason": "特殊委托：获得单位尚未支持"
+                }
+            }
+        },
+        "next": [
+            "角色要求_当前角色返回列表_全检查"
+        ]
+    },
+    "角色要求_记录特殊委托不明": {
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "skip",
+                    "slot": "当前",
+                    "reason": "特殊委托内容无法判定"
+                }
+            }
+        },
+        "next": [
+            "角色要求_当前角色返回列表_全检查"
+        ]
+    }
+}

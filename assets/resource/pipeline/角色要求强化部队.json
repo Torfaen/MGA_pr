@@ -4,7 +4,7 @@
             "filename": "角色要求强化部队"
         }
     },
-    "角色要求_处理左角色强化部队": {
+    "角色要求_处理强化部队": {
         "$__mpe_code": {
             "position": {
                 "x": 1620,
@@ -15,7 +15,7 @@
             "param": {
                 "custom_action": "角色要求执行并记录",
                 "custom_action_param": {
-                    "slot": "左",
+                    "slot": "当前",
                     "type": "强化部队",
                     "entry": "角色要求_强化部队操作轮询"
                 }
@@ -34,67 +34,7 @@
         },
         "timeout": 10000
     },
-    "角色要求_处理中角色强化部队": {
-        "$__mpe_code": {
-            "position": {
-                "x": 1620,
-                "y": -225
-            }
-        },
-        "action": {
-            "param": {
-                "custom_action": "角色要求执行并记录",
-                "custom_action_param": {
-                    "slot": "中",
-                    "type": "强化部队",
-                    "entry": "角色要求_强化部队操作轮询"
-                }
-            },
-            "type": "Custom"
-        },
-        "next": [
-            "角色要求_等待角色列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ],
-        "recognition": {
-            "param": {},
-            "type": "DirectHit"
-        },
-        "timeout": 10000
-    },
-    "角色要求_处理右角色强化部队": {
-        "$__mpe_code": {
-            "position": {
-                "x": 1620,
-                "y": -55
-            }
-        },
-        "action": {
-            "param": {
-                "custom_action": "角色要求执行并记录",
-                "custom_action_param": {
-                    "slot": "右",
-                    "type": "强化部队",
-                    "entry": "角色要求_强化部队操作轮询"
-                }
-            },
-            "type": "Custom"
-        },
-        "next": [
-            "角色要求_等待角色列表_全检查"
-        ],
-        "on_error": [
-            "角色要求_查找失败"
-        ],
-        "recognition": {
-            "param": {},
-            "type": "DirectHit"
-        },
-        "timeout": 10000
-    },
-    "角色要求_检测左角色强化部队_全检查": {
+    "角色要求_检测强化部队_全检查": {
         "$__mpe_code": {
             "position": {
                 "x": 2280,
@@ -106,76 +46,10 @@
             "type": "DoNothing"
         },
         "next": [
-            "角色要求_处理左角色强化部队"
+            "角色要求_处理强化部队"
         ],
         "on_error": [
-            "角色要求_记录左角色跳过"
-        ],
-        "recognition": {
-            "param": {
-                "expected": [
-                    "强化部队"
-                ],
-                "roi": [
-                    640,
-                    80,
-                    600,
-                    300
-                ]
-            },
-            "type": "OCR"
-        },
-        "timeout": 3000
-    },
-    "角色要求_检测中角色强化部队_全检查": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2280,
-                "y": -395
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_处理中角色强化部队"
-        ],
-        "on_error": [
-            "角色要求_记录中角色跳过"
-        ],
-        "recognition": {
-            "param": {
-                "expected": [
-                    "强化部队"
-                ],
-                "roi": [
-                    640,
-                    80,
-                    600,
-                    300
-                ]
-            },
-            "type": "OCR"
-        },
-        "timeout": 3000
-    },
-    "角色要求_检测右角色强化部队_全检查": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2280,
-                "y": -225
-            }
-        },
-        "action": {
-            "param": {},
-            "type": "DoNothing"
-        },
-        "next": [
-            "角色要求_处理右角色强化部队"
-        ],
-        "on_error": [
-            "角色要求_记录右角色跳过"
+            "角色要求_记录当前角色跳过"
         ],
         "recognition": {
             "param": {

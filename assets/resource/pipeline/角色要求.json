@@ -330,30 +330,34 @@
             }
         },
         "action": {
+            "type": "Custom",
             "param": {
-                "target": [
-                    240,
-                    180,
-                    90,
-                    150
-                ]
-            },
-            "type": "Click"
+                "custom_action": "角色要求记录",
+                "custom_action_param": {
+                    "op": "select_slot",
+                    "slot": "左",
+                    "target": [
+                        240,
+                        180,
+                        90,
+                        150
+                    ]
+                }
+            }
         },
         "next": [
-            "角色要求_检测左角色强化部队_全检查",
-            "角色要求_检测左角色调度资金_全检查",
-            "角色要求_检测左角色交付机体_全检查",
-            "角色要求_检测左角色委托开发_全检查",
-            "角色要求_检测左角色请求出击_全检查"
+            "角色要求_点击当前角色_全检查"
         ],
         "on_error": [
-            "角色要求_记录左角色跳过"
+            "角色要求_查找失败"
         ],
-        "post_wait_freezes": 500,
-        "timeout": 3000
+        "timeout": 3000,
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        }
     },
-    "角色要求_记录左角色跳过": {
+    "角色要求_记录当前角色跳过": {
         "$__mpe_code": {
             "position": {
                 "x": 2420,
@@ -365,14 +369,14 @@
                 "custom_action": "角色要求记录",
                 "custom_action_param": {
                     "op": "skip",
-                    "slot": "左",
+                    "slot": "当前",
                     "reason": "类别不明"
                 }
             },
             "type": "Custom"
         },
         "next": [
-            "角色要求_左角色返回列表_全检查"
+            "角色要求_当前角色返回列表_全检查"
         ],
         "recognition": {
             "param": {},
@@ -380,7 +384,7 @@
         },
         "timeout": 5000
     },
-    "角色要求_左角色返回列表_全检查": {
+    "角色要求_当前角色返回列表_全检查": {
         "$__mpe_code": {
             "position": {
                 "x": 2500,
@@ -388,13 +392,10 @@
             }
         },
         "action": {
-            "param": {
-            },
+            "param": {},
             "type": "Click"
         },
-        "next": [
-            "角色要求_检查中角色更新_全检查"
-        ],
+        "next": [],
         "recognition": {
             "param": {
                 "roi": [
@@ -413,7 +414,10 @@
             "type": "TemplateMatch"
         },
         "timeout": 5000,
-        "post_wait_freezes": 500
+        "post_wait_freezes": 500,
+        "on_error": [
+            "角色要求_查找失败"
+        ]
     },
     "角色要求_检查中角色更新_全检查": {
         "$__mpe_code": {
@@ -481,90 +485,32 @@
             }
         },
         "action": {
-            "param": {
-                "target": [
-                    600,
-                    180,
-                    90,
-                    150
-                ]
-            },
-            "type": "Click"
-        },
-        "next": [
-            "角色要求_检测中角色强化部队_全检查",
-            "角色要求_检测中角色调度资金_全检查",
-            "角色要求_检测中角色交付机体_全检查",
-            "角色要求_检测中角色委托开发_全检查",
-            "角色要求_检测中角色请求出击_全检查"
-        ],
-        "on_error": [
-            "角色要求_记录中角色跳过"
-        ],
-        "post_wait_freezes": 500,
-        "timeout": 3000
-    },
-    "角色要求_记录中角色跳过": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2420,
-                "y": -470
-            }
-        },
-        "action": {
+            "type": "Custom",
             "param": {
                 "custom_action": "角色要求记录",
                 "custom_action_param": {
-                    "op": "skip",
+                    "op": "select_slot",
                     "slot": "中",
-                    "reason": "类别不明"
+                    "target": [
+                        600,
+                        180,
+                        90,
+                        150
+                    ]
                 }
-            },
-            "type": "Custom"
-        },
-        "next": [
-            "角色要求_中角色返回列表_全检查"
-        ],
-        "recognition": {
-            "param": {},
-            "type": "DirectHit"
-        },
-        "timeout": 5000
-    },
-    "角色要求_中角色返回列表_全检查": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2500,
-                "y": -395
             }
         },
-        "action": {
-            "param": {
-            },
-            "type": "Click"
-        },
         "next": [
-            "角色要求_检查右角色更新_全检查"
+            "角色要求_点击当前角色_全检查"
         ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 3000,
         "recognition": {
-            "param": {
-                "roi": [
-                    0,
-                    0,
-                    170,
-                    90
-                ],
-                "template": [
-                    "角色要求/返回按钮.png"
-                ],
-                "threshold": [
-                    0.75
-                ]
-            },
-            "type": "TemplateMatch"
-        },
-        "timeout": 5000,
-        "post_wait_freezes": 500
+            "type": "DirectHit",
+            "param": {}
+        }
     },
     "角色要求_检查右角色更新_全检查": {
         "$__mpe_code": {
@@ -632,90 +578,32 @@
             }
         },
         "action": {
-            "param": {
-                "target": [
-                    955,
-                    180,
-                    90,
-                    150
-                ]
-            },
-            "type": "Click"
-        },
-        "next": [
-            "角色要求_检测右角色强化部队_全检查",
-            "角色要求_检测右角色调度资金_全检查",
-            "角色要求_检测右角色交付机体_全检查",
-            "角色要求_检测右角色委托开发_全检查",
-            "角色要求_检测右角色请求出击_全检查"
-        ],
-        "on_error": [
-            "角色要求_记录右角色跳过"
-        ],
-        "post_wait_freezes": 500,
-        "timeout": 3000
-    },
-    "角色要求_记录右角色跳过": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2420,
-                "y": -300
-            }
-        },
-        "action": {
+            "type": "Custom",
             "param": {
                 "custom_action": "角色要求记录",
                 "custom_action_param": {
-                    "op": "skip",
+                    "op": "select_slot",
                     "slot": "右",
-                    "reason": "类别不明"
+                    "target": [
+                        955,
+                        180,
+                        90,
+                        150
+                    ]
                 }
-            },
-            "type": "Custom"
-        },
-        "next": [
-            "角色要求_右角色返回列表_全检查"
-        ],
-        "recognition": {
-            "param": {},
-            "type": "DirectHit"
-        },
-        "timeout": 5000
-    },
-    "角色要求_右角色返回列表_全检查": {
-        "$__mpe_code": {
-            "position": {
-                "x": 2500,
-                "y": -225
             }
         },
-        "action": {
-            "param": {
-            },
-            "type": "Click"
-        },
         "next": [
-            "角色要求_完成"
+            "角色要求_点击当前角色_全检查"
         ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 3000,
         "recognition": {
-            "param": {
-                "roi": [
-                    0,
-                    0,
-                    170,
-                    90
-                ],
-                "template": [
-                    "角色要求/返回按钮.png"
-                ],
-                "threshold": [
-                    0.75
-                ]
-            },
-            "type": "TemplateMatch"
-        },
-        "timeout": 5000,
-        "post_wait_freezes": 500
+            "type": "DirectHit",
+            "param": {}
+        }
     },
     "角色要求_等待角色要求报告": {
         "$__mpe_code": {
@@ -1057,5 +945,53 @@
         "focus": {
             "Node.Action.Starting": "MGA_TASK_FAILED: 角色要求查找失败，4次未找到角色要求，跳过该任务，开始返回主页"
         }
+    },
+    "角色要求_点击当前角色_全检查": {
+        "enabled": false,
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            }
+        },
+        "next": [
+            "角色要求_检测特殊委托_全检查",
+            "角色要求_检测强化部队_全检查",
+            "角色要求_检测调度资金_全检查",
+            "角色要求_检测交付机体_全检查",
+            "角色要求_检测委托开发_全检查",
+            "角色要求_检测请求出击_全检查"
+        ],
+        "on_error": [
+            "角色要求_记录当前角色跳过"
+        ],
+        "post_wait_freezes": 500,
+        "timeout": 3000
+    },
+    "角色要求_处理失败返回列表": {
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "action": {
+            "type": "DoNothing",
+            "param": {}
+        },
+        "next": [
+            "角色要求_当前角色返回列表_全检查"
+        ],
+        "on_error": [
+            "角色要求_查找失败"
+        ],
+        "timeout": 10000
     }
 }

@@ -6,7 +6,13 @@ from maa.custom_action import CustomAction
 
 
 _SLOT_ORDER = ["左", "中", "右"]
+_SLOT_NEXT = {
+    "左": "角色要求_检查中角色更新_全检查",
+    "中": "角色要求_检查右角色更新_全检查",
+    "右": "角色要求_完成",
+}
 _records = {}
+_current_slot = None
 _current_run_skip_reason = None
 
 
@@ -16,6 +22,12 @@ def _parse_params(raw: str) -> dict:
 
 def _slot_label(slot: str) -> str:
     return f"{slot}角色"
+
+
+def _resolve_slot(slot: str):
+    if slot == "当前":
+        slot = _current_slot
+    return slot if slot in _SLOT_ORDER else None
 
 
 def _record_done(slot: str, requirement_type: str) -> None:
@@ -57,16 +69,46 @@ def _format_slot_summary(slot: str) -> str:
 @AgentServer.custom_action("角色要求记录")
 class RoleRequirementRecord(CustomAction):
     def run(self, context: Context, argv: CustomAction.RunArg) -> bool:
+        global _current_slot, _current_run_skip_reason
+
         params = _parse_params(argv.custom_action_param)
         op = params.get("op")
 
         if op == "reset":
             _records.clear()
+            _current_slot = None
+            _current_run_skip_reason = None
             print("[角色要求] 记录已重置")
             return True
 
-        if op == "skip":
+        if op == "select_slot":
+            # Clear the old slot first so a failed selection cannot record
+            # another character's outcome under the previous character.
+            _current_slot = None
             slot = params.get("slot")
+            target = params.get("target")
+            if slot not in _SLOT_ORDER or not isinstance(target, list) or len(target) != 4:
+                print("MGA_TASK_FAILED: [角色要求] 选择角色缺少合法 slot/target")
+                return False
+
+            overrides = {
+                "角色要求_点击当前角色_全检查": {
+                    "enabled": True,
+                    "action": {"type": "Click", "param": {"target": target}},
+                },
+                "角色要求_当前角色返回列表_全检查": {
+                    "next": [_SLOT_NEXT[slot]],
+                },
+            }
+            if not context.override_pipeline(overrides):
+                print("MGA_TASK_FAILED: [角色要求] 当前角色点击/返回配置失败")
+                return False
+            _current_slot = slot
+            print(f"[角色要求] 当前处理位置：{_slot_label(slot)}")
+            return True
+
+        if op == "skip":
+            slot = _resolve_slot(params.get("slot"))
             reason = params.get("reason", "类别不明")
             if not slot:
                 print("MGA_TASK_FAILED: [角色要求] 跳过记录缺少 slot")
@@ -77,7 +119,7 @@ class RoleRequirementRecord(CustomAction):
             return True
 
         if op == "skip_if_unprocessed":
-            slot = params.get("slot")
+            slot = _resolve_slot(params.get("slot"))
             reason = params.get("reason", "距离更新还有")
             if not slot:
                 print("MGA_TASK_FAILED: [角色要求] 跳过记录缺少 slot")
@@ -103,7 +145,7 @@ class RoleRequirementRunAndRecord(CustomAction):
         global _current_run_skip_reason
 
         params = _parse_params(argv.custom_action_param)
-        slot = params.get("slot")
+        slot = _resolve_slot(params.get("slot"))
         requirement_type = params.get("type")
         entry = params.get("entry")
 
@@ -123,7 +165,7 @@ class RoleRequirementRunAndRecord(CustomAction):
 
         skip_reason = _current_run_skip_reason
         _current_run_skip_reason = None
-        if result is None:
+        if result is None or not result.status.succeeded:
             _record_failed(slot, requirement_type)
             print(f"MGA_TASK_FAILED: [角色要求] {_slot_label(slot)} {requirement_type}：执行失败")
             return False
